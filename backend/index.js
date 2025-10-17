@@ -17,7 +17,7 @@ async function main(){
             console.log(`The server is running on port ${process.env.PORT}`);
         })
     } catch(e){
-        console.error("Error: Could not connected to PostgreSQL db.", e)
+        console.error("Error: Could not connected to PostgreSQL db.", e);
         process.exit(1);
     }
 }
