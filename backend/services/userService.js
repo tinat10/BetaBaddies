@@ -47,6 +47,8 @@ class UserService {
       return {
         id: userResult.rows[0].u_id,
         email: userResult.rows[0].email,
+        firstName: firstName,
+        lastName: lastName,
         createdAt: userResult.rows[0].created_at,
         updatedAt: userResult.rows[0].updated_at,
       };

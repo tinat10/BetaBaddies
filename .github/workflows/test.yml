@@ -1,0 +1,91 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "backend/**"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "backend/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ats_tracker_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Setup test database
+        working-directory: ./backend
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: ats_tracker_test
+          DB_USER: postgres
+          DB_PASS: postgres
+          SERVER_PORT: 3001
+          NODE_ENV: test
+          SESSION_SECRET: test-secret-key
+          CORS_ORIGIN: http://localhost:3000
+        run: |
+          # Create test database and load schema
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE ats_tracker_test;"
+          PGPASSWORD=postgres psql -h localhost -U postgres -d ats_tracker_test -f ../db/ats_db.sql
+
+      - name: Run tests
+        working-directory: ./backend
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: ats_tracker_test
+          DB_USER: postgres
+          DB_PASS: postgres
+          SERVER_PORT: 3001
+          NODE_ENV: test
+          SESSION_SECRET: test-secret-key
+          CORS_ORIGIN: http://localhost:3000
+        run: npm test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: backend/test-results/
+          retention-days: 7
+
