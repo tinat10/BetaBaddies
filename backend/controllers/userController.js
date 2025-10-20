@@ -65,7 +65,7 @@ class UserController {
     req.session.userId = user.u_id;
     req.session.userEmail = user.email;
 
-    res.json({
+    res.status(200).json({
       ok: true,
       data: {
         user: {
@@ -97,7 +97,7 @@ class UserController {
       }
 
       res.clearCookie("connect.sid");
-      res.json({
+      res.status(200).json({
         ok: true,
         data: {
           message: "Logout successful",
@@ -121,7 +121,7 @@ class UserController {
       });
     }
 
-    res.json({
+    res.status(200).json({
       ok: true,
       data: {
         user: {
@@ -155,7 +155,7 @@ class UserController {
       profileData
     );
 
-    res.json({
+    res.status(200).json({
       ok: true,
       data: {
         profile: updatedProfile,
@@ -198,7 +198,7 @@ class UserController {
     // Update password
     await userService.updatePassword(userId, newPassword);
 
-    res.json({
+    res.status(200).json({
       ok: true,
       data: {
         message: "Password updated successfully",
@@ -211,7 +211,7 @@ class UserController {
     const userId = req.session.userId;
     const dashboard = await userService.getUserDashboard(userId);
 
-    res.json({
+    res.status(200).json({
       ok: true,
       data: dashboard,
     });
@@ -231,7 +231,7 @@ class UserController {
     });
 
     res.clearCookie("connect.sid");
-    res.json({
+    res.status(204).json({
       ok: true,
       data: {
         message: "Account deleted successfully",
@@ -241,7 +241,7 @@ class UserController {
 
   // Get CSRF token
   getCSRFToken = asyncHandler(async (req, res) => {
-    res.json({
+    res.status(200).json({
       ok: true,
       data: {
         csrfToken: req.session.csrfToken,
