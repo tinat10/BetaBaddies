@@ -2,11 +2,11 @@ name: Backend Tests
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, UC-011-RESTful-User-API-Endpoints]
     paths:
       - "backend/**"
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, UC-011-RESTful-User-API-Endpoints]
     paths:
       - "backend/**"
 
