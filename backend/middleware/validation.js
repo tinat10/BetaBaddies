@@ -3,8 +3,6 @@ import Joi from "joi";
 // Validation schemas
 const schemas = {
   register: Joi.object({
-    firstName: Joi.string().min(2).max(50).required(),
-    lastName: Joi.string().min(2).max(50).required(),
     email: Joi.string().email().required(),
     password: Joi.string()
       .min(8)
@@ -19,22 +17,6 @@ const schemas = {
   login: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-  }),
-
-  updateProfile: Joi.object({
-    firstName: Joi.string().min(2).max(50),
-    middleName: Joi.string().min(2).max(50).allow(""),
-    lastName: Joi.string().min(2).max(50),
-    phone: Joi.string()
-      .pattern(/^\+?[\d\s\-\(\)]+$/)
-      .max(15),
-    city: Joi.string().max(100),
-    state: Joi.string().length(2).uppercase(),
-    jobTitle: Joi.string().max(100),
-    bio: Joi.string().max(500),
-    industry: Joi.string().max(100),
-    expLevel: Joi.string().valid("entry", "mid", "senior", "executive"),
-    pfpLink: Joi.string().uri().max(1000),
   }),
 
   changePassword: Joi.object({
@@ -84,5 +66,4 @@ export const validate = (schema) => {
 // Export individual validation middleware
 export const validateRegister = validate(schemas.register);
 export const validateLogin = validate(schemas.login);
-export const validateUpdateProfile = validate(schemas.updateProfile);
 export const validateChangePassword = validate(schemas.changePassword);

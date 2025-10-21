@@ -17,14 +17,10 @@ const testUsers = [
   {
     email: `test1-${Date.now()}@example.com`,
     password: "TestPassword123",
-    firstName: "Test",
-    lastName: "User1",
   },
   {
     email: `test2-${Date.now()}@example.com`,
     password: "AnotherPassword456",
-    firstName: "Test",
-    lastName: "User2",
   },
 ];
 
@@ -80,7 +76,6 @@ async function cleanupTestData() {
 
   for (const userId of createdUserIds) {
     try {
-      await database.query("DELETE FROM profiles WHERE user_id = $1", [userId]);
       await database.query("DELETE FROM users WHERE u_id = $1", [userId]);
       console.log(`   ✓ Deleted test user: ${userId}`);
     } catch (error) {
@@ -152,8 +147,6 @@ async function runAllTests() {
       const userData = {
         email: `newuser-${Date.now()}@example.com`,
         password: "NewPassword123",
-        firstName: "New",
-        lastName: "User",
       };
 
       const result = await userService.createUser(userData);
@@ -165,10 +158,6 @@ async function runAllTests() {
 
       if (result.email !== userData.email) {
         throw new Error("Email mismatch in created user");
-      }
-
-      if (result.firstName !== userData.firstName) {
-        throw new Error("First name mismatch in created user");
       }
 
       console.log("   ✓ User created successfully");
@@ -228,11 +217,6 @@ async function runAllTests() {
       const loginResponse = {
         id: user.u_id,
         email: user.email,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        jobTitle: user.job_title,
-        industry: user.industry,
-        profilePicture: user.pfp_link,
       };
 
       if (!loginResponse.id) {
@@ -242,9 +226,8 @@ async function runAllTests() {
       console.log("   ✓ User found by email");
       console.log("   ✓ Password verified successfully");
       console.log("   ✓ Login response created");
-      console.log(
-        `   ✓ User: ${loginResponse.firstName} ${loginResponse.lastName}`
-      );
+      console.log(`   ✓ User ID: ${loginResponse.id}`);
+      console.log(`   ✓ User Email: ${loginResponse.email}`);
     });
 
     // Test 6: Login with Invalid Credentials
@@ -343,8 +326,6 @@ async function runAllTests() {
       const userData = {
         email: testUsers[0].email, // Use existing email
         password: "AnotherPassword123",
-        firstName: "Duplicate",
-        lastName: "User",
       };
 
       try {
@@ -381,42 +362,34 @@ async function runAllTests() {
       console.log(`   ✓ Current time: ${currentTime}`);
     });
 
-    // Test 11: User Profile Creation
-    await runTest("User Profile Creation", async () => {
+    // Test 11: User Account Creation (Authentication Only)
+    await runTest("User Account Creation (Authentication Only)", async () => {
       const userData = {
-        email: `profiletest-${Date.now()}@example.com`,
-        password: "ProfilePassword123",
-        firstName: "Profile",
-        lastName: "Test",
+        email: `authtest-${Date.now()}@example.com`,
+        password: "AuthPassword123",
       };
 
       const result = await userService.createUser(userData);
       createdUserIds.push(result.id); // Add to cleanup list
 
-      // Check if profile was created
-      const profileResult = await database.query(
-        "SELECT * FROM profiles WHERE user_id = $1",
+      // Verify user was created in users table
+      const userResult = await database.query(
+        "SELECT * FROM users WHERE u_id = $1",
         [result.id]
       );
 
-      if (!profileResult.rows || profileResult.rows.length === 0) {
-        throw new Error("User profile was not created");
+      if (!userResult.rows || userResult.rows.length === 0) {
+        throw new Error("User was not created in database");
       }
 
-      const profile = profileResult.rows[0];
-      if (profile.first_name !== userData.firstName) {
-        throw new Error("Profile first name mismatch");
+      const user = userResult.rows[0];
+      if (user.email !== userData.email) {
+        throw new Error("User email mismatch");
       }
 
-      if (profile.last_name !== userData.lastName) {
-        throw new Error("Profile last name mismatch");
-      }
-
-      console.log("   ✓ User profile created successfully");
-      console.log(`   ✓ Profile ID: ${profile.user_id}`);
-      console.log(
-        `   ✓ Profile Name: ${profile.first_name} ${profile.last_name}`
-      );
+      console.log("   ✓ User account created successfully");
+      console.log(`   ✓ User ID: ${user.u_id}`);
+      console.log(`   ✓ User Email: ${user.email}`);
     });
 
     // Test 12: Session Data Structure
@@ -480,7 +453,7 @@ async function runAllTests() {
       console.log("   • Email validation");
       console.log("   • Duplicate email prevention");
       console.log("   • Database connection");
-      console.log("   • User profile creation");
+      console.log("   • User account creation (authentication only)");
       console.log("   • Session data structure");
     }
   } catch (error) {

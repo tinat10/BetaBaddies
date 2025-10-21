@@ -45,10 +45,8 @@ backend/
 | POST   | `/register`        | Create new user account | No            |
 | POST   | `/login`           | Authenticate user       | No            |
 | POST   | `/logout`          | End user session        | No            |
-| GET    | `/profile`         | Get user profile        | Yes           |
-| PUT    | `/profile`         | Update user profile     | Yes           |
-| PUT    | `/change-password` | Change user password    | Yes           |
-| GET    | `/dashboard`       | Get user dashboard      | Yes           |
+| GET    | `/profile`         | Get user info           | Yes           |
+| PUT    | `/change-password` | Change password         | Yes           |
 | DELETE | `/account`         | Delete user account     | Yes           |
 | GET    | `/csrf-token`      | Get CSRF token          | No            |
 

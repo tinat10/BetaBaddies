@@ -8,7 +8,6 @@ import {
 import {
   validateRegister,
   validateLogin,
-  validateUpdateProfile,
   validateChangePassword,
 } from "../middleware/validation.js";
 
@@ -39,22 +38,12 @@ router.get("/csrf-token", userController.getCSRFToken);
 router.get("/profile", isAuthenticated, userController.getProfile);
 
 router.put(
-  "/profile",
-  isAuthenticated,
-  csrfProtection,
-  validateUpdateProfile,
-  userController.updateProfile
-);
-
-router.put(
   "/change-password",
   isAuthenticated,
   csrfProtection,
   validateChangePassword,
   userController.changePassword
 );
-
-router.get("/dashboard", isAuthenticated, userController.getDashboard);
 
 router.delete(
   "/account",

@@ -4,11 +4,9 @@ import { asyncHandler } from "../middleware/errorHandler.js";
 class UserController {
   // Register a new user
   register = asyncHandler(async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+    const { email, password } = req.body;
 
     const user = await userService.createUser({
-      firstName,
-      lastName,
       email,
       password,
     });
@@ -23,8 +21,6 @@ class UserController {
         user: {
           id: user.id,
           email: user.email,
-          firstName,
-          lastName,
           createdAt: user.createdAt,
         },
         message: "User registered successfully",
@@ -71,11 +67,6 @@ class UserController {
         user: {
           id: user.u_id,
           email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          jobTitle: user.job_title,
-          industry: user.industry,
-          pfpLink: user.pfp_link,
         },
         message: "Login successful",
       },
@@ -106,7 +97,7 @@ class UserController {
     });
   });
 
-  // Get current user profile
+  // Get current user info (authentication only)
   getProfile = asyncHandler(async (req, res) => {
     const userId = req.session.userId;
     const user = await userService.getUserById(userId);
@@ -127,39 +118,9 @@ class UserController {
         user: {
           id: user.u_id,
           email: user.email,
-          firstName: user.first_name,
-          middleName: user.middle_name,
-          lastName: user.last_name,
-          phone: user.phone,
-          city: user.city,
-          state: user.state,
-          jobTitle: user.job_title,
-          bio: user.bio,
-          industry: user.industry,
-          expLevel: user.exp_level,
-          pfpLink: user.pfp_link,
           createdAt: user.created_at,
           updatedAt: user.updated_at,
         },
-      },
-    });
-  });
-
-  // Update user profile
-  updateProfile = asyncHandler(async (req, res) => {
-    const userId = req.session.userId;
-    const profileData = req.body;
-
-    const updatedProfile = await userService.updateUserProfile(
-      userId,
-      profileData
-    );
-
-    res.status(200).json({
-      ok: true,
-      data: {
-        profile: updatedProfile,
-        message: "Profile updated successfully",
       },
     });
   });
@@ -203,17 +164,6 @@ class UserController {
       data: {
         message: "Password updated successfully",
       },
-    });
-  });
-
-  // Get user dashboard
-  getDashboard = asyncHandler(async (req, res) => {
-    const userId = req.session.userId;
-    const dashboard = await userService.getUserDashboard(userId);
-
-    res.status(200).json({
-      ok: true,
-      data: dashboard,
     });
   });
 

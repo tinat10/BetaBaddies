@@ -60,8 +60,6 @@ Create a new user account.
 
 ```json
 {
-  "firstName": "John",
-  "lastName": "Doe",
   "email": "john.doe@example.com",
   "password": "SecurePass123"
 }
@@ -69,8 +67,6 @@ Create a new user account.
 
 **Validation Rules:**
 
-- `firstName`: Required, 2-50 characters
-- `lastName`: Required, 2-50 characters
 - `email`: Required, valid email format
 - `password`: Required, minimum 8 characters, must contain uppercase, lowercase, and number
 
@@ -83,8 +79,6 @@ Create a new user account.
     "user": {
       "id": "uuid",
       "email": "john.doe@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
       "createdAt": "2024-01-01T00:00:00.000Z"
     },
     "message": "User registered successfully"
@@ -123,12 +117,7 @@ Authenticate user and create session.
   "data": {
     "user": {
       "id": "uuid",
-      "email": "john.doe@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "jobTitle": "Software Engineer",
-      "industry": "Technology",
-      "pfpLink": "https://example.com/avatar.jpg"
+      "email": "john.doe@example.com"
     },
     "message": "Login successful"
   }
@@ -181,7 +170,7 @@ Get CSRF token for form submissions.
 
 #### GET `/api/v1/users/profile`
 
-Get current user's profile information.
+Get current user's basic information.
 
 **Headers Required:**
 
@@ -196,17 +185,6 @@ Get current user's profile information.
     "user": {
       "id": "uuid",
       "email": "john.doe@example.com",
-      "firstName": "John",
-      "middleName": "Michael",
-      "lastName": "Doe",
-      "phone": "+1234567890",
-      "city": "San Francisco",
-      "state": "CA",
-      "jobTitle": "Senior Software Engineer",
-      "bio": "Experienced developer with 5+ years...",
-      "industry": "Technology",
-      "expLevel": "senior",
-      "pfpLink": "https://example.com/avatar.jpg",
       "createdAt": "2024-01-01T00:00:00.000Z",
       "updatedAt": "2024-01-01T00:00:00.000Z"
     }
@@ -218,69 +196,6 @@ Get current user's profile information.
 
 - `401` - Not authenticated
 - `404` - User not found
-
----
-
-#### PUT `/api/v1/users/profile`
-
-Update current user's profile information.
-
-**Headers Required:**
-
-- Session cookie (automatic)
-- `X-CSRF-Token`: CSRF token
-
-**Request Body (all fields optional):**
-
-```json
-{
-  "firstName": "John",
-  "middleName": "Michael",
-  "lastName": "Doe",
-  "phone": "+1234567890",
-  "city": "San Francisco",
-  "state": "CA",
-  "jobTitle": "Senior Software Engineer",
-  "bio": "Experienced developer with 5+ years...",
-  "industry": "Technology",
-  "expLevel": "senior",
-  "pfpLink": "https://example.com/avatar.jpg"
-}
-```
-
-**Validation Rules:**
-
-- `firstName`: 2-50 characters
-- `middleName`: 2-50 characters (optional)
-- `lastName`: 2-50 characters
-- `phone`: Valid phone format, max 15 characters
-- `city`: Max 100 characters
-- `state`: Exactly 2 uppercase characters
-- `jobTitle`: Max 100 characters
-- `bio`: Max 500 characters
-- `industry`: Max 100 characters
-- `expLevel`: Must be one of: "entry", "mid", "senior", "executive"
-- `pfpLink`: Valid URI, max 1000 characters
-
-**Success Response (200):**
-
-```json
-{
-  "ok": true,
-  "data": {
-    "profile": {
-      // Updated profile object
-    },
-    "message": "Profile updated successfully"
-  }
-}
-```
-
-**Error Responses:**
-
-- `401` - Not authenticated
-- `403` - Invalid CSRF token
-- `422` - Validation errors
 
 ---
 
@@ -324,47 +239,6 @@ Change user's password.
 - `403` - Invalid CSRF token
 - `404` - User not found
 - `422` - Validation errors
-
----
-
-#### GET `/api/v1/users/dashboard`
-
-Get user dashboard with profile completeness and counts.
-
-**Headers Required:**
-
-- Session cookie (automatic)
-
-**Success Response (200):**
-
-```json
-{
-  "ok": true,
-  "data": {
-    "user": {
-      "id": "uuid",
-      "email": "john.doe@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "jobTitle": "Senior Software Engineer",
-      "industry": "Technology",
-      "pfpLink": "https://example.com/avatar.jpg"
-    },
-    "counts": {
-      "jobs": 3,
-      "education": 2,
-      "skills": 15,
-      "certifications": 4,
-      "projects": 8
-    },
-    "profileCompleteness": 85
-  }
-}
-```
-
-**Error Responses:**
-
-- `401` - Not authenticated
 
 ---
 
