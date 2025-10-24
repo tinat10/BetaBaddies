@@ -5,7 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node tests/login-functionality.test.js"
+    "test": "node tests/login-functionality.test.js",
+    "test:user-api": "node tests/user-api.test.js",
+    "test:jobs-service": "node tests/jobs-service.test.js",
+    "test:jobs-api": "node tests/jobs-api.test.js",
+    "test:all": "npm run test && npm run test:user-api && npm run test:jobs-service && npm run test:jobs-api"
   },
   "keywords": [],
   "author": "",
@@ -22,5 +26,8 @@
     "morgan": "^1.10.1",
     "pg": "^8.16.3",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.4"
   }
 }
