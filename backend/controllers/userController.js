@@ -6,26 +6,39 @@ class UserController {
   register = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
-    const user = await userService.createUser({
-      email,
-      password,
-    });
+    try {
+      const user = await userService.createUser({
+        email,
+        password,
+      });
 
-    // Set session
-    req.session.userId = user.id;
-    req.session.userEmail = user.email;
+      // Set session
+      req.session.userId = user.id;
+      req.session.userEmail = user.email;
 
-    res.status(201).json({
-      ok: true,
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          createdAt: user.createdAt,
+      res.status(201).json({
+        ok: true,
+        data: {
+          user: {
+            id: user.id,
+            email: user.email,
+            createdAt: user.createdAt,
+          },
+          message: "User registered successfully",
         },
-        message: "User registered successfully",
-      },
-    });
+      });
+    } catch (error) {
+      if (error.message.includes("already exists")) {
+        return res.status(409).json({
+          ok: false,
+          error: {
+            code: "CONFLICT",
+            message: "User with this email already exists",
+          },
+        });
+      }
+      throw error;
+    }
   });
 
   // Login user
@@ -130,8 +143,8 @@ class UserController {
     const userId = req.session.userId;
     const { currentPassword, newPassword } = req.body;
 
-    // Verify current password
-    const user = await userService.getUserById(userId);
+    // Get user with password for verification
+    const user = await userService.getUserByEmail(req.session.userEmail);
     if (!user) {
       return res.status(404).json({
         ok: false,
@@ -181,7 +194,7 @@ class UserController {
     });
 
     res.clearCookie("connect.sid");
-    res.status(204).json({
+    res.status(200).json({
       ok: true,
       data: {
         message: "Account deleted successfully",
