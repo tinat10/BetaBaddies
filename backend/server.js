@@ -11,6 +11,7 @@ import educationRoutes from "./routes/educationRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import certificationRoutes from "./routes/certificationRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 
 // Import middleware
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
@@ -102,6 +103,7 @@ app.use("/api/v1/education", educationRoutes);
 app.use("/api/v1/skills", skillRoutes);
 app.use("/api/v1/jobs", jobRoutes);
 app.use("/api/v1/certifications", certificationRoutes);
+app.use("/api/v1/projects", projectRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
