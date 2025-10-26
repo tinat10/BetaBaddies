@@ -1,0 +1,54 @@
+import express from "express";
+import certificationController from "../controllers/certificationController.js";
+import { isAuthenticated, csrfProtection } from "../middleware/auth.js";
+import {
+  validateCreateCertification,
+  validateUpdateCertification,
+  validateCertificationId,
+} from "../middleware/validation.js";
+
+const router = express.Router();
+
+// All certification routes require authentication
+router.use(isAuthenticated);
+
+// Create a new certification
+router.post("/", csrfProtection, validateCreateCertification, certificationController.create);
+
+// Get all certifications for the authenticated user
+router.get("/", certificationController.getAll);
+
+// Get current certifications (non-expired)
+router.get("/current", certificationController.getCurrent);
+
+// Get certification history (all certifications including expired)
+router.get("/history", certificationController.getHistory);
+
+// Get certification statistics
+router.get("/statistics", certificationController.getStatistics);
+
+// Get expiring certifications
+router.get("/expiring", certificationController.getExpiring);
+
+// Search certifications
+router.get("/search", certificationController.search);
+
+// Get certifications by organization
+router.get("/organization", certificationController.getByOrganization);
+
+// Get certification by ID (must be after other routes to avoid conflicts)
+router.get("/:id", validateCertificationId, certificationController.getById);
+
+// Update certification
+router.put(
+  "/:id",
+  csrfProtection,
+  validateCertificationId,
+  validateUpdateCertification,
+  certificationController.update
+);
+
+// Delete certification
+router.delete("/:id", csrfProtection, validateCertificationId, certificationController.delete);
+
+export default router;

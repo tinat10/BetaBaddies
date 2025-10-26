@@ -108,6 +108,80 @@ const schemas = {
   jobId: Joi.object({
     id: Joi.string().uuid().required(),
   }),
+
+  createCertification: Joi.object({
+    name: Joi.string().max(255).required(),
+    orgName: Joi.string().max(255).required(),
+    dateEarned: Joi.date().required(),
+    expirationDate: Joi.date().allow(null).optional(),
+    neverExpires: Joi.boolean().default(false),
+  })
+    .custom((value, helpers) => {
+      // Custom validation for certification date logic
+      const earnedDate = new Date(value.dateEarned);
+      const today = new Date();
+
+      // Check if date earned is in the future
+      if (earnedDate > today) {
+        return helpers.error("certification.futureDate");
+      }
+
+      if (value.neverExpires && value.expirationDate) {
+        return helpers.error("certification.permanentWithExpiration");
+      }
+      if (!value.neverExpires && !value.expirationDate) {
+        return helpers.error("certification.expiringWithoutDate");
+      }
+      if (
+        value.expirationDate &&
+        value.dateEarned &&
+        value.expirationDate <= value.dateEarned
+      ) {
+        return helpers.error("certification.expirationBeforeEarned");
+      }
+      return value;
+    })
+    .messages({
+      "certification.futureDate": "Date earned cannot be in the future",
+      "certification.permanentWithExpiration":
+        "Permanent certifications cannot have an expiration date",
+      "certification.expiringWithoutDate":
+        "Non-permanent certifications must have an expiration date",
+      "certification.expirationBeforeEarned":
+        "Expiration date must be after date earned",
+    }),
+
+  updateCertification: Joi.object({
+    name: Joi.string().max(255).optional(),
+    orgName: Joi.string().max(255).optional(),
+    dateEarned: Joi.date().optional(),
+    expirationDate: Joi.date().allow(null).optional(),
+    neverExpires: Joi.boolean().optional(),
+  })
+    .custom((value, helpers) => {
+      // Custom validation for certification date logic
+      if (value.neverExpires && value.expirationDate) {
+        return helpers.error("certification.permanentWithExpiration");
+      }
+      if (
+        value.expirationDate &&
+        value.dateEarned &&
+        value.expirationDate <= value.dateEarned
+      ) {
+        return helpers.error("certification.expirationBeforeEarned");
+      }
+      return value;
+    })
+    .messages({
+      "certification.permanentWithExpiration":
+        "Permanent certifications cannot have an expiration date",
+      "certification.expirationBeforeEarned":
+        "Expiration date must be after date earned",
+    }),
+
+  certificationId: Joi.object({
+    id: Joi.string().uuid().required(),
+  }),
 };
 
 // Validation middleware factory
@@ -181,3 +255,10 @@ export const validateUpdateEducation = validate(schemas.updateEducation);
 export const validateCreateJob = validate(schemas.createJob);
 export const validateUpdateJob = validate(schemas.updateJob);
 export const validateJobId = validateParams(schemas.jobId);
+export const validateCreateCertification = validate(
+  schemas.createCertification
+);
+export const validateUpdateCertification = validate(
+  schemas.updateCertification
+);
+export const validateCertificationId = validateParams(schemas.certificationId);
