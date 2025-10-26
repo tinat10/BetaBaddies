@@ -69,6 +69,29 @@ const schemas = {
     honors: Joi.string().max(1000).allow(null, "").optional(),
   }),
 
+  createSkill: Joi.object({
+    skillName: Joi.string().max(100).required(),
+    proficiency: Joi.string()
+      .valid("Beginner", "Intermediate", "Advanced", "Expert")
+      .required(),
+    category: Joi.string()
+      .valid("Technical", "Soft Skills", "Languages", "Industry-Specific")
+      .allow(null, "")
+      .optional(),
+    skillBadge: Joi.string().uri().max(500).allow(null, "").optional(),
+  }),
+
+  updateSkill: Joi.object({
+    proficiency: Joi.string()
+      .valid("Beginner", "Intermediate", "Advanced", "Expert")
+      .optional(),
+    category: Joi.string()
+      .valid("Technical", "Soft Skills", "Languages", "Industry-Specific")
+      .allow(null, "")
+      .optional(),
+    skillBadge: Joi.string().uri().max(500).allow(null, "").optional(),
+  }),
+
   createJob: Joi.object({
     title: Joi.string().max(255).required(),
     company: Joi.string().max(255).required(),
@@ -178,6 +201,8 @@ export const validateLogin = validate(schemas.login);
 export const validateChangePassword = validate(schemas.changePassword);
 export const validateCreateEducation = validate(schemas.createEducation);
 export const validateUpdateEducation = validate(schemas.updateEducation);
+export const validateCreateSkill = validate(schemas.createSkill);
+export const validateUpdateSkill = validate(schemas.updateSkill);
 export const validateCreateJob = validate(schemas.createJob);
 export const validateUpdateJob = validate(schemas.updateJob);
 export const validateJobId = validateParams(schemas.jobId);

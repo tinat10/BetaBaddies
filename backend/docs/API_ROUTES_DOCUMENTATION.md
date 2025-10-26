@@ -875,6 +875,257 @@ Delete an education entry.
 
 ---
 
+## Skills Management Routes (`/api/v1/skills`)
+
+All skills endpoints require authentication.
+
+### GET `/api/v1/skills`
+
+Get all skills for the current user, optionally filtered by category.
+
+**Headers Required:**
+- Session cookie (automatic)
+
+**Query Parameters:**
+- `category` (optional): Filter by category (Technical, Soft Skills, Languages, Industry-Specific)
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  "data": {
+    "skills": [
+      {
+        "id": "uuid",
+        "userId": "uuid",
+        "skillName": "JavaScript",
+        "proficiency": "Advanced",
+        "category": "Technical",
+        "skillBadge": "https://example.com/js-badge.png"
+      },
+      {
+        "id": "uuid",
+        "userId": "uuid",
+        "skillName": "Communication",
+        "proficiency": "Expert",
+        "category": "Soft Skills",
+        "skillBadge": null
+      }
+    ]
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+
+---
+
+### GET `/api/v1/skills/categories`
+
+Get skills grouped by category with category counts.
+
+**Headers Required:**
+- Session cookie (automatic)
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  "data": {
+    "skillsByCategory": {
+      "Technical": [
+        {
+          "id": "uuid",
+          "skillName": "JavaScript",
+          "proficiency": "Advanced",
+          "category": "Technical",
+          "skillBadge": "https://example.com/js-badge.png"
+        }
+      ],
+      "Soft Skills": [
+        {
+          "id": "uuid",
+          "skillName": "Communication",
+          "proficiency": "Expert",
+          "category": "Soft Skills",
+          "skillBadge": null
+        }
+      ]
+    },
+    "categoryCounts": {
+      "Technical": 5,
+      "Soft Skills": 3,
+      "Languages": 2
+    }
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+
+---
+
+### POST `/api/v1/skills`
+
+Create a new skill.
+
+**Headers Required:**
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Request Body:**
+```json
+{
+  "skillName": "Python",
+  "proficiency": "Intermediate",
+  "category": "Technical",
+  "skillBadge": "https://example.com/python-badge.png"
+}
+```
+
+**Validation Rules:**
+- `skillName`: Required, max 100 characters
+- `proficiency`: Required, one of: "Beginner", "Intermediate", "Advanced", "Expert"
+- `category`: Optional, one of: "Technical", "Soft Skills", "Languages", "Industry-Specific"
+- `skillBadge`: Optional, valid URI, max 500 characters
+
+**Success Response (201):**
+```json
+{
+  "ok": true,
+  "data": {
+    "skill": {
+      "id": "uuid",
+      "userId": "uuid",
+      "skillName": "Python",
+      "proficiency": "Intermediate",
+      "category": "Technical",
+      "skillBadge": "https://example.com/python-badge.png"
+    },
+    "message": "Skill created successfully"
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `409` - Duplicate skill (skill already exists for this user)
+- `422` - Validation errors
+
+---
+
+### GET `/api/v1/skills/:id`
+
+Get a specific skill by ID.
+
+**Headers Required:**
+- Session cookie (automatic)
+
+**URL Parameters:**
+- `id`: Skill UUID
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  data: {
+    skill: {
+      id: "uuid",
+      userId: "uuid",
+      skillName: "JavaScript",
+      proficiency: "Advanced",
+      category: "Technical",
+      skillBadge: "https://example.com/js-badge.png"
+    }
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+- `404` - Skill not found
+
+---
+
+### PUT `/api/v1/skills/:id`
+
+Update a skill (skill name cannot be changed).
+
+**Headers Required:**
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**URL Parameters:**
+- `id`: Skill UUID
+
+**Request Body:**
+```json
+{
+  "proficiency": "Expert",
+  "category": "Technical",
+  "skillBadge": "https://example.com/js-expert-badge.png"
+}
+```
+
+**Note:** All fields are optional. `skillName` cannot be updated once created.
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  "data": {
+    "skill": {
+      "id": "uuid",
+      "userId": "uuid",
+      "skillName": "JavaScript",
+      "proficiency": "Expert",
+      "category": "Technical",
+      "skillBadge": "https://example.com/js-expert-badge.png"
+    },
+    "message": "Skill updated successfully"
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `404` - Skill not found
+- `422` - Validation errors
+
+---
+
+### DELETE `/api/v1/skills/:id`
+
+Delete a skill.
+
+**Headers Required:**
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**URL Parameters:**
+- `id`: Skill UUID
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  "data": {
+    "message": "Skill deleted successfully"
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `404` - Skill not found
+
+---
+
 ## HTTP Status Codes
 
 | Code | Description           | Usage                                           |
@@ -905,6 +1156,8 @@ Delete an education entry.
 | `VALIDATION_ERROR`      | Input validation failed       |
 | `CONFLICT`              | Resource already exists       |
 | `EDUCATION_NOT_FOUND`   | Education entry not found     |
+| `SKILL_NOT_FOUND`       | Skill not found               |
+| `DUPLICATE_SKILL`        | Skill already exists           |
 | `RATE_LIMIT_EXCEEDED`   | Too many requests             |
 | `INTERNAL_SERVER_ERROR` | Unexpected server error       |
 | Code                    | Description                             |
