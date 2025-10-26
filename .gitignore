@@ -113,3 +113,7 @@ dist
 *.log
 .DS_Store
 .vscode/
+
+# File upload directories
+backend/uploads/
+uploads/

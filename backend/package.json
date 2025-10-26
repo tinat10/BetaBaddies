@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "node index.js",
     "test": "node tests/login-functionality.test.js",
     "test:education": "node tests/education-functionality.test.js",
     "test:user-api": "node tests/user-api.test.js",
@@ -12,7 +13,9 @@
     "test:jobs-api": "node tests/jobs-api.test.js",
     "test:certifications": "node tests/certifications-functionality.test.js",
     "test:certifications-api": "node tests/certifications-api.test.js",
-    "test:all": "npm run test && npm run test:user-api && npm run test:jobs-service && npm run test:jobs-api && npm run test:certifications && npm run test:certifications-api"
+    "test:file-upload": "node tests/file-upload-functionality.test.js",
+    "test:file-upload-api": "node tests/file-upload-api.test.js",
+    "test:all": "npm run test && npm run test:user-api && npm run test:jobs-service && npm run test:jobs-api && npm run test:certifications && npm run test:certifications-api && npm run test:file-upload && npm run test:file-upload-api"
   },
   "keywords": [],
   "author": "",
@@ -27,7 +30,9 @@
     "helmet": "^8.1.0",
     "joi": "^18.0.1",
     "morgan": "^1.10.1",
+    "multer": "^2.0.2",
     "pg": "^8.16.3",
+    "sharp": "^0.34.4",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

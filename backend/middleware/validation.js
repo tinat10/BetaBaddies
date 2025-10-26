@@ -205,6 +205,10 @@ const schemas = {
   certificationId: Joi.object({
     id: Joi.string().uuid().required(),
   }),
+
+  fileId: Joi.object({
+    fileId: Joi.string().uuid().required(),
+  }),
 };
 
 // Validation middleware factory
@@ -287,3 +291,4 @@ export const validateUpdateCertification = validate(
   schemas.updateCertification
 );
 export const validateCertificationId = validateParams(schemas.certificationId);
+export const validateFileId = validateParams(schemas.fileId);
