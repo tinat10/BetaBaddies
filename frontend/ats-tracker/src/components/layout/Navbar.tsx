@@ -1,9 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { Icon } from '@iconify/react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { Menubar, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar'
+import { cn } from '@/lib/utils'
+import { navigationItems, ROUTES } from '@/config/routes'
 
 export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
+  const location = useLocation()
   
   // Mock user data - replace with actual authentication
   const user = {
@@ -30,17 +36,19 @@ export function Navbar() {
   }, [isDropdownOpen])
 
   return (
-    <nav className="bg-white border-b border-slate-200 py-4 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-10 flex justify-between items-center">
-        {/* Logo/Brand */}
-        <div className="flex items-center gap-3">
-          <Icon icon="mingcute:file-list-line" width={32} height={32} className="text-blue-500" />
-          <h1 className="text-2xl font-bold text-slate-900 m-0 font-sans">ATS Tracker</h1>
-        </div>
+    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+      <div className="max-w-[1600px] mx-auto px-10">
+        {/* Top Row: Logo and User Profile */}
+        <div className="flex justify-between items-center py-4">
+          {/* Logo/Brand */}
+          <div className="flex items-center gap-3">
+            <Icon icon="mingcute:file-list-line" width={32} height={32} className="text-blue-500" />
+            <h1 className="text-2xl font-bold text-slate-900 m-0 font-sans">ATS Tracker</h1>
+          </div>
 
-        {/* User Profile Area */}
-        <div className="flex items-center">
-          {user.isLoggedIn ? (
+          {/* User Profile Area */}
+          <div className="flex items-center">
+            {user.isLoggedIn ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -80,7 +88,7 @@ export function Navbar() {
                   </button>
                   <button 
                     className="w-full flex items-center gap-3 px-4 py-3 bg-transparent border-none text-left cursor-pointer text-sm font-medium text-slate-900 transition-colors duration-200 hover:bg-slate-50"
-                    onClick={() => alert('Settings')}
+                    onClick={() => navigate(ROUTES.SETTINGS)}
                   >
                     <Icon icon="mingcute:setting-line" width={20} height={20} />
                     <span>Settings</span>
@@ -105,8 +113,36 @@ export function Navbar() {
                 Sign Up
               </button>
             </div>
-          )}
+            )}
+          </div>
         </div>
+
+        {/* Bottom Row: Navigation Menu */}
+        {user.isLoggedIn && (
+          <div className="border-t border-slate-100 py-3">
+            <Menubar className="border-0 bg-transparent shadow-none p-0 h-auto space-x-1">
+              {navigationItems.map((item) => {
+                const isActive = location.pathname === item.path
+                return (
+                  <MenubarMenu key={item.id}>
+                    <MenubarTrigger
+                      onClick={() => navigate(item.path)}
+                      className={cn(
+                        "cursor-pointer bg-transparent data-[state=open]:bg-transparent focus:bg-transparent",
+                        isActive 
+                          ? "bg-slate-100 text-slate-900 hover:bg-slate-100" 
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      )}
+                    >
+                      <Icon icon={item.icon} width={16} height={16} className="mr-2" />
+                      {item.label}
+                    </MenubarTrigger>
+                  </MenubarMenu>
+                )
+              })}
+            </Menubar>
+          </div>
+        )}
       </div>
     </nav>
   )

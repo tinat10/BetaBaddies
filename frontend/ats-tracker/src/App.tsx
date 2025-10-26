@@ -8,7 +8,7 @@ import { Education } from './pages/Education'
 import { Projects } from './pages/Projects'
 import { Certifications } from './pages/Certifications'
 import { Settings } from './pages/Settings'
-import { ThemeProvider } from "./components/theme-provider"
+import { ROUTES } from './config/routes'
 import './App.css'
 
 function App() {
@@ -17,14 +17,14 @@ function App() {
 	    <div className="app">
 	      <Layout>
 		<Routes>
-		  <Route path="/" element={<Dashboard />} />
-		  <Route path="/basic-information" element={<BasicInformation />} />
-		  <Route path="/employment" element={<Employment />} />
-		  <Route path="/skills" element={<Skills />} />
-		  <Route path="/education" element={<Education />} />
-		  <Route path="/projects" element={<Projects />} />
-		  <Route path="/certifications" element={<Certifications />} />
-		  <Route path="/settings" element={<Settings />} />
+		  <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+		  <Route path={ROUTES.BASIC_INFO} element={<BasicInformation />} />
+		  <Route path={ROUTES.EMPLOYMENT} element={<Employment />} />
+		  <Route path={ROUTES.SKILLS} element={<Skills />} />
+		  <Route path={ROUTES.EDUCATION} element={<Education />} />
+		  <Route path={ROUTES.PROJECTS} element={<Projects />} />
+		  <Route path={ROUTES.CERTIFICATIONS} element={<Certifications />} />
+		  <Route path={ROUTES.SETTINGS} element={<Settings />} />
 		</Routes>
 	      </Layout>
 	    </div>
