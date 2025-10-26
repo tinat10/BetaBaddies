@@ -10,7 +10,9 @@
     "test:user-api": "node tests/user-api.test.js",
     "test:jobs-service": "node tests/jobs-service.test.js",
     "test:jobs-api": "node tests/jobs-api.test.js",
-    "test:all": "npm run test && npm run test:user-api && npm run test:jobs-service && npm run test:jobs-api"
+    "test:certifications": "node tests/certifications-functionality.test.js",
+    "test:certifications-api": "node tests/certifications-api.test.js",
+    "test:all": "npm run test && npm run test:user-api && npm run test:jobs-service && npm run test:jobs-api && npm run test:certifications && npm run test:certifications-api"
   },
   "keywords": [],
   "author": "",
