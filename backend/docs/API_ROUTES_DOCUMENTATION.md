@@ -1287,6 +1287,443 @@ curl -X GET http://localhost:5000/api/v1/jobs/statistics \
 
 ---
 
+## Projects Management Routes (`/api/v1/projects`)
+
+### Protected Routes (Authentication Required)
+
+#### POST `/api/v1/projects`
+
+Create a new project entry for the authenticated user's portfolio.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Request Body:**
+
+```json
+{
+  "name": "E-Commerce Platform",
+  "description": "Full-stack e-commerce application with payment integration",
+  "link": "https://github.com/username/ecommerce",
+  "startDate": "2023-01-01",
+  "endDate": "2023-06-30",
+  "technologies": "React, Node.js, PostgreSQL, Stripe",
+  "collaborators": "Team of 5 developers",
+  "status": "Completed",
+  "industry": "E-Commerce"
+}
+```
+
+**Validation Rules:**
+
+- `name`: Required, string, max 255 characters
+- `description`: Optional, string, max 500 characters
+- `link`: Optional, valid URL, max 500 characters
+- `startDate`: Required, valid date (YYYY-MM-DD format)
+- `endDate`: Optional, valid date, must be after startDate if provided
+- `technologies`: Optional, string, max 500 characters (comma-separated recommended)
+- `collaborators`: Optional, string, max 255 characters
+- `status`: Required, enum: "Completed", "Ongoing", "Planned"
+- `industry`: Optional, string, max 255 characters
+
+**Success Response (201):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "project": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "userId": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "E-Commerce Platform",
+      "description": "Full-stack e-commerce application with payment integration",
+      "link": "https://github.com/username/ecommerce",
+      "startDate": "2023-01-01",
+      "endDate": "2023-06-30",
+      "technologies": "React, Node.js, PostgreSQL, Stripe",
+      "collaborators": "Team of 5 developers",
+      "status": "Completed",
+      "industry": "E-Commerce"
+    },
+    "message": "Project created successfully"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized`: Not authenticated
+- `422 Unprocessable Entity`: Validation error
+- `500 Internal Server Error`: Server error
+
+---
+
+#### GET `/api/v1/projects`
+
+Get all projects for the authenticated user with optional filtering and sorting.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Query Parameters (all optional):**
+
+- `status`: Filter by status ("Completed", "Ongoing", "Planned")
+- `industry`: Filter by industry
+- `technology`: Search for specific technology in projects
+- `startDateFrom`: Filter projects starting from this date (YYYY-MM-DD)
+- `startDateTo`: Filter projects starting up to this date (YYYY-MM-DD)
+- `sortBy`: Sort field ("start_date", "end_date", "name", "status", "industry")
+- `sortOrder`: Sort order ("ASC", "DESC")
+
+**Example Requests:**
+
+```
+GET /api/v1/projects
+GET /api/v1/projects?status=Completed
+GET /api/v1/projects?technology=React
+GET /api/v1/projects?industry=E-Commerce&sortBy=start_date&sortOrder=DESC
+```
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "projects": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "userId": "123e4567-e89b-12d3-a456-426614174000",
+        "name": "E-Commerce Platform",
+        "description": "Full-stack e-commerce application",
+        "link": "https://github.com/username/ecommerce",
+        "startDate": "2023-01-01",
+        "endDate": "2023-06-30",
+        "technologies": "React, Node.js, PostgreSQL, Stripe",
+        "collaborators": "Team of 5 developers",
+        "status": "Completed",
+        "industry": "E-Commerce"
+      },
+      {
+        "id": "660e8400-e29b-41d4-a716-446655440001",
+        "userId": "123e4567-e89b-12d3-a456-426614174000",
+        "name": "AI Chatbot",
+        "description": "AI-powered customer service chatbot",
+        "link": null,
+        "startDate": "2024-01-15",
+        "endDate": null,
+        "technologies": "Python, TensorFlow, FastAPI",
+        "collaborators": "Team of 3",
+        "status": "Ongoing",
+        "industry": "AI/ML"
+      }
+    ],
+    "count": 2,
+    "filters": {
+      "status": "Completed"
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized`: Not authenticated
+- `500 Internal Server Error`: Server error
+
+---
+
+#### GET `/api/v1/projects/:id`
+
+Get a specific project by ID.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**URL Parameters:**
+
+- `id`: Project UUID
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "project": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "userId": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "E-Commerce Platform",
+      "description": "Full-stack e-commerce application",
+      "link": "https://github.com/username/ecommerce",
+      "startDate": "2023-01-01",
+      "endDate": "2023-06-30",
+      "technologies": "React, Node.js, PostgreSQL, Stripe",
+      "collaborators": "Team of 5 developers",
+      "status": "Completed",
+      "industry": "E-Commerce"
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized`: Not authenticated
+- `404 Not Found`: Project not found or doesn't belong to user
+- `500 Internal Server Error`: Server error
+
+---
+
+#### GET `/api/v1/projects/search`
+
+Search projects by text across name, description, technologies, and industry.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Query Parameters:**
+
+- `q`: Search query (required)
+
+**Example Request:**
+
+```
+GET /api/v1/projects/search?q=chatbot
+```
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "projects": [
+      {
+        "id": "660e8400-e29b-41d4-a716-446655440001",
+        "userId": "123e4567-e89b-12d3-a456-426614174000",
+        "name": "AI Chatbot",
+        "description": "AI-powered customer service chatbot",
+        "link": null,
+        "startDate": "2024-01-15",
+        "endDate": null,
+        "technologies": "Python, TensorFlow, FastAPI",
+        "collaborators": "Team of 3",
+        "status": "Ongoing",
+        "industry": "AI/ML"
+      }
+    ],
+    "count": 1,
+    "query": "chatbot"
+  }
+}
+```
+
+**Error Responses:**
+
+- `400 Bad Request`: Missing or empty search query
+- `401 Unauthorized`: Not authenticated
+- `500 Internal Server Error`: Server error
+
+---
+
+#### GET `/api/v1/projects/statistics`
+
+Get project statistics for the authenticated user.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "statistics": {
+      "total": 5,
+      "byStatus": {
+        "Completed": 3,
+        "Ongoing": 1,
+        "Planned": 1
+      },
+      "uniqueTechnologies": 12
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized`: Not authenticated
+- `500 Internal Server Error`: Server error
+
+---
+
+#### PUT `/api/v1/projects/:id`
+
+Update an existing project.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**URL Parameters:**
+
+- `id`: Project UUID
+
+**Request Body (all fields optional):**
+
+```json
+{
+  "name": "Updated E-Commerce Platform",
+  "description": "Updated description with microservices architecture",
+  "link": "https://github.com/username/ecommerce-v2",
+  "startDate": "2023-01-01",
+  "endDate": "2023-08-30",
+  "technologies": "React, Node.js, PostgreSQL, Docker, Kubernetes",
+  "collaborators": "Team of 8 developers",
+  "status": "Completed",
+  "industry": "E-Commerce"
+}
+```
+
+**Validation Rules:**
+
+- Same as POST `/api/v1/projects` but all fields are optional
+- Can perform partial updates
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "project": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "userId": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "Updated E-Commerce Platform",
+      "description": "Updated description with microservices architecture",
+      "link": "https://github.com/username/ecommerce-v2",
+      "startDate": "2023-01-01",
+      "endDate": "2023-08-30",
+      "technologies": "React, Node.js, PostgreSQL, Docker, Kubernetes",
+      "collaborators": "Team of 8 developers",
+      "status": "Completed",
+      "industry": "E-Commerce"
+    },
+    "message": "Project updated successfully"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized`: Not authenticated
+- `404 Not Found`: Project not found or doesn't belong to user
+- `422 Unprocessable Entity`: Validation error
+- `500 Internal Server Error`: Server error
+
+---
+
+#### DELETE `/api/v1/projects/:id`
+
+Delete a project.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**URL Parameters:**
+
+- `id`: Project UUID
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "message": "Project deleted successfully"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized`: Not authenticated
+- `404 Not Found`: Project not found or doesn't belong to user
+- `500 Internal Server Error`: Server error
+
+---
+
+### cURL Examples - Projects
+
+```bash
+# Create a new project
+curl -X POST http://localhost:5000/api/v1/projects \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: your-csrf-token" \
+  -b cookies.txt \
+  -d '{
+    "name": "E-Commerce Platform",
+    "description": "Full-stack e-commerce application",
+    "link": "https://github.com/username/ecommerce",
+    "startDate": "2023-01-01",
+    "endDate": "2023-06-30",
+    "technologies": "React, Node.js, PostgreSQL",
+    "collaborators": "Team of 5",
+    "status": "Completed",
+    "industry": "E-Commerce"
+  }'
+
+# Get all projects
+curl -X GET http://localhost:5000/api/v1/projects \
+  -b cookies.txt
+
+# Get projects with filters
+curl -X GET "http://localhost:5000/api/v1/projects?status=Completed&sortBy=start_date&sortOrder=DESC" \
+  -b cookies.txt
+
+# Search projects
+curl -X GET "http://localhost:5000/api/v1/projects/search?q=chatbot" \
+  -b cookies.txt
+
+# Get project statistics
+curl -X GET http://localhost:5000/api/v1/projects/statistics \
+  -b cookies.txt
+
+# Get project by ID
+curl -X GET http://localhost:5000/api/v1/projects/550e8400-e29b-41d4-a716-446655440000 \
+  -b cookies.txt
+
+# Update project
+curl -X PUT http://localhost:5000/api/v1/projects/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: your-csrf-token" \
+  -b cookies.txt \
+  -d '{
+    "description": "Updated description",
+    "status": "Completed",
+    "endDate": "2023-08-30"
+  }'
+
+# Delete project
+curl -X DELETE http://localhost:5000/api/v1/projects/550e8400-e29b-41d4-a716-446655440000 \
+  -H "X-CSRF-Token: your-csrf-token" \
+  -b cookies.txt
+```
+
+---
+
 ## Notes
 
 1. **CSRF Protection**: All state-changing operations (POST, PUT, DELETE) require a valid CSRF token in the `X-CSRF-Token` header.

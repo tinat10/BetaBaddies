@@ -15,7 +15,9 @@
     "test:certifications-api": "node tests/certifications-api.test.js",
     "test:file-upload": "node tests/file-upload-functionality.test.js",
     "test:file-upload-api": "node tests/file-upload-api.test.js",
-    "test:all": "npm run test && npm run test:user-api && npm run test:jobs-service && npm run test:jobs-api && npm run test:certifications && npm run test:certifications-api && npm run test:file-upload && npm run test:file-upload-api"
+    "test:all": "npm run test && npm run test:user-api && npm run test:jobs-service && npm run test:jobs-api && npm run test:certifications && npm run test:certifications-api && npm run test:file-upload && npm run test:projects-api && npm run test:projects && npm run test:file-upload-api"
+    "test:projects": "node tests/projects-functionality.test.js",
+    "test:projects-api": "node tests/projects-api.test.js",
   },
   "keywords": [],
   "author": "",

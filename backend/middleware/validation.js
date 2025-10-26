@@ -208,6 +208,61 @@ const schemas = {
 
   fileId: Joi.object({
     fileId: Joi.string().uuid().required(),
+  createProject: Joi.object({
+    name: Joi.string().max(255).required(),
+    link: Joi.string().uri().max(500).allow(null, "").optional(),
+    description: Joi.string().max(500).allow(null, "").optional(),
+    startDate: Joi.date().required(),
+    endDate: Joi.date().allow(null).optional(),
+    technologies: Joi.string().max(500).allow(null, "").optional(),
+    collaborators: Joi.string().max(255).allow(null, "").optional(),
+    status: Joi.string()
+      .valid("Completed", "Ongoing", "Planned")
+      .required(),
+    industry: Joi.string().max(255).allow(null, "").optional(),
+  })
+    .custom((value, helpers) => {
+      // Custom validation for date logic
+      if (value.startDate && value.endDate && value.endDate < value.startDate) {
+        return helpers.error("date.endBeforeStart");
+      }
+      if (value.status === "Completed" && !value.endDate) {
+        return helpers.error("project.completedWithoutEndDate");
+      }
+      return value;
+    })
+    .messages({
+      "date.endBeforeStart": "End date must be after start date",
+      "project.completedWithoutEndDate":
+        "Completed projects should have an end date",
+    }),
+
+  updateProject: Joi.object({
+    name: Joi.string().max(255).optional(),
+    link: Joi.string().uri().max(500).allow(null, "").optional(),
+    description: Joi.string().max(500).allow(null, "").optional(),
+    startDate: Joi.date().optional(),
+    endDate: Joi.date().allow(null).optional(),
+    technologies: Joi.string().max(500).allow(null, "").optional(),
+    collaborators: Joi.string().max(255).allow(null, "").optional(),
+    status: Joi.string()
+      .valid("Completed", "Ongoing", "Planned")
+      .optional(),
+    industry: Joi.string().max(255).allow(null, "").optional(),
+  })
+    .custom((value, helpers) => {
+      // Custom validation for date logic
+      if (value.startDate && value.endDate && value.endDate < value.startDate) {
+        return helpers.error("date.endBeforeStart");
+      }
+      return value;
+    })
+    .messages({
+      "date.endBeforeStart": "End date must be after start date",
+    }),
+
+  projectId: Joi.object({
+    id: Joi.string().uuid().required(),
   }),
 };
 
@@ -292,3 +347,6 @@ export const validateUpdateCertification = validate(
 );
 export const validateCertificationId = validateParams(schemas.certificationId);
 export const validateFileId = validateParams(schemas.fileId);
+export const validateCreateProject = validate(schemas.createProject);
+export const validateUpdateProject = validate(schemas.updateProject);
+export const validateProjectId = validateParams(schemas.projectId);
