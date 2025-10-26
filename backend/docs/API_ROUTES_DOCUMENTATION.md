@@ -671,6 +671,210 @@ Check server health status.
 
 ---
 
+## Education Management Routes (`/api/v1/education`)
+
+All education endpoints require authentication.
+
+### GET `/api/v1/education`
+
+Get all education entries for the current user.
+
+**Headers Required:**
+- Session cookie (automatic)
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  "data": {
+    "educations": [
+      {
+        "id": "uuid",
+        "userId": "uuid",
+        "school": "University of Technology",
+        "degreeType": "Bachelor's",
+        "field": "Computer Science",
+        "gpa": "3.75",
+        "isEnrolled": false,
+        "honors": "Summa Cum Laude"
+      }
+    ]
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+
+---
+
+### POST `/api/v1/education`
+
+Create a new education entry.
+
+**Headers Required:**
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Request Body:**
+```json
+{
+  "school": "University of Technology",
+  "degreeType": "Bachelor's",
+  "field": "Computer Science",
+  "gpa": 3.75,
+  "isEnrolled": false,
+  "honors": "Summa Cum Laude"
+}
+```
+
+**Validation Rules:**
+- `school`: Required, max 255 characters
+- `degreeType`: Required, one of: "High School", "Associate", "Bachelor's", "Master's", "PhD", "Certificate", "Diploma"
+- `field`: Optional, max 255 characters
+- `gpa`: Optional, number between 0 and 4.0
+- `isEnrolled`: Required, boolean
+- `honors`: Optional, max 1000 characters
+
+**Success Response (201):**
+```json
+{
+  "ok": true,
+  "data": {
+    "education": {
+      "id": "uuid",
+      "userId": "uuid",
+      "school": "University of Technology",
+      "degreeType": "Bachelor's",
+      "field": "Computer Science",
+      "gpa": "3.75",
+      "isEnrolled": false,
+      "honors": "Summa Cum Laude"
+    },
+    "message": "Education entry created successfully"
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `422` - Validation errors
+
+---
+
+### GET `/api/v1/education/:id`
+
+Get a specific education entry by ID.
+
+**Headers Required:**
+- Session cookie (automatic)
+
+**URL Parameters:**
+- `id`: Education entry UUID
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  "data": {
+    "education": {
+      "id": "uuid",
+      "userId": "uuid",
+      "school": "University of Technology",
+      "degreeType": "Bachelor's",
+      "field": "Computer Science",
+      "gpa": "3.75",
+      "isEnrolled": false,
+      "honors": "Summa Cum Laude"
+    }
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+- `404` - Education not found
+
+---
+
+### PUT `/api/v1/education/:id`
+
+Update an education entry.
+
+**Headers Required:**
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**URL Parameters:**
+- `id`: Education entry UUID
+
+**Request Body:**
+```json
+{
+  "school": "Updated University Name",
+  "gpa": 3.8
+}
+```
+
+**Note:** All fields are optional. Only provided fields will be updated.
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  "data": {
+    "education": {
+      "id": "uuid",
+      "userId": "uuid",
+      "school": "Updated University Name",
+      "degreeType": "Bachelor's",
+      "field": "Computer Science",
+      "gpa": "3.8",
+      "isEnrolled": false,
+      "honors": "Summa Cum Laude"
+    },
+    "message": "Education entry updated successfully"
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `404` - Education not found
+- `422` - Validation errors
+
+---
+
+### DELETE `/api/v1/education/:id`
+
+Delete an education entry.
+
+**Headers Required:**
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**URL Parameters:**
+- `id`: Education entry UUID
+
+**Success Response (200):**
+```json
+{
+  "ok": true,
+  "data": {
+    "message": "Education entry deleted successfully"
+  }
+}
+```
+
+**Error Responses:**
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `404` - Education not found
+
+---
+
 ## HTTP Status Codes
 
 | Code | Description           | Usage                                           |
@@ -691,6 +895,18 @@ Check server health status.
 
 ## Error Codes
 
+| Code                    | Description                   |
+| ----------------------- | ----------------------------- |
+| `UNAUTHORIZED`          | Authentication required       |
+| `INVALID_CREDENTIALS`   | Invalid email or password     |
+| `INVALID_PASSWORD`      | Current password is incorrect |
+| `USER_NOT_FOUND`        | User not found                |
+| `CSRF_TOKEN_MISMATCH`   | Invalid CSRF token            |
+| `VALIDATION_ERROR`      | Input validation failed       |
+| `CONFLICT`              | Resource already exists       |
+| `EDUCATION_NOT_FOUND`   | Education entry not found     |
+| `RATE_LIMIT_EXCEEDED`   | Too many requests             |
+| `INTERNAL_SERVER_ERROR` | Unexpected server error       |
 | Code                    | Description                             |
 | ----------------------- | --------------------------------------- |
 | `UNAUTHORIZED`          | Authentication required                 |
