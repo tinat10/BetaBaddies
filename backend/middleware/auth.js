@@ -14,42 +14,6 @@ export const isAuthenticated = (req, res, next) => {
   });
 };
 
-// Middleware to generate CSRF token and attach to session
-export const generateCSRFToken = (req, res, next) => {
-  if (!req.session.csrfToken) {
-    req.session.csrfToken =
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
-  }
-  res.locals.csrfToken = req.session.csrfToken;
-  next();
-};
-
-// CSRF protection middleware
-export const csrfProtection = (req, res, next) => {
-  if (
-    req.method === "GET" ||
-    req.method === "HEAD" ||
-    req.method === "OPTIONS"
-  ) {
-    return next();
-  }
-
-  const clientCsrfToken = req.headers["x-csrf-token"];
-  const sessionCsrfToken = req.session.csrfToken;
-
-  if (!clientCsrfToken || clientCsrfToken !== sessionCsrfToken) {
-    return res.status(403).json({
-      ok: false,
-      error: {
-        code: "CSRF_TOKEN_MISMATCH",
-        message: "Invalid CSRF token",
-      },
-    });
-  }
-  next();
-};
-
 // Rate limiting middleware for authentication attempts
 export const authRateLimit = (windowMs, maxAttempts) => (req, res, next) => {
   const ip = req.ip;
