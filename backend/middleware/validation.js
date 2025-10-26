@@ -68,6 +68,46 @@ const schemas = {
     isEnrolled: Joi.boolean().optional(),
     honors: Joi.string().max(1000).allow(null, "").optional(),
   }),
+
+  createJob: Joi.object({
+    title: Joi.string().max(255).required(),
+    company: Joi.string().max(255).required(),
+    location: Joi.string().max(255).allow(null, "").optional(),
+    salary: Joi.number().min(0).allow(null).optional(),
+    startDate: Joi.date().allow(null).optional(),
+    endDate: Joi.date().allow(null).optional(),
+    description: Joi.string().max(2000).allow(null, "").optional(),
+    isCurrent: Joi.boolean().optional(),
+  })
+    .custom((value, helpers) => {
+      // Custom validation for date logic
+      if (value.startDate && value.endDate && value.endDate < value.startDate) {
+        return helpers.error("date.endBeforeStart");
+      }
+      if (value.isCurrent && value.endDate) {
+        return helpers.error("date.currentWithEndDate");
+      }
+      return value;
+    })
+    .messages({
+      "date.endBeforeStart": "End date must be after start date",
+      "date.currentWithEndDate": "Current job cannot have an end date",
+    }),
+
+  updateJob: Joi.object({
+    title: Joi.string().max(255).optional(),
+    company: Joi.string().max(255).optional(),
+    location: Joi.string().max(255).allow(null, "").optional(),
+    salary: Joi.number().min(0).allow(null).optional(),
+    startDate: Joi.date().allow(null).optional(),
+    endDate: Joi.date().allow(null).optional(),
+    description: Joi.string().max(2000).allow(null, "").optional(),
+    isCurrent: Joi.boolean().optional(),
+  }),
+
+  jobId: Joi.object({
+    id: Joi.string().uuid().required(),
+  }),
 };
 
 // Validation middleware factory
@@ -138,3 +178,6 @@ export const validateLogin = validate(schemas.login);
 export const validateChangePassword = validate(schemas.changePassword);
 export const validateCreateEducation = validate(schemas.createEducation);
 export const validateUpdateEducation = validate(schemas.updateEducation);
+export const validateCreateJob = validate(schemas.createJob);
+export const validateUpdateJob = validate(schemas.updateJob);
+export const validateJobId = validateParams(schemas.jobId);
