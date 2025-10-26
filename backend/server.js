@@ -7,6 +7,7 @@ import rateLimit from "express-rate-limit";
 
 // Import routes
 import userRoutes from "./routes/userRoutes.js";
+import educationRoutes from "./routes/educationRoutes.js";
 
 // Import middleware
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
@@ -94,6 +95,7 @@ app.get("/health", (req, res) => {
 
 // API routes
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/education", educationRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
