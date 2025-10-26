@@ -208,6 +208,8 @@ const schemas = {
 
   fileId: Joi.object({
     fileId: Joi.string().uuid().required(),
+  }),
+
   createProject: Joi.object({
     name: Joi.string().max(255).required(),
     link: Joi.string().uri().max(500).allow(null, "").optional(),
@@ -216,9 +218,7 @@ const schemas = {
     endDate: Joi.date().allow(null).optional(),
     technologies: Joi.string().max(500).allow(null, "").optional(),
     collaborators: Joi.string().max(255).allow(null, "").optional(),
-    status: Joi.string()
-      .valid("Completed", "Ongoing", "Planned")
-      .required(),
+    status: Joi.string().valid("Completed", "Ongoing", "Planned").required(),
     industry: Joi.string().max(255).allow(null, "").optional(),
   })
     .custom((value, helpers) => {
@@ -245,9 +245,7 @@ const schemas = {
     endDate: Joi.date().allow(null).optional(),
     technologies: Joi.string().max(500).allow(null, "").optional(),
     collaborators: Joi.string().max(255).allow(null, "").optional(),
-    status: Joi.string()
-      .valid("Completed", "Ongoing", "Planned")
-      .optional(),
+    status: Joi.string().valid("Completed", "Ongoing", "Planned").optional(),
     industry: Joi.string().max(255).allow(null, "").optional(),
   })
     .custom((value, helpers) => {

@@ -1,9 +1,6 @@
 import express from "express";
 import educationController from "../controllers/educationController.js";
-import {
-  isAuthenticated,
-  csrfProtection,
-} from "../middleware/auth.js";
+import { isAuthenticated } from "../middleware/auth.js";
 import {
   validateCreateEducation,
   validateUpdateEducation,
@@ -17,7 +14,6 @@ router.get("/", isAuthenticated, educationController.getAll);
 router.post(
   "/",
   isAuthenticated,
-  csrfProtection,
   validateCreateEducation,
   educationController.create
 );
@@ -27,17 +23,10 @@ router.get("/:id", isAuthenticated, educationController.getById);
 router.put(
   "/:id",
   isAuthenticated,
-  csrfProtection,
   validateUpdateEducation,
   educationController.update
 );
 
-router.delete(
-  "/:id",
-  isAuthenticated,
-  csrfProtection,
-  educationController.delete
-);
+router.delete("/:id", isAuthenticated, educationController.delete);
 
 export default router;
-

@@ -201,16 +201,6 @@ class UserController {
       },
     });
   });
-
-  // Get CSRF token
-  getCSRFToken = asyncHandler(async (req, res) => {
-    res.status(200).json({
-      ok: true,
-      data: {
-        csrfToken: req.session.csrfToken,
-      },
-    });
-  });
 }
 
 export default new UserController();

@@ -51,52 +51,32 @@ async function setupTestData() {
 async function loginUser() {
   console.log("🔐 Logging in test user...");
 
-  // First, establish a session by getting CSRF token
-  const csrfResponse = await request(app).get("/api/v1/users/csrf-token");
-
-  if (csrfResponse.status !== 200) {
-    throw new Error(`CSRF token request failed: ${csrfResponse.status}`);
-  }
-
-  // Extract session cookie from CSRF response
-  const cookies = csrfResponse.headers["set-cookie"];
-  sessionCookie = cookies.find((cookie) => cookie.startsWith("connect.sid"));
-
-  if (!sessionCookie) {
-    throw new Error("No session cookie received");
-  }
-
-  // Get CSRF token from response
-  csrfToken = csrfResponse.body.data.csrfToken;
-  if (!csrfToken) {
-    throw new Error("No CSRF token received");
-  }
-
-  console.log("   ✓ CSRF token obtained");
-
-  // Now login with the CSRF token
-  const loginResponse = await request(app)
-    .post("/api/v1/users/login")
-    .set("X-CSRF-Token", csrfToken)
-    .set("Cookie", sessionCookie)
-    .send({
-      email: testUser.email,
-      password: "TestPassword123",
-    });
+  // Perform login request
+  const loginResponse = await request(app).post("/api/v1/users/login").send({
+    email: testUser.email,
+    password: "TestPassword123",
+  });
 
   if (loginResponse.status !== 200) {
     throw new Error(`Login failed: ${loginResponse.body.error?.message}`);
+  }
+
+  // Extract session cookie
+  const cookies = loginResponse.headers["set-cookie"];
+  sessionCookie = cookies
+    ? cookies.find((cookie) => cookie.startsWith("connect.sid"))
+    : null;
+
+  if (!sessionCookie) {
+    throw new Error("No session cookie received");
   }
 
   console.log("   ✓ User logged in successfully");
 }
 
 async function getFreshCsrfToken() {
-  const csrfResponse = await request(app)
-    .get("/api/v1/users/csrf-token")
-    .set("Cookie", sessionCookie);
-
-  return csrfResponse.body.data.csrfToken;
+  // CSRF tokens are no longer required
+  return "";
 }
 
 async function cleanupTestData() {
@@ -147,7 +127,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/jobs")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .send(jobData);
 
@@ -259,7 +238,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .put(`/api/v1/jobs/${jobId}`)
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .send(updateData);
 
@@ -295,7 +273,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/jobs")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .send(jobData);
 
@@ -375,7 +352,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/jobs")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .send(invalidJobData);
 
@@ -413,33 +389,8 @@ async function runAllTests() {
       console.log("   ✓ Unauthorized access handled correctly");
     });
 
-    // Test 11: CSRF Protection
-    await runTest("POST /api/v1/jobs - CSRF Protection", async () => {
-      const jobData = {
-        title: "Test Job",
-        company: "Test Corp",
-        startDate: "2023-01-01",
-      };
-
-      const response = await request(app)
-        .post("/api/v1/jobs")
-        .set("Cookie", sessionCookie)
-        .send(jobData);
-
-      if (response.status !== 403) {
-        throw new Error(
-          `Expected 403, got ${response.status}: ${JSON.stringify(
-            response.body
-          )}`
-        );
-      }
-
-      if (response.body.error.code !== "CSRF_TOKEN_MISMATCH") {
-        throw new Error("Expected CSRF error");
-      }
-
-      console.log("   ✓ CSRF protection working correctly");
-    });
+    // Test 11: CSRF Protection (REMOVED - CSRF no longer in use)
+    // CSRF protection has been removed from the backend
 
     // Test 12: Delete Job
     await runTest("DELETE /api/v1/jobs/:id - Delete Job", async () => {
@@ -448,7 +399,6 @@ async function runAllTests() {
       const jobId = testJobs[testJobs.length - 1].id;
       const response = await request(app)
         .delete(`/api/v1/jobs/${jobId}`)
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie);
 
       if (response.status !== 204) {
@@ -508,7 +458,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/jobs")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .send(invalidJobData);
 

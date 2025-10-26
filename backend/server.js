@@ -16,7 +16,6 @@ import projectRoutes from "./routes/projectRoutes.js";
 
 // Import middleware
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
-import { generateCSRFToken } from "./middleware/auth.js";
 
 const app = express();
 
@@ -82,9 +81,6 @@ app.use(
     },
   })
 );
-
-// CSRF token generation for all routes
-app.use(generateCSRFToken);
 
 // Health check endpoint
 app.get("/health", (req, res) => {

@@ -5,7 +5,7 @@ This document provides comprehensive documentation for all implemented API route
 ## Base URL
 
 ```
-http://localhost:5000/api/v1
+http://localhost:3001/api/v1
 ```
 
 ## Authentication
@@ -680,9 +680,11 @@ All education endpoints require authentication.
 Get all education entries for the current user.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
@@ -704,6 +706,7 @@ Get all education entries for the current user.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 
 ---
@@ -713,10 +716,12 @@ Get all education entries for the current user.
 Create a new education entry.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 - `X-CSRF-Token`: CSRF token
 
 **Request Body:**
+
 ```json
 {
   "school": "University of Technology",
@@ -729,6 +734,7 @@ Create a new education entry.
 ```
 
 **Validation Rules:**
+
 - `school`: Required, max 255 characters
 - `degreeType`: Required, one of: "High School", "Associate", "Bachelor's", "Master's", "PhD", "Certificate", "Diploma"
 - `field`: Optional, max 255 characters
@@ -737,6 +743,7 @@ Create a new education entry.
 - `honors`: Optional, max 1000 characters
 
 **Success Response (201):**
+
 ```json
 {
   "ok": true,
@@ -757,6 +764,7 @@ Create a new education entry.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 - `403` - Invalid CSRF token
 - `422` - Validation errors
@@ -768,12 +776,15 @@ Create a new education entry.
 Get a specific education entry by ID.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 
 **URL Parameters:**
+
 - `id`: Education entry UUID
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
@@ -793,6 +804,7 @@ Get a specific education entry by ID.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 - `404` - Education not found
 
@@ -803,13 +815,16 @@ Get a specific education entry by ID.
 Update an education entry.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 - `X-CSRF-Token`: CSRF token
 
 **URL Parameters:**
+
 - `id`: Education entry UUID
 
 **Request Body:**
+
 ```json
 {
   "school": "Updated University Name",
@@ -820,6 +835,7 @@ Update an education entry.
 **Note:** All fields are optional. Only provided fields will be updated.
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
@@ -840,6 +856,7 @@ Update an education entry.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 - `403` - Invalid CSRF token
 - `404` - Education not found
@@ -852,13 +869,16 @@ Update an education entry.
 Delete an education entry.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 - `X-CSRF-Token`: CSRF token
 
 **URL Parameters:**
+
 - `id`: Education entry UUID
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
@@ -869,9 +889,231 @@ Delete an education entry.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 - `403` - Invalid CSRF token
 - `404` - Education not found
+
+---
+
+---
+
+## Certifications Management Routes (`/api/v1/certifications`)
+
+### Protected Routes (Authentication Required)
+
+#### GET `/api/v1/certifications`
+
+Get all certifications for the authenticated user.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Query Parameters:**
+
+- `neverExpires` (optional): Filter by expiration status (true/false)
+- `sort` (optional): Sort order (`dateEarned` or `-dateEarned`, default: `-dateEarned`)
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "certifications": [
+      {
+        "id": "uuid",
+        "userId": "uuid",
+        "name": "AWS Certified Solutions Architect",
+        "orgName": "Amazon Web Services",
+        "dateEarned": "2023-01-15",
+        "expirationDate": "2026-01-15",
+        "neverExpires": false
+      }
+    ]
+  }
+}
+```
+
+#### POST `/api/v1/certifications`
+
+Create a new certification.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Request Body:**
+
+```json
+{
+  "name": "AWS Certified Solutions Architect",
+  "orgName": "Amazon Web Services",
+  "dateEarned": "2023-01-15",
+  "expirationDate": "2026-01-15",
+  "neverExpires": false
+}
+```
+
+**Validation Rules:**
+
+- `name`: Required, string, max 255 characters
+- `orgName`: Required, string, max 255 characters
+- `dateEarned`: Required, valid date (YYYY-MM-DD format)
+- `expirationDate`: Optional, valid date, must be after dateEarned if provided
+- `neverExpires`: Required, boolean - if true, expirationDate is ignored
+
+**Success Response (201):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "certification": {
+      "id": "uuid",
+      "userId": "uuid",
+      "name": "AWS Certified Solutions Architect",
+      "orgName": "Amazon Web Services",
+      "dateEarned": "2023-01-15",
+      "expirationDate": "2026-01-15",
+      "neverExpires": false
+    },
+    "message": "Certification created successfully"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `422` - Validation errors
+- `500` - Internal server error
+
+---
+
+#### GET `/api/v1/certifications/:id`
+
+Get a specific certification by ID.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Path Parameters:**
+
+- `id`: Certification UUID
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "certification": {
+      "id": "uuid",
+      "userId": "uuid",
+      "name": "AWS Certified Solutions Architect",
+      "orgName": "Amazon Web Services",
+      "dateEarned": "2023-01-15",
+      "expirationDate": "2026-01-15",
+      "neverExpires": false
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `404` - Certification not found
+- `422` - Invalid certification ID format
+
+---
+
+#### PUT `/api/v1/certifications/:id`
+
+Update a certification.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Path Parameters:**
+
+- `id`: Certification UUID
+
+**Request Body (all fields optional):**
+
+```json
+{
+  "name": "Updated Certification Name",
+  "expirationDate": "2027-01-15"
+}
+```
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "certification": {
+      "id": "uuid",
+      "userId": "uuid",
+      "name": "Updated Certification Name",
+      "orgName": "Amazon Web Services",
+      "dateEarned": "2023-01-15",
+      "expirationDate": "2027-01-15",
+      "neverExpires": false
+    },
+    "message": "Certification updated successfully"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `404` - Certification not found
+- `422` - Validation errors
+
+---
+
+#### DELETE `/api/v1/certifications/:id`
+
+Delete a certification.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Path Parameters:**
+
+- `id`: Certification UUID
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "message": "Certification deleted successfully"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `404` - Certification not found
+- `422` - Invalid certification ID format
 
 ---
 
@@ -884,12 +1126,15 @@ All skills endpoints require authentication.
 Get all skills for the current user, optionally filtered by category.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 
 **Query Parameters:**
+
 - `category` (optional): Filter by category (Technical, Soft Skills, Languages, Industry-Specific)
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
@@ -917,6 +1162,7 @@ Get all skills for the current user, optionally filtered by category.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 
 ---
@@ -926,9 +1172,11 @@ Get all skills for the current user, optionally filtered by category.
 Get skills grouped by category with category counts.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
@@ -963,6 +1211,7 @@ Get skills grouped by category with category counts.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 
 ---
@@ -972,10 +1221,12 @@ Get skills grouped by category with category counts.
 Create a new skill.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 - `X-CSRF-Token`: CSRF token
 
 **Request Body:**
+
 ```json
 {
   "skillName": "Python",
@@ -986,12 +1237,14 @@ Create a new skill.
 ```
 
 **Validation Rules:**
+
 - `skillName`: Required, max 100 characters
 - `proficiency`: Required, one of: "Beginner", "Intermediate", "Advanced", "Expert"
 - `category`: Optional, one of: "Technical", "Soft Skills", "Languages", "Industry-Specific"
 - `skillBadge`: Optional, valid URI, max 500 characters
 
 **Success Response (201):**
+
 ```json
 {
   "ok": true,
@@ -1010,6 +1263,7 @@ Create a new skill.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 - `403` - Invalid CSRF token
 - `409` - Duplicate skill (skill already exists for this user)
@@ -1022,29 +1276,33 @@ Create a new skill.
 Get a specific skill by ID.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 
 **URL Parameters:**
+
 - `id`: Skill UUID
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
-  data: {
-    skill: {
-      id: "uuid",
-      userId: "uuid",
-      skillName: "JavaScript",
-      proficiency: "Advanced",
-      category: "Technical",
-      skillBadge: "https://example.com/js-badge.png"
+  "data": {
+    "skill": {
+      "id": "uuid",
+      "userId": "uuid",
+      "skillName": "JavaScript",
+      "proficiency": "Advanced",
+      "category": "Technical",
+      "skillBadge": "https://example.com/js-badge.png"
     }
   }
 }
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 - `404` - Skill not found
 
@@ -1055,13 +1313,16 @@ Get a specific skill by ID.
 Update a skill (skill name cannot be changed).
 
 **Headers Required:**
+
 - Session cookie (automatic)
 - `X-CSRF-Token`: CSRF token
 
 **URL Parameters:**
+
 - `id`: Skill UUID
 
 **Request Body:**
+
 ```json
 {
   "proficiency": "Expert",
@@ -1073,6 +1334,7 @@ Update a skill (skill name cannot be changed).
 **Note:** All fields are optional. `skillName` cannot be updated once created.
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
@@ -1091,6 +1353,7 @@ Update a skill (skill name cannot be changed).
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 - `403` - Invalid CSRF token
 - `404` - Skill not found
@@ -1103,13 +1366,16 @@ Update a skill (skill name cannot be changed).
 Delete a skill.
 
 **Headers Required:**
+
 - Session cookie (automatic)
 - `X-CSRF-Token`: CSRF token
 
 **URL Parameters:**
+
 - `id`: Skill UUID
 
 **Success Response (200):**
+
 ```json
 {
   "ok": true,
@@ -1120,6 +1386,7 @@ Delete a skill.
 ```
 
 **Error Responses:**
+
 - `401` - Not authenticated
 - `403` - Invalid CSRF token
 - `404` - Skill not found
@@ -1146,20 +1413,20 @@ Delete a skill.
 
 ## Error Codes
 
-| Code                    | Description                   |
-| ----------------------- | ----------------------------- |
-| `UNAUTHORIZED`          | Authentication required       |
-| `INVALID_CREDENTIALS`   | Invalid email or password     |
-| `INVALID_PASSWORD`      | Current password is incorrect |
-| `USER_NOT_FOUND`        | User not found                |
-| `CSRF_TOKEN_MISMATCH`   | Invalid CSRF token            |
-| `VALIDATION_ERROR`      | Input validation failed       |
-| `CONFLICT`              | Resource already exists       |
-| `EDUCATION_NOT_FOUND`   | Education entry not found     |
-| `SKILL_NOT_FOUND`       | Skill not found               |
-| `DUPLICATE_SKILL`        | Skill already exists           |
-| `RATE_LIMIT_EXCEEDED`   | Too many requests             |
-| `INTERNAL_SERVER_ERROR` | Unexpected server error       |
+| Code                    | Description                             |
+| ----------------------- | --------------------------------------- |
+| `UNAUTHORIZED`          | Authentication required                 |
+| `INVALID_CREDENTIALS`   | Invalid email or password               |
+| `INVALID_PASSWORD`      | Current password is incorrect           |
+| `USER_NOT_FOUND`        | User not found                          |
+| `CSRF_TOKEN_MISMATCH`   | Invalid CSRF token                      |
+| `VALIDATION_ERROR`      | Input validation failed                 |
+| `CONFLICT`              | Resource already exists                 |
+| `EDUCATION_NOT_FOUND`   | Education entry not found               |
+| `SKILL_NOT_FOUND`       | Skill not found                         |
+| `DUPLICATE_SKILL`       | Skill already exists                    |
+| `RATE_LIMIT_EXCEEDED`   | Too many requests                       |
+| `INTERNAL_SERVER_ERROR` | Unexpected server error                 |
 | Code                    | Description                             |
 | ----------------------- | --------------------------------------- |
 | `UNAUTHORIZED`          | Authentication required                 |

@@ -49,79 +49,72 @@ async function setupTestData() {
 
   // Login user
   console.log("🔐 Logging in test user...");
-  const csrfResponse = await request(app)
-    .get("/api/v1/users/csrf-token")
-    .expect(200);
-
-  // Extract session cookie from CSRF response
-  const cookies = csrfResponse.headers["set-cookie"];
-  sessionCookie = cookies.find((cookie) => cookie.startsWith("connect.sid"));
-
-  if (!sessionCookie) {
-    throw new Error("No session cookie received");
-  }
-
-  // Get CSRF token from response
-  csrfToken = csrfResponse.body.data.csrfToken;
-  if (!csrfToken) {
-    throw new Error("No CSRF token received");
-  }
-  console.log(`   ✓ CSRF token obtained`);
-
   const loginResponse = await request(app)
     .post("/api/v1/users/login")
-    .set("X-CSRF-Token", csrfToken)
-    .set("Cookie", sessionCookie)
     .send({
       email: testUser.email,
       password: "TestPassword123",
     })
     .expect(200);
 
+  // Extract session cookie
+  const cookies = loginResponse.headers["set-cookie"];
+  sessionCookie = cookies
+    ? cookies.find((cookie) => cookie.startsWith("connect.sid"))
+    : null;
+
+  if (!sessionCookie) {
+    throw new Error("No session cookie received");
+  }
+
   console.log(`   ✓ User logged in successfully`);
 }
 
 async function getFreshCsrfToken() {
-  const response = await request(app)
-    .get("/api/v1/users/csrf-token")
-    .set("Cookie", sessionCookie)
-    .expect(200);
-  return response.body.data.csrfToken;
+  // CSRF tokens are no longer required
+  return "";
 }
 
 async function runAllTests() {
   await setupTestData();
 
   // Test 1: POST /api/v1/projects - Create Completed Project
-  await runTest("POST /api/v1/projects - Create Completed Project", async () => {
-    const freshCsrfToken = await getFreshCsrfToken();
+  await runTest(
+    "POST /api/v1/projects - Create Completed Project",
+    async () => {
+      const freshCsrfToken = await getFreshCsrfToken();
 
-    const projectData = {
-      name: "E-Commerce Platform",
-      description: "Full-stack e-commerce application with payment integration",
-      link: "https://github.com/test/ecommerce",
-      startDate: "2023-01-01",
-      endDate: "2023-06-30",
-      technologies: "React, Node.js, PostgreSQL, Stripe",
-      collaborators: "Team of 5 developers",
-      status: "Completed",
-      industry: "E-Commerce",
-    };
+      const projectData = {
+        name: "E-Commerce Platform",
+        description:
+          "Full-stack e-commerce application with payment integration",
+        link: "https://github.com/test/ecommerce",
+        startDate: "2023-01-01",
+        endDate: "2023-06-30",
+        technologies: "React, Node.js, PostgreSQL, Stripe",
+        collaborators: "Team of 5 developers",
+        status: "Completed",
+        industry: "E-Commerce",
+      };
 
-    const response = await request(app)
-      .post("/api/v1/projects")
-      .set("X-CSRF-Token", freshCsrfToken)
-      .set("Cookie", sessionCookie)
-      .send(projectData);
+      const response = await request(app)
+        .post("/api/v1/projects")
+        .set("Cookie", sessionCookie)
+        .send(projectData);
 
-    if (response.status !== 201) {
-      throw new Error(`Expected 201, got ${response.status}: ${JSON.stringify(response.body)}`);
+      if (response.status !== 201) {
+        throw new Error(
+          `Expected 201, got ${response.status}: ${JSON.stringify(
+            response.body
+          )}`
+        );
+      }
+
+      testProjects.push(response.body.data.project);
+      console.log(`   ✓ Project created successfully`);
+      console.log(`   ✓ Project ID: ${response.body.data.project.id}`);
     }
-
-    testProjects.push(response.body.data.project);
-    console.log(`   ✓ Project created successfully`);
-    console.log(`   ✓ Project ID: ${response.body.data.project.id}`);
-  });
+  );
 
   // Test 2: POST /api/v1/projects - Create Ongoing Project
   await runTest("POST /api/v1/projects - Create Ongoing Project", async () => {
@@ -140,12 +133,13 @@ async function runAllTests() {
 
     const response = await request(app)
       .post("/api/v1/projects")
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie)
       .send(projectData);
 
     if (response.status !== 201) {
-      throw new Error(`Expected 201, got ${response.status}: ${JSON.stringify(response.body)}`);
+      throw new Error(
+        `Expected 201, got ${response.status}: ${JSON.stringify(response.body)}`
+      );
     }
 
     testProjects.push(response.body.data.project);
@@ -167,12 +161,13 @@ async function runAllTests() {
 
     const response = await request(app)
       .post("/api/v1/projects")
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie)
       .send(projectData);
 
     if (response.status !== 201) {
-      throw new Error(`Expected 201, got ${response.status}: ${JSON.stringify(response.body)}`);
+      throw new Error(
+        `Expected 201, got ${response.status}: ${JSON.stringify(response.body)}`
+      );
     }
 
     testProjects.push(response.body.data.project);
@@ -197,7 +192,9 @@ async function runAllTests() {
       throw new Error("Should have at least 3 projects");
     }
 
-    console.log(`   ✓ Retrieved ${response.body.data.projects.length} projects`);
+    console.log(
+      `   ✓ Retrieved ${response.body.data.projects.length} projects`
+    );
   });
 
   // Test 5: GET /api/v1/projects/:id - Get Specific Project
@@ -220,45 +217,55 @@ async function runAllTests() {
   });
 
   // Test 6: GET /api/v1/projects - Filter by Status
-  await runTest("GET /api/v1/projects - Filter by Status (Completed)", async () => {
-    const response = await request(app)
-      .get("/api/v1/projects?status=Completed")
-      .set("Cookie", sessionCookie);
+  await runTest(
+    "GET /api/v1/projects - Filter by Status (Completed)",
+    async () => {
+      const response = await request(app)
+        .get("/api/v1/projects?status=Completed")
+        .set("Cookie", sessionCookie);
 
-    if (response.status !== 200) {
-      throw new Error(`Expected 200, got ${response.status}`);
-    }
-
-    if (!Array.isArray(response.body.data.projects)) {
-      throw new Error("Projects should be an array");
-    }
-
-    // Verify all returned projects are completed
-    response.body.data.projects.forEach((project) => {
-      if (project.status !== "Completed") {
-        throw new Error("Filter returned non-completed project");
+      if (response.status !== 200) {
+        throw new Error(`Expected 200, got ${response.status}`);
       }
-    });
 
-    console.log(`   ✓ Retrieved ${response.body.data.projects.length} completed project(s)`);
-  });
+      if (!Array.isArray(response.body.data.projects)) {
+        throw new Error("Projects should be an array");
+      }
+
+      // Verify all returned projects are completed
+      response.body.data.projects.forEach((project) => {
+        if (project.status !== "Completed") {
+          throw new Error("Filter returned non-completed project");
+        }
+      });
+
+      console.log(
+        `   ✓ Retrieved ${response.body.data.projects.length} completed project(s)`
+      );
+    }
+  );
 
   // Test 7: GET /api/v1/projects - Filter by Technology
-  await runTest("GET /api/v1/projects - Filter by Technology (React)", async () => {
-    const response = await request(app)
-      .get("/api/v1/projects?technology=React")
-      .set("Cookie", sessionCookie);
+  await runTest(
+    "GET /api/v1/projects - Filter by Technology (React)",
+    async () => {
+      const response = await request(app)
+        .get("/api/v1/projects?technology=React")
+        .set("Cookie", sessionCookie);
 
-    if (response.status !== 200) {
-      throw new Error(`Expected 200, got ${response.status}`);
+      if (response.status !== 200) {
+        throw new Error(`Expected 200, got ${response.status}`);
+      }
+
+      if (response.body.data.projects.length === 0) {
+        throw new Error("Should find projects with React");
+      }
+
+      console.log(
+        `   ✓ Retrieved ${response.body.data.projects.length} project(s) using React`
+      );
     }
-
-    if (response.body.data.projects.length === 0) {
-      throw new Error("Should find projects with React");
-    }
-
-    console.log(`   ✓ Retrieved ${response.body.data.projects.length} project(s) using React`);
-  });
+  );
 
   // Test 8: GET /api/v1/projects - Filter by Industry
   await runTest("GET /api/v1/projects - Filter by Industry", async () => {
@@ -276,7 +283,9 @@ async function runAllTests() {
       }
     });
 
-    console.log(`   ✓ Retrieved ${response.body.data.projects.length} E-Commerce project(s)`);
+    console.log(
+      `   ✓ Retrieved ${response.body.data.projects.length} E-Commerce project(s)`
+    );
   });
 
   // Test 9: GET /api/v1/projects - Sort by Date
@@ -324,48 +333,56 @@ async function runAllTests() {
       throw new Error("Should find at least one project with 'chatbot'");
     }
 
-    console.log(`   ✓ Found ${response.body.data.projects.length} project(s) matching 'chatbot'`);
+    console.log(
+      `   ✓ Found ${response.body.data.projects.length} project(s) matching 'chatbot'`
+    );
   });
 
   // Test 11: GET /api/v1/projects/search - Empty Search Query
-  await runTest("GET /api/v1/projects/search - Empty Search Query (should fail)", async () => {
-    const response = await request(app)
-      .get("/api/v1/projects/search?q=")
-      .set("Cookie", sessionCookie);
+  await runTest(
+    "GET /api/v1/projects/search - Empty Search Query (should fail)",
+    async () => {
+      const response = await request(app)
+        .get("/api/v1/projects/search?q=")
+        .set("Cookie", sessionCookie);
 
-    if (response.status !== 400) {
-      throw new Error(`Expected 400, got ${response.status}`);
+      if (response.status !== 400) {
+        throw new Error(`Expected 400, got ${response.status}`);
+      }
+
+      if (response.body.error.code !== "INVALID_SEARCH_QUERY") {
+        throw new Error("Should return INVALID_SEARCH_QUERY error");
+      }
+
+      console.log(`   ✓ Correctly rejected empty search query`);
     }
-
-    if (response.body.error.code !== "INVALID_SEARCH_QUERY") {
-      throw new Error("Should return INVALID_SEARCH_QUERY error");
-    }
-
-    console.log(`   ✓ Correctly rejected empty search query`);
-  });
+  );
 
   // Test 12: GET /api/v1/projects/statistics - Get Project Statistics
-  await runTest("GET /api/v1/projects/statistics - Get Statistics", async () => {
-    const response = await request(app)
-      .get("/api/v1/projects/statistics")
-      .set("Cookie", sessionCookie);
+  await runTest(
+    "GET /api/v1/projects/statistics - Get Statistics",
+    async () => {
+      const response = await request(app)
+        .get("/api/v1/projects/statistics")
+        .set("Cookie", sessionCookie);
 
-    if (response.status !== 200) {
-      throw new Error(`Expected 200, got ${response.status}`);
+      if (response.status !== 200) {
+        throw new Error(`Expected 200, got ${response.status}`);
+      }
+
+      const stats = response.body.data.statistics;
+      if (!stats.total) {
+        throw new Error("Statistics should include total count");
+      }
+
+      if (!stats.byStatus) {
+        throw new Error("Statistics should include status breakdown");
+      }
+
+      console.log(`   ✓ Statistics: ${stats.total} total projects`);
+      console.log(`   ✓ By status:`, stats.byStatus);
     }
-
-    const stats = response.body.data.statistics;
-    if (!stats.total) {
-      throw new Error("Statistics should include total count");
-    }
-
-    if (!stats.byStatus) {
-      throw new Error("Statistics should include status breakdown");
-    }
-
-    console.log(`   ✓ Statistics: ${stats.total} total projects`);
-    console.log(`   ✓ By status:`, stats.byStatus);
-  });
+  );
 
   // Test 13: PUT /api/v1/projects/:id - Update Project
   await runTest("PUT /api/v1/projects/:id - Update Project", async () => {
@@ -379,12 +396,13 @@ async function runAllTests() {
 
     const response = await request(app)
       .put(`/api/v1/projects/${projectId}`)
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie)
       .send(updateData);
 
     if (response.status !== 200) {
-      throw new Error(`Expected 200, got ${response.status}: ${JSON.stringify(response.body)}`);
+      throw new Error(
+        `Expected 200, got ${response.status}: ${JSON.stringify(response.body)}`
+      );
     }
 
     if (response.body.data.project.description !== updateData.description) {
@@ -395,31 +413,33 @@ async function runAllTests() {
   });
 
   // Test 14: PUT /api/v1/projects/:id - Update Project Status
-  await runTest("PUT /api/v1/projects/:id - Update Status to Completed", async () => {
-    const freshCsrfToken = await getFreshCsrfToken();
-    const projectId = testProjects[1].id; // The ongoing project
+  await runTest(
+    "PUT /api/v1/projects/:id - Update Status to Completed",
+    async () => {
+      const freshCsrfToken = await getFreshCsrfToken();
+      const projectId = testProjects[1].id; // The ongoing project
 
-    const updateData = {
-      status: "Completed",
-      endDate: "2024-10-26",
-    };
+      const updateData = {
+        status: "Completed",
+        endDate: "2024-10-26",
+      };
 
-    const response = await request(app)
-      .put(`/api/v1/projects/${projectId}`)
-      .set("X-CSRF-Token", freshCsrfToken)
-      .set("Cookie", sessionCookie)
-      .send(updateData);
+      const response = await request(app)
+        .put(`/api/v1/projects/${projectId}`)
+        .set("Cookie", sessionCookie)
+        .send(updateData);
 
-    if (response.status !== 200) {
-      throw new Error(`Expected 200, got ${response.status}`);
+      if (response.status !== 200) {
+        throw new Error(`Expected 200, got ${response.status}`);
+      }
+
+      if (response.body.data.project.status !== "Completed") {
+        throw new Error("Status was not updated to Completed");
+      }
+
+      console.log(`   ✓ Project status updated to Completed`);
     }
-
-    if (response.body.data.project.status !== "Completed") {
-      throw new Error("Status was not updated to Completed");
-    }
-
-    console.log(`   ✓ Project status updated to Completed`);
-  });
+  );
 
   // Test 15: POST /api/v1/projects - Validation Error (Missing required fields)
   await runTest("POST /api/v1/projects - Validation Error", async () => {
@@ -432,7 +452,6 @@ async function runAllTests() {
 
     const response = await request(app)
       .post("/api/v1/projects")
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie)
       .send(invalidData);
 
@@ -459,7 +478,6 @@ async function runAllTests() {
 
     const response = await request(app)
       .post("/api/v1/projects")
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie)
       .send(invalidData);
 
@@ -490,22 +508,26 @@ async function runAllTests() {
   });
 
   // Test 18: PUT /api/v1/projects/:id - Update Non-existent Project
-  await runTest("PUT /api/v1/projects/:id - Update Non-existent Project", async () => {
-    const freshCsrfToken = await getFreshCsrfToken();
-    const fakeId = "12345678-1234-1234-1234-123456789012";
+  await runTest(
+    "PUT /api/v1/projects/:id - Update Non-existent Project",
+    async () => {
+      const freshCsrfToken = await getFreshCsrfToken();
+      const fakeId = "12345678-1234-1234-1234-123456789012";
 
-    const response = await request(app)
-      .put(`/api/v1/projects/${fakeId}`)
-      .set("X-CSRF-Token", freshCsrfToken)
-      .set("Cookie", sessionCookie)
-      .send({ name: "Updated Name" });
+      const response = await request(app)
+        .put(`/api/v1/projects/${fakeId}`)
+        .set("Cookie", sessionCookie)
+        .send({ name: "Updated Name" });
 
-    if (response.status !== 404) {
-      throw new Error(`Expected 404, got ${response.status}`);
+      if (response.status !== 404) {
+        throw new Error(`Expected 404, got ${response.status}`);
+      }
+
+      console.log(
+        `   ✓ Correctly returned 404 for updating non-existent project`
+      );
     }
-
-    console.log(`   ✓ Correctly returned 404 for updating non-existent project`);
-  });
+  );
 
   // Test 19: DELETE /api/v1/projects/:id - Delete Project
   await runTest("DELETE /api/v1/projects/:id - Delete Project", async () => {
@@ -514,7 +536,6 @@ async function runAllTests() {
 
     const response = await request(app)
       .delete(`/api/v1/projects/${projectId}`)
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie);
 
     if (response.status !== 200) {
@@ -535,21 +556,25 @@ async function runAllTests() {
   });
 
   // Test 20: DELETE /api/v1/projects/:id - Delete Non-existent Project
-  await runTest("DELETE /api/v1/projects/:id - Delete Non-existent Project", async () => {
-    const freshCsrfToken = await getFreshCsrfToken();
-    const fakeId = "12345678-1234-1234-1234-123456789012";
+  await runTest(
+    "DELETE /api/v1/projects/:id - Delete Non-existent Project",
+    async () => {
+      const freshCsrfToken = await getFreshCsrfToken();
+      const fakeId = "12345678-1234-1234-1234-123456789012";
 
-    const response = await request(app)
-      .delete(`/api/v1/projects/${fakeId}`)
-      .set("X-CSRF-Token", freshCsrfToken)
-      .set("Cookie", sessionCookie);
+      const response = await request(app)
+        .delete(`/api/v1/projects/${fakeId}`)
+        .set("Cookie", sessionCookie);
 
-    if (response.status !== 404) {
-      throw new Error(`Expected 404, got ${response.status}`);
+      if (response.status !== 404) {
+        throw new Error(`Expected 404, got ${response.status}`);
+      }
+
+      console.log(
+        `   ✓ Correctly returned 404 for deleting non-existent project`
+      );
     }
-
-    console.log(`   ✓ Correctly returned 404 for deleting non-existent project`);
-  });
+  );
 
   // Test 21: Authentication Check - Unauthenticated Access
   await runTest("GET /api/v1/projects - Unauthenticated Access", async () => {
@@ -568,7 +593,10 @@ async function runAllTests() {
   console.log(`❌ Failed: ${testResults.failed}`);
   console.log(`📝 Total:  ${testResults.total}`);
   console.log(
-    `📈 Success Rate: ${((testResults.passed / testResults.total) * 100).toFixed(1)}%`
+    `📈 Success Rate: ${(
+      (testResults.passed / testResults.total) *
+      100
+    ).toFixed(1)}%`
   );
 
   if (testResults.failed === 0) {
@@ -610,4 +638,3 @@ runAllTests()
     console.error("💥 Fatal error:", error);
     cleanup().finally(() => process.exit(1));
   });
-

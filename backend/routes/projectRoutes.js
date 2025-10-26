@@ -1,9 +1,6 @@
 import express from "express";
 import projectController from "../controllers/projectController.js";
-import {
-  isAuthenticated,
-  csrfProtection,
-} from "../middleware/auth.js";
+import { isAuthenticated } from "../middleware/auth.js";
 import {
   validateCreateProject,
   validateUpdateProject,
@@ -23,7 +20,6 @@ router.get("/", isAuthenticated, projectController.getAll);
 router.post(
   "/",
   isAuthenticated,
-  csrfProtection,
   validateCreateProject,
   projectController.create
 );
@@ -33,17 +29,10 @@ router.get("/:id", isAuthenticated, projectController.getById);
 router.put(
   "/:id",
   isAuthenticated,
-  csrfProtection,
   validateUpdateProject,
   projectController.update
 );
 
-router.delete(
-  "/:id",
-  isAuthenticated,
-  csrfProtection,
-  projectController.delete
-);
+router.delete("/:id", isAuthenticated, projectController.delete);
 
 export default router;
-

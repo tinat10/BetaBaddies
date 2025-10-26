@@ -1,6 +1,6 @@
 import express from "express";
 import certificationController from "../controllers/certificationController.js";
-import { isAuthenticated, csrfProtection } from "../middleware/auth.js";
+import { isAuthenticated } from "../middleware/auth.js";
 import {
   validateCreateCertification,
   validateUpdateCertification,
@@ -13,7 +13,7 @@ const router = express.Router();
 router.use(isAuthenticated);
 
 // Create a new certification
-router.post("/", csrfProtection, validateCreateCertification, certificationController.create);
+router.post("/", validateCreateCertification, certificationController.create);
 
 // Get all certifications for the authenticated user
 router.get("/", certificationController.getAll);
@@ -42,13 +42,12 @@ router.get("/:id", validateCertificationId, certificationController.getById);
 // Update certification
 router.put(
   "/:id",
-  csrfProtection,
   validateCertificationId,
   validateUpdateCertification,
   certificationController.update
 );
 
 // Delete certification
-router.delete("/:id", csrfProtection, validateCertificationId, certificationController.delete);
+router.delete("/:id", validateCertificationId, certificationController.delete);
 
 export default router;

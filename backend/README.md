@@ -1,140 +1,183 @@
 # ATS Backend API
 
-A comprehensive RESTful API for the ATS (Applicant Tracking System) platform built with Express.js and PostgreSQL.
-
-## 🏗️ Project Structure
-
-```
-backend/
-├── config/
-│   └── db.config.js          # Database configuration
-├── controllers/
-│   └── userController.js      # User-related request handlers
-├── middleware/
-│   ├── auth.js               # Authentication middleware
-│   ├── errorHandler.js       # Error handling middleware
-│   └── validation.js         # Input validation middleware
-├── routes/
-│   └── userRoutes.js         # User API routes
-├── services/
-│   ├── database.js           # Database service with connection pooling
-│   └── userService.js        # User business logic
-├── utils/
-│   └── helpers.js            # Utility functions
-├── index.js                  # Application entry point
-├── server.js                 # Express app configuration
-└── package.json
-```
-
-## 🚀 Features
-
-- **Modular Architecture**: Clean separation of concerns with controllers, services, and middleware
-- **Authentication**: Session-based authentication with CSRF protection
-- **Security**: Rate limiting, input validation, SQL injection protection
-- **Error Handling**: Centralized error handling with standardized responses
-- **Database**: PostgreSQL with connection pooling
-- **Validation**: Comprehensive input validation using Joi
-- **Logging**: Request logging with Morgan
-
-## 📋 API Endpoints
-
-### User Management (`/api/v1/users`)
-
-| Method | Endpoint           | Description             | Auth Required |
-| ------ | ------------------ | ----------------------- | ------------- |
-| POST   | `/register`        | Create new user account | No            |
-| POST   | `/login`           | Authenticate user       | No            |
-| POST   | `/logout`          | End user session        | No            |
-| GET    | `/profile`         | Get user info           | Yes           |
-| PUT    | `/change-password` | Change password         | Yes           |
-| DELETE | `/account`         | Delete user account     | Yes           |
-| GET    | `/csrf-token`      | Get CSRF token          | No            |
-
-## 🔧 Setup Instructions
-
-### Prerequisites
-
-- Node.js 18+ (recommended)
-- PostgreSQL 12+
-- npm or yarn
+## 🚀 Quick Start
 
 ### Installation
 
-1. **Install dependencies**:
-
-   ```bash
-   npm install
-   ```
-
-2. **Environment Variables**:
-   Create a `.env` file in the backend directory:
-
-   ```env
-   NODE_ENV=development
-   PORT=5000
-   DB_HOST=localhost
-   DB_NAME=ats_db
-   DB_USER=your_username
-   DB_PASS=your_password
-   DB_PORT=5432
-   SESSION_SECRET=your-super-secret-session-key
-   FRONTEND_URL=http://localhost:3000
-   ```
-
-3. **Start the server**:
-   ```bash
-   npm start
-   ```
-
-The server will start on `http://localhost:5000` (or the port specified in your `.env` file).
-
-### Health Check
-
-Visit `http://localhost:5000/health` to verify the server is running.
-
-## 📝 API Usage Examples
-
-### Register a new user
-
 ```bash
-curl -X POST http://localhost:5000/api/v1/users/register \
-  -H "Content-Type: application/json" \
-  -H "X-CSRF-Token: your-csrf-token" \
-  -d '{
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john@example.com",
-    "password": "SecurePass123"
-  }'
+# Install dependencies
+cd backend
+npm install
+
+# Start the server
+npm start
 ```
 
-### Login
+Server will run on `http://localhost:3001`
 
-```bash
-curl -X POST http://localhost:5000/api/v1/users/login \
-  -H "Content-Type: application/json" \
-  -H "X-CSRF-Token: your-csrf-token" \
-  -d '{
-    "email": "john@example.com",
-    "password": "SecurePass123"
-  }'
+### Environment Variables
+
+Create a `.env` file in the backend directory:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=ats_tracker
+DB_USER=postgres
+DB_PASS=your_password
+SERVER_PORT=3001
+SESSION_SECRET=your-secret-key-change-in-production
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
 ```
 
-### Get user profile (requires authentication)
+## 📡 API Endpoints
 
-```bash
-curl -X GET http://localhost:5000/api/v1/users/profile \
-  -H "Cookie: connect.sid=your-session-cookie"
+### Base URL
+
+```
+http://localhost:3001/api/v1
 ```
 
-## 🔒 Security Features
+### Available Routes
 
-- **CSRF Protection**: All state-changing requests require CSRF tokens
-- **Rate Limiting**: API endpoints are rate-limited to prevent abuse
-- **Input Validation**: All inputs are validated and sanitized
-- **Password Security**: Passwords are hashed using bcrypt
-- **Session Security**: Sessions are httpOnly and secure in production
-- **SQL Injection Prevention**: Parameterized queries prevent SQL injection
+#### User Management (`/api/v1/users`)
+
+- `POST /register` - Register new user
+- `POST /login` - Authenticate user
+- `POST /logout` - End session
+- `GET /csrf-token` - Get CSRF token
+- `GET /profile` - Get user profile
+- `PUT /change-password` - Change password
+- `DELETE /account` - Delete account
+
+#### Jobs Management (`/api/v1/jobs`)
+
+- `POST /` - Create new job
+- `GET /` - Get all jobs
+- `GET /current` - Get current job
+- `GET /history` - Get job history
+- `GET /statistics` - Get job statistics
+- `GET /:id` - Get job by ID
+- `PUT /:id` - Update job
+- `DELETE /:id` - Delete job
+
+#### Education Management (`/api/v1/education`)
+
+- `GET /` - Get all education entries
+- `POST /` - Create education entry
+- `GET /:id` - Get education by ID
+- `PUT /:id` - Update education
+- `DELETE /:id` - Delete education
+
+#### Skills Management (`/api/v1/skills`)
+
+- `GET /` - Get all skills
+- `GET /categories` - Get skills by category
+- `POST /` - Create skill
+- `GET /:id` - Get skill by ID
+- `PUT /:id` - Update skill
+- `DELETE /:id` - Delete skill
+
+#### Certifications Management (`/api/v1/certifications`)
+
+- `GET /` - Get all certifications
+- `GET /current` - Get current certifications
+- `GET /history` - Get certification history
+- `GET /statistics` - Get certification statistics
+- `GET /expiring` - Get expiring certifications
+- `GET /search` - Search certifications
+- `GET /organization` - Get by organization
+- `POST /` - Create certification
+- `GET /:id` - Get certification by ID
+- `PUT /:id` - Update certification
+- `DELETE /:id` - Delete certification
+
+## 🧪 Testing
+
+### Run All Tests
+
+```bash
+npm run test:all
+```
+
+### Run Individual Test Suites
+
+```bash
+npm run test                    # Login functionality tests
+npm run test:user-api           # User API tests
+npm run test:jobs-service       # Jobs service tests
+npm run test:jobs-api           # Jobs API tests
+npm run test:certifications     # Certifications service tests
+npm run test:certifications-api # Certifications API tests
+```
+
+## 📁 Project Structure
+
+```
+backend/
+├── config/              # Configuration files
+│   └── db.config.js    # Database configuration
+├── controllers/        # Request handlers
+│   ├── userController.js
+│   ├── jobController.js
+│   ├── educationController.js
+│   ├── skillController.js
+│   └── certificationController.js
+├── middleware/          # Cross-cutting concerns
+│   ├── auth.js         # Authentication & CSRF
+│   ├── errorHandler.js # Error handling
+│   └── validation.js   # Input validation
+├── routes/              # API routes
+│   ├── userRoutes.js
+│   ├── jobRoutes.js
+│   ├── educationRoutes.js
+│   ├── skillRoutes.js
+│   └── certificationRoutes.js
+├── services/            # Business logic
+│   ├── database.js      # Database service
+│   ├── userService.js
+│   ├── jobService.js
+│   ├── educationService.js
+│   ├── skillService.js
+│   └── certificationService.js
+├── tests/               # Test files
+│   ├── login-functionality.test.js
+│   ├── user-api.test.js
+│   ├── jobs-service.test.js
+│   ├── jobs-api.test.js
+│   ├── certifications-functionality.test.js
+│   └── certifications-api.test.js
+├── utils/               # Utility functions
+├── docs/                # Documentation
+├── server.js            # Express app configuration
+└── index.js             # Application entry point
+```
+
+## 🔐 Authentication
+
+- **Session-based** authentication using HTTP-only cookies
+- **CSRF protection** on all state-changing operations
+- **Rate limiting** on authentication endpoints
+
+### Getting Started with CSRF Protection
+
+```javascript
+// 1. Get CSRF token
+const response = await fetch("http://localhost:3001/api/v1/users/csrf-token");
+const { csrfToken } = await response.json();
+
+// 2. Use token in requests
+await fetch("http://localhost:3001/api/v1/users/login", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-CSRF-Token": csrfToken,
+  },
+  credentials: "include",
+  body: JSON.stringify({ email, password }),
+});
+```
 
 ## 📊 Response Format
 
@@ -144,7 +187,7 @@ curl -X GET http://localhost:5000/api/v1/users/profile \
 {
   "ok": true,
   "data": {
-    // Resource payload
+    // Response data
   }
 }
 ```
@@ -156,37 +199,43 @@ curl -X GET http://localhost:5000/api/v1/users/profile \
   "ok": false,
   "error": {
     "code": "ERROR_CODE",
-    "message": "Human readable error message",
+    "message": "Error message",
     "fields": {
-      "fieldName": "Field-specific error message"
+      // Field-specific errors
     }
   }
 }
 ```
 
-## 🛠️ Development
+## 📖 Documentation
 
-### Adding New Services
+- [API Routes Documentation](./docs/API_ROUTES_DOCUMENTATION.md)
+- [API Design Documentation](./docs/API_DESIGN_DOCUMENTATION.md)
+- [Status Codes Reference](./docs/STATUS_CODES_REFERENCE.md)
 
-1. Create service in `services/` directory
-2. Create controller in `controllers/` directory
-3. Create routes in `routes/` directory
-4. Add validation schemas in `middleware/validation.js`
-5. Import and use routes in `server.js`
+## 🛠️ Tech Stack
 
-### Database Schema
+- **Node.js** - Runtime
+- **Express.js** - Web framework
+- **PostgreSQL** - Database
+- **Joi** - Validation
+- **bcrypt** - Password hashing
+- **Helmet** - Security headers
+- **CORS** - Cross-origin resource sharing
+- **Supertest** - API testing
+- **Morgan** - HTTP request logging
 
-The API works with the existing database schema:
+## 🔒 Security Features
 
-- `users` - User authentication
-- `profiles` - Extended user profile information
-- `jobs` - Employment history
-- `educations` - Education history
-- `skills` - User skills
-- `certifications` - Professional certifications
-- `projects` - Personal/professional projects
-- `files` - File storage references
+- ✅ Password hashing with bcrypt (12 rounds)
+- ✅ Session-based authentication
+- ✅ CSRF protection
+- ✅ Rate limiting on auth endpoints
+- ✅ Security headers (Helmet)
+- ✅ Input validation and sanitization
+- ✅ SQL injection prevention
+- ✅ CORS configuration
 
-## 📄 License
+## 📝 License
 
-This project is part of the ATS platform and follows the project's licensing terms.
+ISC

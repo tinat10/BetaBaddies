@@ -1,6 +1,6 @@
 import express from "express";
 import jobController from "../controllers/jobController.js";
-import { isAuthenticated, csrfProtection } from "../middleware/auth.js";
+import { isAuthenticated } from "../middleware/auth.js";
 import {
   validateCreateJob,
   validateUpdateJob,
@@ -13,7 +13,7 @@ const router = express.Router();
 router.use(isAuthenticated);
 
 // Create a new job
-router.post("/", csrfProtection, validateCreateJob, jobController.createJob);
+router.post("/", validateCreateJob, jobController.createJob);
 
 // Get all jobs for the authenticated user
 router.get("/", jobController.getJobs);
@@ -31,15 +31,9 @@ router.get("/statistics", jobController.getJobStatistics);
 router.get("/:id", validateJobId, jobController.getJob);
 
 // Update job
-router.put(
-  "/:id",
-  csrfProtection,
-  validateJobId,
-  validateUpdateJob,
-  jobController.updateJob
-);
+router.put("/:id", validateJobId, validateUpdateJob, jobController.updateJob);
 
 // Delete job
-router.delete("/:id", csrfProtection, validateJobId, jobController.deleteJob);
+router.delete("/:id", validateJobId, jobController.deleteJob);
 
 export default router;

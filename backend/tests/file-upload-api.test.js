@@ -51,44 +51,30 @@ async function setupTestData() {
 
   // Login user
   console.log("🔐 Logging in test user...");
-  const csrfResponse = await request(app)
-    .get("/api/v1/users/csrf-token")
-    .expect(200);
-
-  // Extract session cookie from CSRF response
-  const cookies = csrfResponse.headers["set-cookie"];
-  sessionCookie = cookies.find((cookie) => cookie.startsWith("connect.sid"));
-
-  if (!sessionCookie) {
-    throw new Error("No session cookie received");
-  }
-
-  // Get CSRF token from response
-  csrfToken = csrfResponse.body.data.csrfToken;
-  if (!csrfToken) {
-    throw new Error("No CSRF token received");
-  }
-  console.log(`   ✓ CSRF token obtained`);
-
   const loginResponse = await request(app)
     .post("/api/v1/users/login")
-    .set("X-CSRF-Token", csrfToken)
-    .set("Cookie", sessionCookie)
     .send({
       email: testUser.email,
       password: "TestPassword123",
     })
     .expect(200);
 
+  // Extract session cookie
+  const cookies = loginResponse.headers["set-cookie"];
+  sessionCookie = cookies
+    ? cookies.find((cookie) => cookie.startsWith("connect.sid"))
+    : null;
+
+  if (!sessionCookie) {
+    throw new Error("No session cookie received");
+  }
+
   console.log(`   ✓ User logged in successfully`);
 }
 
 async function getFreshCsrfToken() {
-  const response = await request(app)
-    .get("/api/v1/users/csrf-token")
-    .set("Cookie", sessionCookie)
-    .expect(200);
-  return response.body.data.csrfToken;
+  // CSRF tokens are no longer required
+  return "";
 }
 
 async function cleanupTestData() {
@@ -157,7 +143,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/files/profile-picture")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .attach("profilePicture", mockFile.buffer, {
           filename: mockFile.originalname,
@@ -187,7 +172,6 @@ async function runAllTests() {
 
     const response = await request(app)
       .post("/api/v1/files/document")
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie)
       .field("documentType", "certificate")
       .attach("document", mockFile.buffer, {
@@ -217,7 +201,6 @@ async function runAllTests() {
 
     const response = await request(app)
       .post("/api/v1/files/resume")
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie)
       .attach("resume", mockFile.buffer, {
         filename: mockFile.originalname,
@@ -375,7 +358,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/files/profile-picture")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .attach("profilePicture", oversizedFile.buffer, {
           filename: oversizedFile.originalname,
@@ -406,7 +388,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/files/profile-picture")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .attach("profilePicture", invalidFile.buffer, {
           filename: invalidFile.originalname,
@@ -434,30 +415,8 @@ async function runAllTests() {
     console.log(`   ✓ Unauthorized access handled correctly`);
   });
 
-  // Test 14: POST /api/v1/files/profile-picture - CSRF Protection
-  await runTest(
-    "POST /api/v1/files/profile-picture - CSRF Protection",
-    async () => {
-      const mockFile = createMockFileBuffer("profile.jpg", "image/jpeg", 1024);
-
-      const response = await request(app)
-        .post("/api/v1/files/profile-picture")
-        .set("Cookie", sessionCookie) // Missing X-CSRF-Token
-        .attach("profilePicture", mockFile.buffer, {
-          filename: mockFile.originalname,
-          contentType: mockFile.mimetype,
-        })
-        .expect(403);
-
-      if (
-        !response.body.error ||
-        response.body.error.code !== "CSRF_TOKEN_MISMATCH"
-      ) {
-        throw new Error("CSRF protection not working correctly");
-      }
-      console.log(`   ✓ CSRF protection working correctly`);
-    }
-  );
+  // Test 14: POST /api/v1/files/profile-picture - CSRF Protection (REMOVED - CSRF no longer in use)
+  // CSRF protection has been removed from the backend
 
   // Test 15: DELETE /api/v1/files/:fileId - Delete File
   await runTest("DELETE /api/v1/files/:fileId - Delete File", async () => {
@@ -466,7 +425,6 @@ async function runAllTests() {
 
     const response = await request(app)
       .delete(`/api/v1/files/${fileToDelete.fileId}`)
-      .set("X-CSRF-Token", freshCsrfToken)
       .set("Cookie", sessionCookie)
       .expect(200);
 

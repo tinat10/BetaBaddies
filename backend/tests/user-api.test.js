@@ -56,52 +56,32 @@ async function setupTestData() {
 async function loginUser() {
   console.log("🔐 Logging in test user...");
 
-  // First, establish a session by getting CSRF token
-  const csrfResponse = await request(app).get("/api/v1/users/csrf-token");
-
-  if (csrfResponse.status !== 200) {
-    throw new Error(`CSRF token request failed: ${csrfResponse.status}`);
-  }
-
-  // Extract session cookie from CSRF response
-  const cookies = csrfResponse.headers["set-cookie"];
-  sessionCookie = cookies.find((cookie) => cookie.startsWith("connect.sid"));
-
-  if (!sessionCookie) {
-    throw new Error("No session cookie received");
-  }
-
-  // Get CSRF token from response
-  csrfToken = csrfResponse.body.data.csrfToken;
-  if (!csrfToken) {
-    throw new Error("No CSRF token received");
-  }
-
-  console.log("   ✓ CSRF token obtained");
-
-  // Now login with the CSRF token
-  const loginResponse = await request(app)
-    .post("/api/v1/users/login")
-    .set("X-CSRF-Token", csrfToken)
-    .set("Cookie", sessionCookie)
-    .send({
-      email: testUser.email,
-      password: "TestPassword123",
-    });
+  // Perform login request
+  const loginResponse = await request(app).post("/api/v1/users/login").send({
+    email: testUser.email,
+    password: "TestPassword123",
+  });
 
   if (loginResponse.status !== 200) {
     throw new Error(`Login failed: ${loginResponse.body.error?.message}`);
+  }
+
+  // Extract session cookie
+  const cookies = loginResponse.headers["set-cookie"];
+  sessionCookie = cookies
+    ? cookies.find((cookie) => cookie.startsWith("connect.sid"))
+    : null;
+
+  if (!sessionCookie) {
+    throw new Error("No session cookie received");
   }
 
   console.log("   ✓ User logged in successfully");
 }
 
 async function getFreshCsrfToken() {
-  const csrfResponse = await request(app)
-    .get("/api/v1/users/csrf-token")
-    .set("Cookie", sessionCookie);
-
-  return csrfResponse.body.data.csrfToken;
+  // CSRF tokens are no longer required
+  return "";
 }
 
 async function cleanupTestData() {
@@ -168,7 +148,6 @@ async function runAllTests() {
 
         const response = await request(app)
           .post("/api/v1/users/register")
-          .set("X-CSRF-Token", freshCsrfToken)
           .set("Cookie", sessionCookie)
           .send(newUserData);
 
@@ -195,7 +174,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/users/logout")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie);
 
       if (response.status !== 200) {
@@ -235,18 +213,9 @@ async function runAllTests() {
 
     // Test 5: Login Again for Remaining Tests
     await runTest("Login Again for Remaining Tests", async () => {
-      // Get fresh CSRF token
-      const csrfResponse = await request(app).get("/api/v1/users/csrf-token");
-      sessionCookie = csrfResponse.headers["set-cookie"].find((cookie) =>
-        cookie.startsWith("connect.sid")
-      );
-      csrfToken = csrfResponse.body.data.csrfToken;
-
       // Login again
       const loginResponse = await request(app)
         .post("/api/v1/users/login")
-        .set("X-CSRF-Token", csrfToken)
-        .set("Cookie", sessionCookie)
         .send({
           email: testUser.email,
           password: "TestPassword123",
@@ -256,6 +225,14 @@ async function runAllTests() {
         throw new Error(
           `Re-login failed: ${loginResponse.body.error?.message}`
         );
+      }
+
+      // Extract session cookie
+      const cookies = loginResponse.headers["set-cookie"];
+      sessionCookie = cookies ? cookies.find((cookie) => cookie.startsWith("connect.sid")) : null;
+
+      if (!sessionCookie) {
+        throw new Error("No session cookie received on re-login");
       }
 
       console.log("   ✓ User re-logged in successfully");
@@ -274,7 +251,6 @@ async function runAllTests() {
 
         const response = await request(app)
           .put("/api/v1/users/change-password")
-          .set("X-CSRF-Token", freshCsrfToken)
           .set("Cookie", sessionCookie)
           .send(passwordData);
 
@@ -292,18 +268,9 @@ async function runAllTests() {
 
     // Test 7: Login with New Password
     await runTest("Login with New Password", async () => {
-      // Get fresh CSRF token
-      const csrfResponse = await request(app).get("/api/v1/users/csrf-token");
-      sessionCookie = csrfResponse.headers["set-cookie"].find((cookie) =>
-        cookie.startsWith("connect.sid")
-      );
-      csrfToken = csrfResponse.body.data.csrfToken;
-
       // Login with new password
       const loginResponse = await request(app)
         .post("/api/v1/users/login")
-        .set("X-CSRF-Token", csrfToken)
-        .set("Cookie", sessionCookie)
         .send({
           email: testUser.email,
           password: "NewTestPassword456",
@@ -313,6 +280,14 @@ async function runAllTests() {
         throw new Error(
           `Login with new password failed: ${loginResponse.body.error?.message}`
         );
+      }
+
+      // Extract session cookie
+      const cookies = loginResponse.headers["set-cookie"];
+      sessionCookie = cookies ? cookies.find((cookie) => cookie.startsWith("connect.sid")) : null;
+
+      if (!sessionCookie) {
+        throw new Error("No session cookie received on login with new password");
       }
 
       console.log("   ✓ Login with new password successful");
@@ -329,7 +304,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .post("/api/v1/users/register")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie)
         .send(duplicateUserData);
 
@@ -356,7 +330,6 @@ async function runAllTests() {
 
         const response = await request(app)
           .post("/api/v1/users/login")
-          .set("X-CSRF-Token", freshCsrfToken)
           .set("Cookie", sessionCookie)
           .send({
             email: testUser.email,
@@ -392,7 +365,6 @@ async function runAllTests() {
 
         const response = await request(app)
           .post("/api/v1/users/register")
-          .set("X-CSRF-Token", freshCsrfToken)
           .set("Cookie", sessionCookie)
           .send(invalidUserData);
 
@@ -412,30 +384,8 @@ async function runAllTests() {
       }
     );
 
-    // Test 11: POST /api/v1/users/login - CSRF Protection
-    await runTest("POST /api/v1/users/login - CSRF Protection", async () => {
-      const response = await request(app)
-        .post("/api/v1/users/login")
-        .set("Cookie", sessionCookie)
-        .send({
-          email: testUser.email,
-          password: "NewTestPassword456",
-        });
-
-      if (response.status !== 403) {
-        throw new Error(
-          `Expected 403, got ${response.status}: ${JSON.stringify(
-            response.body
-          )}`
-        );
-      }
-
-      if (response.body.error.code !== "CSRF_TOKEN_MISMATCH") {
-        throw new Error("Expected CSRF error");
-      }
-
-      console.log("   ✓ CSRF protection working correctly");
-    });
+    // Test 11: POST /api/v1/users/login - CSRF Protection (REMOVED - CSRF no longer in use)
+    // CSRF protection has been removed from the backend
 
     // Test 12: GET /api/v1/users/profile - Unauthorized Access
     await runTest(
@@ -464,16 +414,8 @@ async function runAllTests() {
       "PUT /api/v1/users/change-password - Wrong Current Password",
       async () => {
         // Login first
-        const csrfResponse = await request(app).get("/api/v1/users/csrf-token");
-        sessionCookie = csrfResponse.headers["set-cookie"].find((cookie) =>
-          cookie.startsWith("connect.sid")
-        );
-        csrfToken = csrfResponse.body.data.csrfToken;
-
         const loginResponse = await request(app)
           .post("/api/v1/users/login")
-          .set("X-CSRF-Token", csrfToken)
-          .set("Cookie", sessionCookie)
           .send({
             email: testUser.email,
             password: "NewTestPassword456",
@@ -481,6 +423,14 @@ async function runAllTests() {
 
         if (loginResponse.status !== 200) {
           throw new Error("Login failed for password test");
+        }
+
+        // Extract session cookie
+        const cookies = loginResponse.headers["set-cookie"];
+        sessionCookie = cookies ? cookies.find((cookie) => cookie.startsWith("connect.sid")) : null;
+
+        if (!sessionCookie) {
+          throw new Error("No session cookie received");
         }
 
         // Try to change password with wrong current password
@@ -493,7 +443,6 @@ async function runAllTests() {
 
         const response = await request(app)
           .put("/api/v1/users/change-password")
-          .set("X-CSRF-Token", freshCsrfToken)
           .set("Cookie", sessionCookie)
           .send(passwordData);
 
@@ -519,7 +468,6 @@ async function runAllTests() {
 
       const response = await request(app)
         .delete("/api/v1/users/account")
-        .set("X-CSRF-Token", freshCsrfToken)
         .set("Cookie", sessionCookie);
 
       if (response.status !== 200) {
