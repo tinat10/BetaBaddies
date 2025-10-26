@@ -46,6 +46,387 @@ All API responses follow this standardized format:
 
 ---
 
+## Jobs Management Routes (`/api/v1/jobs`)
+
+### Protected Routes (Authentication Required)
+
+#### POST `/api/v1/jobs`
+
+Create a new job entry for the authenticated user.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Request Body:**
+
+```json
+{
+  "title": "Software Engineer",
+  "company": "Tech Corp",
+  "location": "San Francisco, CA",
+  "startDate": "2023-01-15",
+  "endDate": null,
+  "isCurrent": true,
+  "description": "Full-stack development using React and Node.js"
+}
+```
+
+**Validation Rules:**
+
+- `title`: Required, string, max 255 characters
+- `company`: Required, string, max 255 characters
+- `location`: Optional, string, max 255 characters
+- `startDate`: Required, valid date (YYYY-MM-DD format)
+- `endDate`: Optional, valid date, must be after startDate if provided
+- `isCurrent`: Required, boolean
+- `description`: Optional, string, max 1000 characters
+
+**Success Response (201):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "job": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Software Engineer",
+      "company": "Tech Corp",
+      "location": "San Francisco, CA",
+      "startDate": "2023-01-15",
+      "endDate": null,
+      "isCurrent": true,
+      "description": "Full-stack development using React and Node.js"
+    },
+    "message": "Job created successfully"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `422` - Validation errors
+- `500` - Internal server error
+
+---
+
+#### GET `/api/v1/jobs`
+
+Get all jobs for the authenticated user.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Query Parameters:**
+
+- `sort` (optional): Sort order (`startDate` or `-startDate`, default: `-startDate`)
+- `limit` (optional): Number of results (default: 50, max: 100)
+- `offset` (optional): Number of results to skip (default: 0)
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "jobs": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "title": "Software Engineer",
+        "company": "Tech Corp",
+        "location": "San Francisco, CA",
+        "startDate": "2023-01-15",
+        "endDate": null,
+        "isCurrent": true,
+        "description": "Full-stack development"
+      }
+    ],
+    "pagination": {
+      "total": 1,
+      "limit": 50,
+      "offset": 0,
+      "hasMore": false
+    },
+    "currentJob": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Software Engineer",
+      "company": "Tech Corp"
+    },
+    "statistics": {
+      "totalJobs": 1,
+      "currentJobs": 1,
+      "pastJobs": 0
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `500` - Internal server error
+
+---
+
+#### GET `/api/v1/jobs/current`
+
+Get the user's current job.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "job": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Software Engineer",
+      "company": "Tech Corp",
+      "location": "San Francisco, CA",
+      "startDate": "2023-01-15",
+      "endDate": null,
+      "isCurrent": true,
+      "description": "Full-stack development"
+    }
+  }
+}
+```
+
+**Success Response (200) - No Current Job:**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "job": null,
+    "message": "No current job found"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `500` - Internal server error
+
+---
+
+#### GET `/api/v1/jobs/history`
+
+Get job history in chronological order (timeline view).
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "history": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "title": "Software Engineer",
+        "company": "Tech Corp",
+        "location": "San Francisco, CA",
+        "startDate": "2023-01-15",
+        "endDate": null,
+        "isCurrent": true,
+        "description": "Full-stack development"
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `500` - Internal server error
+
+---
+
+#### GET `/api/v1/jobs/statistics`
+
+Get job statistics for the authenticated user.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "statistics": {
+      "totalJobs": 3,
+      "currentJobs": 1,
+      "pastJobs": 2,
+      "earliestStart": "2020-01-01",
+      "latestEnd": "2022-12-31"
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `500` - Internal server error
+
+---
+
+#### GET `/api/v1/jobs/:id`
+
+Get a specific job by ID.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+
+**Path Parameters:**
+
+- `id`: Job UUID
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "job": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Software Engineer",
+      "company": "Tech Corp",
+      "location": "San Francisco, CA",
+      "startDate": "2023-01-15",
+      "endDate": null,
+      "isCurrent": true,
+      "description": "Full-stack development"
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `404` - Job not found or doesn't belong to user
+- `422` - Invalid job ID format
+- `500` - Internal server error
+
+---
+
+#### PUT `/api/v1/jobs/:id`
+
+Update an existing job.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Path Parameters:**
+
+- `id`: Job UUID
+
+**Request Body:**
+
+```json
+{
+  "title": "Senior Software Engineer",
+  "description": "Senior full-stack development"
+}
+```
+
+**Validation Rules:**
+
+- All fields optional (partial updates supported)
+- Same validation rules as create job
+
+**Success Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "job": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Senior Software Engineer",
+      "company": "Tech Corp",
+      "location": "San Francisco, CA",
+      "startDate": "2023-01-15",
+      "endDate": null,
+      "isCurrent": true,
+      "description": "Senior full-stack development"
+    },
+    "message": "Job updated successfully"
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `404` - Job not found or doesn't belong to user
+- `422` - Validation errors or invalid job ID format
+- `500` - Internal server error
+
+---
+
+#### DELETE `/api/v1/jobs/:id`
+
+Delete a job entry.
+
+**Headers Required:**
+
+- Session cookie (automatic)
+- `X-CSRF-Token`: CSRF token
+
+**Path Parameters:**
+
+- `id`: Job UUID
+
+**Success Response (204):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "message": "Job deleted successfully",
+    "deletedJob": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Software Engineer",
+      "company": "Tech Corp"
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+- `401` - Not authenticated
+- `403` - Invalid CSRF token
+- `404` - Job not found or doesn't belong to user
+- `422` - Invalid job ID format
+- `500` - Internal server error
+
+---
+
 ## User Management Routes (`/api/v1/users`)
 
 ### Public Routes (No Authentication Required)
@@ -526,6 +907,20 @@ Delete an education entry.
 | `EDUCATION_NOT_FOUND`   | Education entry not found     |
 | `RATE_LIMIT_EXCEEDED`   | Too many requests             |
 | `INTERNAL_SERVER_ERROR` | Unexpected server error       |
+| Code                    | Description                             |
+| ----------------------- | --------------------------------------- |
+| `UNAUTHORIZED`          | Authentication required                 |
+| `INVALID_CREDENTIALS`   | Invalid email or password               |
+| `INVALID_PASSWORD`      | Current password is incorrect           |
+| `USER_NOT_FOUND`        | User not found                          |
+| `JOB_NOT_FOUND`         | Job not found or doesn't belong to user |
+| `INVALID_DATE_RANGE`    | End date must be after start date       |
+| `MULTIPLE_CURRENT_JOBS` | Only one current job allowed per user   |
+| `CSRF_TOKEN_MISMATCH`   | Invalid CSRF token                      |
+| `VALIDATION_ERROR`      | Input validation failed                 |
+| `CONFLICT`              | Resource already exists                 |
+| `RATE_LIMIT_EXCEEDED`   | Too many requests                       |
+| `INTERNAL_SERVER_ERROR` | Unexpected server error                 |
 
 ---
 
@@ -582,6 +977,59 @@ curl -X PUT http://localhost:5000/api/v1/users/profile \
     "jobTitle": "Senior Software Engineer",
     "bio": "Updated bio text"
   }'
+```
+
+### Jobs API Usage
+
+```bash
+# Create a new job
+curl -X POST http://localhost:5000/api/v1/jobs \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: your-csrf-token" \
+  -b cookies.txt \
+  -d '{
+    "title": "Software Engineer",
+    "company": "Tech Corp",
+    "location": "San Francisco, CA",
+    "startDate": "2023-01-15",
+    "isCurrent": true,
+    "description": "Full-stack development"
+  }'
+
+# Get all jobs
+curl -X GET http://localhost:5000/api/v1/jobs \
+  -b cookies.txt
+
+# Get current job
+curl -X GET http://localhost:5000/api/v1/jobs/current \
+  -b cookies.txt
+
+# Get job by ID
+curl -X GET http://localhost:5000/api/v1/jobs/550e8400-e29b-41d4-a716-446655440000 \
+  -b cookies.txt
+
+# Update job
+curl -X PUT http://localhost:5000/api/v1/jobs/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: your-csrf-token" \
+  -b cookies.txt \
+  -d '{
+    "title": "Senior Software Engineer",
+    "description": "Senior full-stack development"
+  }'
+
+# Delete job
+curl -X DELETE http://localhost:5000/api/v1/jobs/550e8400-e29b-41d4-a716-446655440000 \
+  -H "X-CSRF-Token: your-csrf-token" \
+  -b cookies.txt
+
+# Get job history
+curl -X GET http://localhost:5000/api/v1/jobs/history \
+  -b cookies.txt
+
+# Get job statistics
+curl -X GET http://localhost:5000/api/v1/jobs/statistics \
+  -b cookies.txt
 ```
 
 ---

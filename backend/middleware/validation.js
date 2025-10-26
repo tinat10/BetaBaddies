@@ -101,6 +101,37 @@ export const validate = (schema) => {
   };
 };
 
+// Validation middleware for path parameters
+export const validateParams = (schema) => {
+  return (req, res, next) => {
+    const { error } = schema.validate(req.params, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      const errorDetails = error.details.map((detail) => ({
+        field: detail.path.join("."),
+        message: detail.message,
+      }));
+
+      return res.status(422).json({
+        ok: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Validation failed",
+          fields: errorDetails.reduce((acc, detail) => {
+            acc[detail.field] = detail.message;
+            return acc;
+          }, {}),
+        },
+      });
+    }
+
+    next();
+  };
+};
+
 // Export individual validation middleware
 export const validateRegister = validate(schemas.register);
 export const validateLogin = validate(schemas.login);

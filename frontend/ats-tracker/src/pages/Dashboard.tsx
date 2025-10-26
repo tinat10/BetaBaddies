@@ -1,4 +1,19 @@
 import { useState } from 'react'
+import { Icon } from '@iconify/react'
+import { Navbar } from '../components/layout/Navbar'
+
+// Icon component for professional icons using Mingcute
+function MingcuteIcon({ type }: { type: string }) {
+  const iconSize = 48
+  const iconMap: Record<string, string> = {
+    'Employment': 'mingcute:briefcase-line',
+    'Skills': 'mingcute:star-line',
+    'Education': 'mingcute:school-line',
+    'Projects': 'mingcute:folder-line',
+  }
+  
+  return <Icon icon={iconMap[type]} width={iconSize} height={iconSize} />
+}
 
 export function Dashboard() {
   // Mock data - will be replaced with API calls later
@@ -16,15 +31,15 @@ export function Dashboard() {
       { id: 4, action: 'Added education', item: 'BS Computer Science', timestamp: '3 days ago' },
     ],
     skillsDistribution: [
-      { category: 'Frontend', count: 5, color: '#3351FD' },
-      { category: 'Backend', count: 4, color: '#6A94EE' },
-      { category: 'DevOps', count: 2, color: '#B1D0FF' },
-      { category: 'Design', count: 1, color: '#EC85CA' },
+      { category: 'Frontend', count: 5 },
+      { category: 'Backend', count: 4 },
+      { category: 'DevOps', count: 2 },
+      { category: 'Design', count: 1 },
     ],
     careerTimeline: [
-      { year: '2023', company: 'Tech Corp', position: 'Senior Developer', color: '#3351FD' },
-      { year: '2021', company: 'StartupXYZ', position: 'Full Stack Developer', color: '#6A94EE' },
-      { year: '2019', company: 'Agency Inc', position: 'Junior Developer', color: '#B1D0FF' },
+      { year: '2023', company: 'Tech Corp', position: 'Senior Developer' },
+      { year: '2021', company: 'StartupXYZ', position: 'Full Stack Developer' },
+      { year: '2019', company: 'Agency Inc', position: 'Junior Developer' },
     ],
     suggestions: [
       'Add more project descriptions to improve profile visibility',
@@ -51,38 +66,40 @@ export function Dashboard() {
   }
 
   return (
-    <div style={styles.dashboard}>
-      {/* Header */}
-      <div style={styles.header}>
+    <>
+      <Navbar />
+      <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-[calc(100vh-80px)]">
+      {/* Welcome Header */}
+      <div className="flex justify-between items-start mb-12 pb-8 border-b border-slate-200">
         <div>
-          <h1 style={styles.h1}>Profile Dashboard</h1>
-          <p style={styles.description}>Welcome back, {profileData.name}! Here's your profile overview.</p>
+          <h1 className="text-5xl font-bold text-slate-900 m-0 mb-3 leading-tight">Welcome back, {profileData.name}!</h1>
         </div>
-        <button style={styles.primaryButton} onClick={handleExportProfile}>
-          📥 Export Profile
+        <button 
+          className="bg-gradient-to-br from-blue-500 to-blue-700 text-white border-none rounded-xl px-7 py-4 text-base font-semibold cursor-pointer transition-all shadow-[0_4px_6px_rgba(59,130,246,0.15)] hover:shadow-lg hover:scale-105" 
+          onClick={handleExportProfile}
+        >
+          Export Profile
         </button>
       </div>
 
       {/* Profile Completion Section */}
-      <div style={styles.card}>
-        <div style={styles.cardHeader}>
-          <h2 style={styles.h2}>Profile Completion</h2>
-          <span style={styles.completionPercentage}>{profileData.profileCompletion}%</span>
+      <div className="bg-white rounded-2xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)] border border-slate-100">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-semibold text-slate-900 m-0">Profile Completion</h2>
+          <span className="text-4xl font-bold text-blue-500">{profileData.profileCompletion}%</span>
         </div>
-        <div style={styles.progressBarContainer}>
+        <div className="w-full h-3 bg-slate-100 rounded-md overflow-hidden mb-6">
           <div 
-            style={{
-              ...styles.progressBar,
-              width: `${profileData.profileCompletion}%`
-            }}
+            className="h-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300"
+            style={{ width: `${profileData.profileCompletion}%` }}
           />
         </div>
-        <div style={styles.suggestions}>
-          <h4 style={styles.h4}>Suggestions to improve your profile:</h4>
-          <ul style={styles.suggestionList}>
+        <div className="mt-4">
+          <h4 className="text-lg font-semibold text-slate-900 mb-3">Suggestions to improve your profile:</h4>
+          <ul className="list-none p-0 m-0">
             {profileData.suggestions.map((suggestion, index) => (
-              <li key={index} style={styles.suggestionItem}>
-                💡 {suggestion}
+              <li key={index} className="text-base font-normal text-slate-500 py-3 border-b border-slate-100 flex items-start">
+                <span className="text-blue-500 text-base mr-3 font-semibold">•</span> {suggestion}
               </li>
             ))}
           </ul>
@@ -90,91 +107,99 @@ export function Dashboard() {
       </div>
 
       {/* Summary Cards */}
-      <div style={styles.summaryGrid}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 mb-10">
         {[
-          { title: 'Employment', count: profileData.employment, icon: '💼', color: '#3351FD' },
-          { title: 'Skills', count: profileData.skills, icon: '⚡', color: '#6A94EE' },
-          { title: 'Education', count: profileData.education, icon: '🎓', color: '#B1D0FF' },
-          { title: 'Projects', count: profileData.projects, icon: '🚀', color: '#EC85CA' },
+          { title: 'Employment', count: profileData.employment, icon: 'Employment', color: '#3B82F6' },
+          { title: 'Skills', count: profileData.skills, icon: 'Skills', color: '#60A5FA' },
+          { title: 'Education', count: profileData.education, icon: 'Education', color: '#93C5FD' },
+          { title: 'Projects', count: profileData.projects, icon: 'Projects', color: '#DBEAFE' },
         ].map((section) => (
-          <div key={section.title} style={{...styles.summaryCard, borderTop: `4px solid ${section.color}`}}>
-            <div style={styles.summaryIcon}>{section.icon}</div>
-            <h3 style={styles.h3}>{section.title}</h3>
-            <p style={styles.summaryCount}>{section.count}</p>
+          <div key={section.title} className="bg-white rounded-2xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)] border border-slate-100 text-center transition-all cursor-pointer hover:shadow-lg" style={{ borderTop: `4px solid ${section.color}` }}>
+            <div className="text-6xl mb-4 flex justify-center items-center" style={{ color: section.color }}>
+              <MingcuteIcon type={section.icon} />
+            </div>
+            <h3 className="text-2xl font-semibold text-slate-900 mb-0">{section.title}</h3>
+            <p className="text-5xl font-bold my-3" style={{ color: section.color }}>{section.count}</p>
             <button 
-              style={styles.secondaryButton}
+              className="bg-slate-50 text-slate-900 border border-slate-200 rounded-lg px-5 py-3 text-sm font-medium cursor-pointer transition-all w-full min-h-[44px] flex items-center justify-center hover:bg-slate-100"
               onClick={() => handleQuickAdd(section.title)}
             >
-              + Add New
+              + Quick Add
             </button>
           </div>
         ))}
       </div>
 
       {/* Two Column Layout for Charts */}
-      <div style={styles.chartsRow}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(500px,1fr))] gap-6 mb-6">
         {/* Skills Distribution Chart */}
-        <div style={styles.card}>
-          <h3 style={styles.cardHeader}>Skills Distribution</h3>
-          <div style={styles.chartContainer}>
-            {profileData.skillsDistribution.map((skill) => (
-              <div key={skill.category} style={styles.chartItem}>
-                <div style={styles.chartLabel}>
-                  <span style={styles.chartLabelText}>{skill.category}</span>
-                  <span style={styles.chartCount}>{skill.count}</span>
+        <div className="bg-white rounded-2xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)] border border-slate-100">
+          <h3 className="text-2xl font-semibold text-slate-900 mb-6">Skills Distribution</h3>
+          <div className="flex flex-col gap-4">
+            {profileData.skillsDistribution.map((skill, index) => {
+              const colors = ['#3B82F6', '#60A5FA', '#93C5FD', '#DBEAFE'];
+              const color = colors[index % colors.length];
+              return (
+                <div key={skill.category} className="mb-2">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-base font-medium text-slate-900">{skill.category}</span>
+                    <span className="text-base font-semibold text-blue-500">{skill.count}</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-100 rounded overflow-hidden">
+                    <div 
+                      className="h-full transition-all duration-300 rounded"
+                      style={{
+                        width: `${(skill.count / profileData.skills) * 100}%`,
+                        backgroundColor: color
+                      }}
+                    />
+                  </div>
                 </div>
-                <div style={styles.chartBarContainer}>
-                  <div 
-                    style={{
-                      ...styles.chartBar,
-                      width: `${(skill.count / profileData.skills) * 100}%`,
-                      backgroundColor: skill.color
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         {/* Career Timeline */}
-        <div style={styles.card}>
-          <h3 style={styles.cardHeader}>Career Timeline</h3>
-          <div style={styles.timelineContainer}>
-            {profileData.careerTimeline.map((item, index) => (
-              <div key={index} style={styles.timelineItem}>
-                <div style={{...styles.timelineDot, backgroundColor: item.color}} />
-                <div style={styles.timelineContent}>
-                  <div style={styles.timelineYear}>{item.year}</div>
-                  <div style={styles.timelinePosition}>{item.position}</div>
-                  <div style={styles.timelineCompany}>{item.company}</div>
+        <div className="bg-white rounded-2xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)] border border-slate-100">
+          <h3 className="text-2xl font-semibold text-slate-900 mb-6">Career Timeline</h3>
+          <div className="max-h-80 overflow-y-auto pr-2">
+            <div className="flex flex-col gap-4">
+              {profileData.careerTimeline.map((item, index) => (
+                <div key={index} className="flex gap-4 relative pb-4 border-b border-slate-100 last:border-b-0">
+                  <div className="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0 mt-2" />
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-blue-500 mb-1">{item.year}</div>
+                    <div className="text-base font-semibold text-slate-900 mb-1">{item.position}</div>
+                    <div className="text-sm text-slate-500">{item.company}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Profile Strength Indicators */}
-      <div style={styles.card}>
-        <h3 style={styles.cardHeader}>Profile Strength</h3>
-        <div style={styles.strengthOverall}>
-          <div style={styles.strengthCircle}>
-            <span style={styles.strengthScore}>{profileData.profileStrength.overall}</span>
-            <span style={styles.strengthLabel}>Overall</span>
+      <div className="bg-white rounded-2xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)] border border-slate-100">
+        <h3 className="text-2xl font-semibold text-slate-900 mb-6">Profile Strength</h3>
+        <div className="flex justify-center mb-8">
+          <div className="w-40 h-40 rounded-full border-8 border-blue-500 flex flex-col items-center justify-center">
+            <span className="text-5xl font-bold text-blue-500">{profileData.profileStrength.overall}</span>
+            <span className="text-base text-slate-500">Overall</span>
           </div>
         </div>
-        <div style={styles.strengthCategories}>
+        <div className="flex flex-col gap-4">
           {profileData.profileStrength.categories.map((category) => (
-            <div key={category.name} style={styles.strengthCategory}>
-              <div style={styles.strengthCategoryHeader}>
-                <span style={styles.strengthCategoryName}>{category.name}</span>
-                <span style={styles.strengthCategoryScore}>{category.score}%</span>
+            <div key={category.name} className="mb-2">
+              <div className="flex justify-between mb-2">
+                <span className="text-base font-medium text-slate-900">{category.name}</span>
+                <span className="text-base font-semibold text-blue-500">{category.score}%</span>
               </div>
-              <div style={styles.strengthBarContainer}>
+              <div className="w-full h-2 bg-slate-100 rounded overflow-hidden">
                 <div 
+                  className="h-full transition-all duration-300 rounded"
                   style={{
-                    ...styles.strengthBar,
                     width: `${category.score}%`,
                     backgroundColor: category.score >= 80 ? '#4DF744' : category.score >= 60 ? '#FFD53F' : '#ED0101'
                   }}
@@ -186,337 +211,22 @@ export function Dashboard() {
       </div>
 
       {/* Recent Activity Timeline */}
-      <div style={styles.card}>
-        <h3 style={styles.cardHeader}>Recent Activity</h3>
-        <div style={styles.activityList}>
+      <div className="bg-white rounded-2xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)] border border-slate-100">
+        <h3 className="text-2xl font-semibold text-slate-900 mb-6">Recent Activity</h3>
+        <div className="flex flex-col gap-4">
           {profileData.recentActivity.map((activity) => (
-            <div key={activity.id} style={styles.activityItem}>
-              <div style={styles.activityDot} />
-              <div style={styles.activityContent}>
-                <p style={styles.activityAction}>{activity.action}</p>
-                <p style={styles.activityItem}>{activity.item}</p>
+            <div key={activity.id} className="flex gap-4 items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-base font-medium text-slate-900 mb-1 m-0">{activity.action}</p>
+                <p className="text-base text-slate-500 m-0">{activity.item}</p>
               </div>
-              <span style={styles.activityTimestamp}>{activity.timestamp}</span>
+              <span className="text-sm text-slate-500">{activity.timestamp}</span>
             </div>
           ))}
         </div>
       </div>
     </div>
+    </>
   )
 }
-
-// Styles based on your design system
-const styles = {
-  dashboard: {
-    padding: '40px',
-    maxWidth: '1400px',
-    margin: '0 auto',
-    backgroundColor: '#FAFAFA',
-    fontFamily: 'Poppins, sans-serif',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '32px',
-  },
-  h1: {
-    fontSize: '64px',
-    fontWeight: 'bold',
-    color: '#000000',
-    margin: '0 0 8px 0',
-  },
-  h2: {
-    fontSize: '48px',
-    fontWeight: '600',
-    color: '#000000',
-    margin: '0',
-  },
-  h3: {
-    fontSize: '36px',
-    fontWeight: '500',
-    color: '#000000',
-    margin: '16px 0',
-  },
-  h4: {
-    fontSize: '28px',
-    fontWeight: '500',
-    color: '#000000',
-    margin: '16px 0 12px 0',
-  },
-  description: {
-    fontSize: '25px',
-    fontWeight: '300',
-    color: '#666',
-    margin: 0,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: '15px',
-    padding: '32px',
-    marginBottom: '24px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-  },
-  cardHeader: {
-    fontSize: '36px',
-    fontWeight: '500',
-    color: '#000000',
-    marginBottom: '24px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  completionPercentage: {
-    fontSize: '48px',
-    fontWeight: 'bold',
-    color: '#3351FD',
-  },
-  progressBarContainer: {
-    width: '100%',
-    height: '24px',
-    backgroundColor: '#E5E5E5',
-    borderRadius: '12px',
-    overflow: 'hidden',
-    marginBottom: '24px',
-  },
-  progressBar: {
-    height: '100%',
-    backgroundColor: '#3351FD',
-    transition: 'width 0.3s ease',
-  },
-  suggestions: {
-    marginTop: '16px',
-  },
-  suggestionList: {
-    listStyle: 'none',
-    padding: 0,
-    margin: 0,
-  },
-  suggestionItem: {
-    fontSize: '22px',
-    fontWeight: '300',
-    color: '#666',
-    padding: '12px 0',
-    borderBottom: '1px solid #E5E5E5',
-  },
-  summaryGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '24px',
-    marginBottom: '24px',
-  },
-  summaryCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: '15px',
-    padding: '32px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center' as const,
-    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-    cursor: 'pointer',
-  },
-  summaryIcon: {
-    fontSize: '64px',
-    marginBottom: '16px',
-  },
-  summaryCount: {
-    fontSize: '48px',
-    fontWeight: 'bold',
-    color: '#3351FD',
-    margin: '8px 0 16px 0',
-  },
-  primaryButton: {
-    backgroundColor: '#3351FD',
-    color: '#FFFFFF',
-    border: 'none',
-    borderRadius: '12px',
-    padding: '16px 32px',
-    fontSize: '22px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    fontFamily: 'Poppins, sans-serif',
-    transition: 'background-color 0.2s ease',
-  },
-  secondaryButton: {
-    backgroundColor: '#6A94EE',
-    color: '#FFFFFF',
-    border: 'none',
-    borderRadius: '12px',
-    padding: '12px 24px',
-    fontSize: '18px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    fontFamily: 'Poppins, sans-serif',
-    width: '100%',
-    transition: 'background-color 0.2s ease',
-  },
-  chartsRow: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
-    gap: '24px',
-    marginBottom: '24px',
-  },
-  chartContainer: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '16px',
-  },
-  chartItem: {
-    marginBottom: '8px',
-  },
-  chartLabel: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: '8px',
-  },
-  chartLabelText: {
-    fontSize: '22px',
-    fontWeight: '500',
-    color: '#000000',
-  },
-  chartCount: {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    color: '#3351FD',
-  },
-  chartBarContainer: {
-    width: '100%',
-    height: '32px',
-    backgroundColor: '#F0F0F0',
-    borderRadius: '8px',
-    overflow: 'hidden',
-  },
-  chartBar: {
-    height: '100%',
-    transition: 'width 0.3s ease',
-    borderRadius: '8px',
-  },
-  timelineContainer: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '24px',
-  },
-  timelineItem: {
-    display: 'flex',
-    gap: '16px',
-    position: 'relative' as const,
-  },
-  timelineDot: {
-    width: '24px',
-    height: '24px',
-    borderRadius: '50%',
-    flexShrink: 0,
-    marginTop: '4px',
-  },
-  timelineContent: {
-    flex: 1,
-  },
-  timelineYear: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#3351FD',
-    marginBottom: '4px',
-  },
-  timelinePosition: {
-    fontSize: '22px',
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: '4px',
-  },
-  timelineCompany: {
-    fontSize: '18px',
-    color: '#666',
-  },
-  strengthOverall: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: '32px',
-  },
-  strengthCircle: {
-    width: '180px',
-    height: '180px',
-    borderRadius: '50%',
-    border: '12px solid #3351FD',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  strengthScore: {
-    fontSize: '64px',
-    fontWeight: 'bold',
-    color: '#3351FD',
-  },
-  strengthLabel: {
-    fontSize: '22px',
-    color: '#666',
-  },
-  strengthCategories: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '16px',
-  },
-  strengthCategory: {
-    marginBottom: '8px',
-  },
-  strengthCategoryHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: '8px',
-  },
-  strengthCategoryName: {
-    fontSize: '22px',
-    fontWeight: '500',
-    color: '#000000',
-  },
-  strengthCategoryScore: {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    color: '#3351FD',
-  },
-  strengthBarContainer: {
-    width: '100%',
-    height: '24px',
-    backgroundColor: '#F0F0F0',
-    borderRadius: '12px',
-    overflow: 'hidden',
-  },
-  strengthBar: {
-    height: '100%',
-    transition: 'width 0.3s ease',
-    borderRadius: '12px',
-  },
-  activityList: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '16px',
-  },
-  activityItem: {
-    display: 'flex',
-    gap: '16px',
-    alignItems: 'center',
-    padding: '16px',
-    backgroundColor: '#FAFAFA',
-    borderRadius: '12px',
-  },
-  activityDot: {
-    width: '12px',
-    height: '12px',
-    borderRadius: '50%',
-    backgroundColor: '#3351FD',
-    flexShrink: 0,
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityAction: {
-    fontSize: '22px',
-    fontWeight: '600',
-    color: '#000000',
-    margin: '0 0 4px 0',
-  },
-  activityTimestamp: {
-    fontSize: '18px',
-    color: '#666',
-  },
-} as const
-
