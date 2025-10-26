@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Icon } from '@iconify/react'
-import { Navbar } from '../components/layout/Navbar'
 
 // Icon component for professional icons using Mingcute
 function MingcuteIcon({ type }: { type: string }) {
@@ -66,9 +65,7 @@ export function Dashboard() {
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-[calc(100vh-80px)]">
+    <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full">
       {/* Welcome Header */}
       <div className="flex justify-between items-start mb-12 pb-8 border-b border-slate-200">
         <div>
@@ -227,6 +224,5 @@ export function Dashboard() {
         </div>
       </div>
     </div>
-    </>
   )
 }
