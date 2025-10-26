@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "node tests/login-functionality.test.js",
+    "test:education": "node tests/education-functionality.test.js"
     "test:user-api": "node tests/user-api.test.js",
     "test:jobs-service": "node tests/jobs-service.test.js",
     "test:jobs-api": "node tests/jobs-api.test.js",
