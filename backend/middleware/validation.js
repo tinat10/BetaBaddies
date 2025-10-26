@@ -206,6 +206,8 @@ const schemas = {
     id: Joi.string().uuid().required(),
   }),
 
+  fileId: Joi.object({
+    fileId: Joi.string().uuid().required(),
   createProject: Joi.object({
     name: Joi.string().max(255).required(),
     link: Joi.string().uri().max(500).allow(null, "").optional(),
@@ -344,6 +346,7 @@ export const validateUpdateCertification = validate(
   schemas.updateCertification
 );
 export const validateCertificationId = validateParams(schemas.certificationId);
+export const validateFileId = validateParams(schemas.fileId);
 export const validateCreateProject = validate(schemas.createProject);
 export const validateUpdateProject = validate(schemas.updateProject);
 export const validateProjectId = validateParams(schemas.projectId);
