@@ -25,6 +25,14 @@ router.post(
   userController.login
 );
 
+// Google OAuth routes
+router.get("/auth/google", userController.googleAuth);
+router.get(
+  "/auth/google/callback",
+  userController.googleCallback,
+  userController.handleGoogleCallback
+);
+
 router.post("/logout", userController.logout);
 
 // Protected routes (authentication required)

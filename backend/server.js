@@ -4,6 +4,7 @@ import session from "express-session";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import passport from "./config/passport.js";
 
 // Import routes
 import userRoutes from "./routes/userRoutes.js";
@@ -82,6 +83,10 @@ app.use(
     },
   })
 );
+
+// Initialize Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Health check endpoint
 app.get("/health", (req, res) => {
