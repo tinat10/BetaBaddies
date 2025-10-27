@@ -63,6 +63,11 @@ jobs:
           PGPASSWORD=postgres psql -h localhost -U postgres -c "DROP DATABASE IF EXISTS ats_tracker_test;"
           PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE ats_tracker_test;"
           PGPASSWORD=postgres psql -h localhost -U postgres -d ats_tracker_test -f ../db/ats_db.sql
+          # Run migrations if they exist
+          if [ -f "../db/migrations/add_google_oauth.sql" ]; then
+            echo "Running Google OAuth migration..."
+            PGPASSWORD=postgres psql -h localhost -U postgres -d ats_tracker_test -f ../db/migrations/add_google_oauth.sql
+          fi
 
       - name: Run tests
         working-directory: ./backend
