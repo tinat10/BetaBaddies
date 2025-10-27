@@ -125,16 +125,8 @@ export function Navbar() {
             </div>
           )}
 
-          {/* Export Profile Button and User Profile Area */}
-          <div className="flex items-center gap-4">
-            {isLoggedIn && (
-              <button 
-                className="px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white"
-                onClick={() => alert('Export Profile - Coming soon!')}
-              >
-                Export Profile
-              </button>
-            )}
+          {/* User Profile Area */}
+          <div className="flex items-center">
             {isCheckingAuth ? (
               <div className="flex items-center gap-2 text-slate-600">
                 <Icon icon="mingcute:loading-line" width={20} height={20} className="animate-spin" />

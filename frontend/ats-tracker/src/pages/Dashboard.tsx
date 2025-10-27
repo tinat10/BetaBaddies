@@ -77,9 +77,17 @@ export function Dashboard() {
     <div className="font-poppins min-h-full">
       {/* Welcome Message */}
       <div className="max-w-[1600px] mx-auto p-10 pb-6">
-        <h2 className="mb-2" style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 200 }}>
-          Welcome Back, <span style={{ fontWeight: 700, color: '#3351FD' }}>{profileData.name}</span>
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="mb-2" style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 200 }}>
+            Welcome Back, <span style={{ fontWeight: 700, color: '#3351FD' }}>{profileData.name}</span>
+          </h2>
+          <button 
+            className="px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white"
+            onClick={() => alert('Export Profile - Coming soon!')}
+          >
+            Export Profile
+          </button>
+        </div>
       </div>
 
       {/* Error banner if there was an error but we have cached/default data */}
@@ -95,20 +103,16 @@ export function Dashboard() {
       <div className="relative -mt-8 pb-4">
         {/* Gradient Background - positioned behind right column, extends to screen edge */}
         <div 
-          className="absolute inset-y-0 left-0 right-0 pointer-events-none"
+          className="absolute inset-y-0 pointer-events-none"
           style={{ 
-            clipPath: 'polygon(27% 5%, 100% 5%, 100% 100%, 27% 100%)',
-            borderTopLeftRadius: '25px',
-            overflow: 'hidden'
+            left: '27%',
+            right: 0,
+            top: '5%',
+            bottom: 0,
+            background: 'linear-gradient(180deg, #B1D0FF 0%, #EC85CA 100%)',
+            borderTopLeftRadius: '25px'
           }}
-        >
-          <div 
-            className="absolute inset-y-0 left-0 right-0"
-            style={{ 
-              background: 'linear-gradient(180deg, #B1D0FF 0%, #EC85CA 100%)'
-            }}
-          />
-        </div>
+        />
         <div className="max-w-[1600px] mx-auto px-10 pb-4 pt-24">
           <div className="grid grid-cols-[350px_1fr] gap-8 relative">
           
@@ -135,40 +139,7 @@ export function Dashboard() {
                    </div>
                  ))
                ) : (
-                 <>
-                   <div className="flex items-start gap-3">
-                     <div className="flex flex-col items-center flex-shrink-0">
-                       <div className="w-2 h-2 rounded-full bg-[#3351FD] mt-1.5" />
-                       <div className="w-px h-full bg-slate-300 mt-2 min-h-[60px]" />
-                     </div>
-                     <div className="flex-1 pb-4">
-                       <div className="text-xs font-medium" style={{ color: '#525252' }}>August 2025 - Present</div>
-                       <div className="text-sm font-semibold" style={{ color: '#161616', marginTop: '2px' }}>Software Engineer</div>
-                       <div className="text-xs" style={{ color: '#525252', marginTop: '2px' }}>@ Amazon</div>
-                     </div>
-                   </div>
-                   <div className="flex items-start gap-3">
-                     <div className="flex flex-col items-center flex-shrink-0">
-                       <div className="w-2 h-2 rounded-full bg-[#3351FD] mt-1.5" />
-                       <div className="w-px h-full bg-slate-300 mt-2 min-h-[60px]" />
-                     </div>
-                     <div className="flex-1 pb-4">
-                       <div className="text-xs font-medium" style={{ color: '#525252' }}>May 2024 - August 2024</div>
-                       <div className="text-sm font-semibold" style={{ color: '#161616', marginTop: '2px' }}>Software Engineering Intern</div>
-                       <div className="text-xs" style={{ color: '#525252', marginTop: '2px' }}>@ Amazon</div>
-                     </div>
-                   </div>
-                   <div className="flex items-start gap-3">
-                     <div className="flex flex-col items-center flex-shrink-0">
-                       <div className="w-2 h-2 rounded-full bg-[#3351FD] mt-1.5" />
-                     </div>
-                     <div className="flex-1 pb-4">
-                       <div className="text-xs font-medium" style={{ color: '#525252' }}>May 2023 - August 2023</div>
-                       <div className="text-sm font-semibold" style={{ color: '#161616', marginTop: '2px' }}>Web Development Intern</div>
-                       <div className="text-xs" style={{ color: '#525252', marginTop: '2px' }}>@ Johnson & Johnson</div>
-                     </div>
-                   </div>
-                 </>
+                 <div className="text-xs" style={{ color: '#525252' }}>No career timeline data yet</div>
                )}
              </div>
            </div>
