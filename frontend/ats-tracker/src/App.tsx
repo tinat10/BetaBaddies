@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
+import { Landing } from './pages/Landing'
 import { Login } from './pages/Login'
 import { Dashboard } from './pages/Dashboard'
 import BasicInformation from './pages/BasicInformation'
@@ -20,6 +21,9 @@ function App() {
     <ErrorBoundary>
 	    <div className="app">
 	      <Routes>
+		{/* Landing page - public, no auth required */}
+		<Route path={ROUTES.LANDING} element={<Landing />} />
+		
 		{/* Login page - redirect to dashboard if already authenticated */}
 		<Route 
 		  path={ROUTES.LOGIN} 
