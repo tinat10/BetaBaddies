@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { Landing } from './pages/Landing'
 import { Login } from './pages/Login'
+import { Register } from './pages/Register'
 import { Dashboard } from './pages/Dashboard'
 import BasicInformation from './pages/BasicInformation'
 import { Employment } from './pages/Employment'
@@ -30,6 +31,16 @@ function App() {
 		  element={
 		    <ProtectedRoute requireAuth={false}>
 		      <Login />
+		    </ProtectedRoute>
+		  } 
+		/>
+		
+		{/* Register page - redirect to dashboard if already authenticated */}
+		<Route 
+		  path={ROUTES.REGISTER} 
+		  element={
+		    <ProtectedRoute requireAuth={false}>
+		      <Register />
 		    </ProtectedRoute>
 		  } 
 		/>

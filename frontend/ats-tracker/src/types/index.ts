@@ -4,4 +4,5 @@ export * from './dashboard.types';
 export * from './api.types';
 export * from './profile.types';
 export * from './education.types';
+export * from './project.types';
 
