@@ -5,6 +5,7 @@ import { Menubar, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar'
 import { cn } from '@/lib/utils'
 import { navigationItems, ROUTES } from '@/config/routes'
 import { api } from '@/services/api'
+import logo from '@/assets/logo.png'
 
 export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -88,18 +89,52 @@ export function Navbar() {
   }, [isDropdownOpen])
 
   return (
-    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white sticky top-0 z-50">
       <div className="max-w-[1600px] mx-auto px-10">
-        {/* Top Row: Logo and User Profile */}
-        <div className="flex justify-between items-center py-4">
+        {/* Top Row: Logo, Navigation, Export Button, and User Profile */}
+        <div className="flex items-center py-4">
           {/* Logo/Brand */}
           <div className="flex items-center gap-3">
-            <Icon icon="mingcute:file-list-line" width={32} height={32} className="text-blue-500" />
-            <h1 className="text-2xl font-bold text-slate-900 m-0 font-sans">ATS Tracker</h1>
+            <img src={logo} alt="ATS Logo" className="w-10 h-10" />
+            <h1 className="text-2xl font-bold text-slate-900 m-0 font-poppins">ATS For Candidates</h1>
           </div>
 
-          {/* User Profile Area */}
-          <div className="flex items-center">
+          {/* Navigation Menu - Centered */}
+          {isLoggedIn && (
+            <div className="flex-1 flex justify-center">
+              <Menubar className="border-0 bg-transparent shadow-none p-0 h-auto space-x-1">
+                {navigationItems.map((item) => {
+                  const isActive = location.pathname === item.path
+                  return (
+                    <MenubarMenu key={item.id}>
+                      <MenubarTrigger
+                        onClick={() => navigate(item.path)}
+                        className={cn(
+                          "cursor-pointer bg-transparent data-[state=open]:bg-transparent focus:bg-transparent text-sm font-medium",
+                          isActive 
+                            ? "bg-black text-white hover:bg-black rounded-md px-4 py-2" 
+                            : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-md px-4 py-2"
+                        )}
+                      >
+                        {item.label}
+                      </MenubarTrigger>
+                    </MenubarMenu>
+                  )
+                })}
+              </Menubar>
+            </div>
+          )}
+
+          {/* Export Profile Button and User Profile Area */}
+          <div className="flex items-center gap-4">
+            {isLoggedIn && (
+              <button 
+                className="px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white"
+                onClick={() => alert('Export Profile - Coming soon!')}
+              >
+                Export Profile
+              </button>
+            )}
             {isCheckingAuth ? (
               <div className="flex items-center gap-2 text-slate-600">
                 <Icon icon="mingcute:loading-line" width={20} height={20} className="animate-spin" />
@@ -192,33 +227,6 @@ export function Navbar() {
             )}
           </div>
         </div>
-
-        {/* Bottom Row: Navigation Menu */}
-        {isLoggedIn && (
-          <div className="border-t border-slate-100 py-3">
-            <Menubar className="border-0 bg-transparent shadow-none p-0 h-auto space-x-1">
-              {navigationItems.map((item) => {
-                const isActive = location.pathname === item.path
-                return (
-                  <MenubarMenu key={item.id}>
-                    <MenubarTrigger
-                      onClick={() => navigate(item.path)}
-                      className={cn(
-                        "cursor-pointer bg-transparent data-[state=open]:bg-transparent focus:bg-transparent",
-                        isActive 
-                          ? "bg-slate-100 text-slate-900 hover:bg-slate-100" 
-                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                      )}
-                    >
-                      <Icon icon={item.icon} width={16} height={16} className="mr-2" />
-                      {item.label}
-                    </MenubarTrigger>
-                  </MenubarMenu>
-                )
-              })}
-            </Menubar>
-          </div>
-        )}
       </div>
     </nav>
   )
