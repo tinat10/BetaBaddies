@@ -3,4 +3,5 @@ export * from './user.types';
 export * from './dashboard.types';
 export * from './api.types';
 export * from './profile.types';
+export * from './skills.types';
 

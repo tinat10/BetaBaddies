@@ -1,4 +1,4 @@
-import { ApiResponse, ProfileData, ProfileInput } from '../types';
+import { ApiResponse, ProfileData, ProfileInput, Skill, SkillInput, SkillsCategoryData } from '../types';
 
 // In development, use proxy (relative path). In production, use env variable or full URL
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -100,11 +100,31 @@ class ApiService {
 
   // Skills endpoints
   async getSkills() {
-    return this.request<ApiResponse<any>>('/skills');
+    return this.request<ApiResponse<{ skills: Skill[] }>>('/skills');
   }
 
   async getSkillsByCategory() {
-    return this.request<ApiResponse<any>>('/skills/categories');
+    return this.request<ApiResponse<SkillsCategoryData>>('/skills/categories');
+  }
+
+  async createSkill(skillData: SkillInput) {
+    return this.request<ApiResponse<{ skill: Skill; message: string }>>('/skills', {
+      method: 'POST',
+      body: JSON.stringify(skillData),
+    });
+  }
+
+  async updateSkill(skillId: string, skillData: Partial<SkillInput>) {
+    return this.request<ApiResponse<{ skill: Skill; message: string }>>(`/skills/${skillId}`, {
+      method: 'PUT',
+      body: JSON.stringify(skillData),
+    });
+  }
+
+  async deleteSkill(skillId: string) {
+    return this.request<ApiResponse<{ message: string }>>(`/skills/${skillId}`, {
+      method: 'DELETE',
+    });
   }
 
   // Education endpoints
