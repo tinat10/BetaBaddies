@@ -83,11 +83,28 @@ export function Projects() {
 
   const handleAddProject = async () => {
     try {
-      await api.createProject(formData)
+      // Convert snake_case to camelCase for backend
+      const backendData: any = {
+        name: formData.name,
+        status: formData.status,
+        startDate: formData.start_date,
+      }
+      
+      // Only add optional fields if they have values
+      if (formData.link && formData.link.trim()) backendData.link = formData.link
+      if (formData.description && formData.description.trim()) backendData.description = formData.description
+      if (formData.end_date && formData.end_date.trim()) backendData.endDate = formData.end_date
+      if (formData.technologies && formData.technologies.trim()) backendData.technologies = formData.technologies
+      if (formData.collaborators && formData.collaborators.trim()) backendData.collaborators = formData.collaborators
+      if (formData.industry && formData.industry.trim()) backendData.industry = formData.industry
+      
+      console.log('Sending project data:', backendData)
+      await api.createProject(backendData)
       setShowAddModal(false)
       resetForm()
       fetchProjects()
     } catch (err: any) {
+      console.error('Failed to create project:', err)
       alert(err.message || 'Failed to create project')
     }
   }
@@ -95,12 +112,29 @@ export function Projects() {
   const handleUpdateProject = async () => {
     if (!selectedProject) return
     try {
-      await api.updateProject(selectedProject.id, formData)
+      // Convert snake_case to camelCase for backend
+      const backendData: any = {
+        name: formData.name,
+        status: formData.status,
+        startDate: formData.start_date,
+      }
+      
+      // Only add optional fields if they have values
+      if (formData.link && formData.link.trim()) backendData.link = formData.link
+      if (formData.description && formData.description.trim()) backendData.description = formData.description
+      if (formData.end_date && formData.end_date.trim()) backendData.endDate = formData.end_date
+      if (formData.technologies && formData.technologies.trim()) backendData.technologies = formData.technologies
+      if (formData.collaborators && formData.collaborators.trim()) backendData.collaborators = formData.collaborators
+      if (formData.industry && formData.industry.trim()) backendData.industry = formData.industry
+      
+      console.log('Updating project data:', backendData)
+      await api.updateProject(selectedProject.id, backendData)
       setShowEditModal(false)
       resetForm()
       setSelectedProject(null)
       fetchProjects()
     } catch (err: any) {
+      console.error('Failed to update project:', err)
       alert(err.message || 'Failed to update project')
     }
   }
