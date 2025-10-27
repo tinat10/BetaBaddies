@@ -93,6 +93,15 @@ http://localhost:3001/api/v1
 - `PUT /:id` - Update certification
 - `DELETE /:id` - Delete certification
 
+#### Profile Management (`/api/v1/profile`)
+
+- `GET /` - Get current user's profile
+- `GET /picture` - Get profile picture path
+- `GET /statistics` - Get profile completeness statistics
+- `POST /` - Create or update profile
+- `PUT /` - Update profile
+- `PUT /picture` - Update profile picture (internal)
+
 ## 🧪 Testing
 
 ### Run All Tests
@@ -110,6 +119,7 @@ npm run test:jobs-service       # Jobs service tests
 npm run test:jobs-api           # Jobs API tests
 npm run test:certifications     # Certifications service tests
 npm run test:certifications-api # Certifications API tests
+npm run test:profile-api        # Profile API tests
 ```
 
 ## 📁 Project Structure
@@ -123,7 +133,8 @@ backend/
 │   ├── jobController.js
 │   ├── educationController.js
 │   ├── skillController.js
-│   └── certificationController.js
+│   ├── certificationController.js
+│   └── profileController.js
 ├── middleware/          # Cross-cutting concerns
 │   ├── auth.js         # Authentication & CSRF
 │   ├── errorHandler.js # Error handling
@@ -133,21 +144,24 @@ backend/
 │   ├── jobRoutes.js
 │   ├── educationRoutes.js
 │   ├── skillRoutes.js
-│   └── certificationRoutes.js
+│   ├── certificationRoutes.js
+│   └── profileRoutes.js
 ├── services/            # Business logic
 │   ├── database.js      # Database service
 │   ├── userService.js
 │   ├── jobService.js
 │   ├── educationService.js
 │   ├── skillService.js
-│   └── certificationService.js
+│   ├── certificationService.js
+│   └── profileService.js
 ├── tests/               # Test files
 │   ├── login-functionality.test.js
 │   ├── user-api.test.js
 │   ├── jobs-service.test.js
 │   ├── jobs-api.test.js
 │   ├── certifications-functionality.test.js
-│   └── certifications-api.test.js
+│   ├── certifications-api.test.js
+│   └── profile-api.test.js
 ├── utils/               # Utility functions
 ├── docs/                # Documentation
 ├── server.js            # Express app configuration
@@ -157,25 +171,28 @@ backend/
 ## 🔐 Authentication
 
 - **Session-based** authentication using HTTP-only cookies
-- **CSRF protection** on all state-changing operations
 - **Rate limiting** on authentication endpoints
+- **No CSRF protection** - removed for simplified API access
 
-### Getting Started with CSRF Protection
+### Getting Started with Authentication
 
 ```javascript
-// 1. Get CSRF token
-const response = await fetch("http://localhost:3001/api/v1/users/csrf-token");
-const { csrfToken } = await response.json();
-
-// 2. Use token in requests
-await fetch("http://localhost:3001/api/v1/users/login", {
+// 1. Login to get session cookie
+const response = await fetch("http://localhost:3001/api/v1/users/login", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    "X-CSRF-Token": csrfToken,
   },
   credentials: "include",
   body: JSON.stringify({ email, password }),
+});
+
+// 2. Use session cookie for authenticated requests
+await fetch("http://localhost:3001/api/v1/users/profile", {
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
 });
 ```
 
