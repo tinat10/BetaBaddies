@@ -239,6 +239,13 @@ class ApiService {
   async getCertificationsByOrganization(organization: string) {
     return this.request<ApiResponse<{ certifications: CertificationData[]; count: number; organization: string }>>(`/certifications/organization?organization=${encodeURIComponent(organization)}`);
   }
+  // Account deletion (UC-009)
+  async deleteAccount(password: string, confirmationText: string) {
+    return this.request<ApiResponse<{ message: string; deletedAt: string }>>('/users/account', {
+      method: 'DELETE',
+      body: JSON.stringify({ password, confirmationText }),
+    });
+  }
 }
 
 export const api = new ApiService();

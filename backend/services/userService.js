@@ -126,25 +126,45 @@ class UserService {
     }
   }
 
-  // Delete user account
-  async deleteUser(userId) {
+  // Delete user account with password verification
+  async deleteUser(userId, password) {
     try {
-      await database.transaction(async (client) => {
-        // Delete related records first (due to foreign key constraints)
-        await client.query("DELETE FROM certifications WHERE user_id = $1", [
-          userId,
-        ]);
-        await client.query("DELETE FROM projects WHERE user_id = $1", [userId]);
-        await client.query("DELETE FROM skills WHERE user_id = $1", [userId]);
-        await client.query("DELETE FROM educations WHERE user_id = $1", [
-          userId,
-        ]);
-        await client.query("DELETE FROM jobs WHERE user_id = $1", [userId]);
-        await client.query("DELETE FROM profiles WHERE user_id = $1", [userId]);
-        await client.query("DELETE FROM users WHERE u_id = $1", [userId]);
-      });
-
-      return { success: true, message: "User account deleted successfully" };
+      // 1. Get user with password for verification
+      const userQuery = `
+        SELECT u_id, email, password
+        FROM users
+        WHERE u_id = $1
+      `;
+      const userResult = await database.query(userQuery, [userId]);
+      
+      if (userResult.rows.length === 0) {
+        throw new Error("User not found");
+      }
+      
+      const user = userResult.rows[0];
+      
+      // 2. Verify password before deletion
+      const isPasswordValid = await this.verifyPassword(password, user.password);
+      
+      if (!isPasswordValid) {
+        throw new Error("Invalid password. Please check your password and try again.");
+      }
+      
+      // 3. Delete user and all related records
+      // Note: CASCADE DELETE is configured in database, so this will automatically
+      // remove all related records (profiles, educations, skills, certifications, etc.)
+      const deleteQuery = "DELETE FROM users WHERE u_id = $1 RETURNING email";
+      const deleteResult = await database.query(deleteQuery, [userId]);
+      
+      if (deleteResult.rowCount === 0) {
+        throw new Error("Failed to delete account");
+      }
+      
+      // 4. Return user email for confirmation email
+      return {
+        email: user.email,
+        deletedAt: new Date().toISOString(),
+      };
     } catch (error) {
       console.error("❌ Error deleting user:", error);
       throw error;
