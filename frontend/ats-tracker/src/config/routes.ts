@@ -1,6 +1,7 @@
 // Centralized route constants
 export const ROUTES = {
-  DASHBOARD: '/',
+  LANDING: '/',
+  DASHBOARD: '/dashboard',
   BASIC_INFO: '/basic-information',
   EMPLOYMENT: '/employment',
   SKILLS: '/skills',

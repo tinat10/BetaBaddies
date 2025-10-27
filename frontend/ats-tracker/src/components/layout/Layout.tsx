@@ -1,11 +1,7 @@
-import { ReactNode } from 'react'
+import { Outlet } from 'react-router-dom'
 import { Navbar } from './Navbar'
 
-interface LayoutProps {
-  children: ReactNode
-}
-
-export function Layout({ children }: LayoutProps) {
+export function Layout() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Top Navbar with Navigation */}
@@ -13,7 +9,7 @@ export function Layout({ children }: LayoutProps) {
       
       {/* Main Content Area */}
       <main className="min-h-[calc(100vh-80px)]">
-        {children}
+        <Outlet />
       </main>
     </div>
   )
