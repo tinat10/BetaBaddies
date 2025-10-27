@@ -1,4 +1,4 @@
-import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput, ProjectData, ProjectInput, ProjectFilters, ProjectSortOptions, CertificationData, CertificationInput } from '../types';
+import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput, ProjectData, ProjectInput, ProjectFilters, ProjectSortOptions, CertificationData, CertificationInput, SkillData, SkillInput, SkillsByCategory, CategoryCounts } from '../types';
 
 // In development, use proxy (relative path). In production, use env variable or full URL
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -125,15 +125,6 @@ class ApiService {
 
   async getJobStatistics() {
     return this.request<ApiResponse<{ statistics: any }>>('/jobs/statistics');
-  }
-
-  // Skills endpoints
-  async getSkills() {
-    return this.request<ApiResponse<any>>('/skills');
-  }
-
-  async getSkillsByCategory() {
-    return this.request<ApiResponse<any>>('/skills/categories');
   }
 
   // Education endpoints
@@ -268,6 +259,44 @@ class ApiService {
   async getCertificationsByOrganization(organization: string) {
     return this.request<ApiResponse<{ certifications: CertificationData[]; count: number; organization: string }>>(`/certifications/organization?organization=${encodeURIComponent(organization)}`);
   }
+
+  // Skills endpoints (Full CRUD + Category grouping)
+  async getSkills(category?: string) {
+    const query = category ? `?category=${encodeURIComponent(category)}` : '';
+    return this.request<ApiResponse<{ skills: SkillData[] }>>(`/skills${query}`);
+  }
+
+  async getSkillsByCategory() {
+    return this.request<ApiResponse<{ 
+      skillsByCategory: SkillsByCategory; 
+      categoryCounts: CategoryCounts;
+    }>>('/skills/categories');
+  }
+
+  async getSkill(id: string) {
+    return this.request<ApiResponse<{ skill: SkillData }>>(`/skills/${id}`);
+  }
+
+  async createSkill(skillData: SkillInput) {
+    return this.request<ApiResponse<{ skill: SkillData; message: string }>>('/skills', {
+      method: 'POST',
+      body: JSON.stringify(skillData),
+    });
+  }
+
+  async updateSkill(id: string, skillData: Partial<SkillInput>) {
+    return this.request<ApiResponse<{ skill: SkillData; message: string }>>(`/skills/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(skillData),
+    });
+  }
+
+  async deleteSkill(id: string) {
+    return this.request<ApiResponse<{ message: string }>>(`/skills/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Account deletion (UC-009)
   async deleteAccount(password: string, confirmationText: string) {
     return this.request<ApiResponse<{ message: string; deletedAt: string }>>('/users/account', {
