@@ -36,7 +36,7 @@ export class DashboardService {
       const jobs = jobsResponse.status === 'fulfilled' ? jobsResponse.value.data?.jobs || [] : [];
       const jobHistory = jobHistoryResponse.status === 'fulfilled' ? jobHistoryResponse.value.data?.history || [] : [];
       const skills = skillsResponse.status === 'fulfilled' ? skillsResponse.value.data?.skills || [] : [];
-      const skillsByCategory = skillsCategoryResponse.status === 'fulfilled' ? skillsCategoryResponse.value.data?.skillsByCategory || {} : {};
+      const categoryCounts = skillsCategoryResponse.status === 'fulfilled' ? skillsCategoryResponse.value.data?.categoryCounts || {} : {};
       const education: EducationData[] = educationResponse.status === 'fulfilled' ? educationResponse.value.data?.educations || [] : [];
       const projects = projectsResponse.status === 'fulfilled' ? projectsResponse.value.data?.projects || [] : [];
 
@@ -58,7 +58,7 @@ export class DashboardService {
       });
 
       // Process skills distribution
-      const skillsDistribution = this.processSkillsDistribution(skillsByCategory);
+      const skillsDistribution = this.processSkillsDistribution(categoryCounts);
 
       // Process career timeline from job history
       const careerTimeline = this.processCareerTimeline(jobHistory);

@@ -127,15 +127,6 @@ class ApiService {
     return this.request<ApiResponse<{ statistics: any }>>('/jobs/statistics');
   }
 
-  // Skills endpoints
-  async getSkills() {
-    return this.request<ApiResponse<any>>('/skills');
-  }
-
-  async getSkillsByCategory() {
-    return this.request<ApiResponse<any>>('/skills/categories');
-  }
-
   // Education endpoints
   async getEducation() {
     return this.request<ApiResponse<{ educations: EducationData[] }>>('/education');

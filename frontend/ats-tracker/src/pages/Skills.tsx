@@ -633,7 +633,7 @@ export function Skills() {
       setError(null);
       const response = await api.getSkills();
       if (response.ok) {
-        setSkills(response.data.skills);
+        setSkills(response.data!.skills);
       }
     } catch (err: any) {
       console.error('Failed to fetch skills:', err);
