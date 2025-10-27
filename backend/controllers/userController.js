@@ -1,6 +1,7 @@
 import userService from "../services/userService.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 import emailService from "../services/emailService.js";
+import passport from "../config/passport.js";
 
 class UserController {
   // Register a new user
@@ -245,6 +246,31 @@ class UserController {
       }
       throw error;
     }
+  });
+
+  // Google OAuth - initiate authentication
+  googleAuth = passport.authenticate("google", {
+    scope: ["profile", "email"],
+  });
+
+  // Google OAuth - handle callback
+  googleCallback = passport.authenticate("google", { session: false });
+
+  // Handle Google OAuth callback and create session
+  handleGoogleCallback = asyncHandler(async (req, res, next) => {
+    // After passport authenticates, req.user is populated
+    if (!req.user) {
+      return res.redirect("/login?error=oauth_failed");
+    }
+
+    // Create session
+    req.session.userId = req.user.id;
+    req.session.userEmail = req.user.email;
+
+    // Redirect to frontend
+    res.redirect(
+      `${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard`
+    );
   });
 }
 
