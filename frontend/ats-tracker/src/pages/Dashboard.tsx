@@ -78,13 +78,14 @@ export function Dashboard() {
       {/* Welcome Message */}
       <div className="max-w-[1600px] mx-auto p-10 pb-6">
         <div className="flex items-center justify-between">
-          <h2 className="mb-2" style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 200 }}>
-            Welcome Back, <span style={{ fontWeight: 700, color: '#3351FD' }}>{profileData.name}</span>
+          <h2 className="mb-2" style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 100 }}>
+            Welcome Back, <span style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 600, color: '#3351FD' }}>{profileData.name}</span>
           </h2>
           <button 
-            className="px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white"
+            className="flex items-center gap-2 px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white"
             onClick={() => alert('Export Profile - Coming soon!')}
           >
+            <Icon icon="mingcute:download-line" width={20} height={20} />
             Export Profile
           </button>
         </div>
