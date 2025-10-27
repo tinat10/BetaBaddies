@@ -85,17 +85,46 @@ class ApiService {
     return this.request<ApiResponse<{ statistics: any }>>('/profile/statistics');
   }
 
-  // Job endpoints
-  async getJobs() {
-    return this.request<ApiResponse<any>>('/jobs');
+  // Job/Employment endpoints (Full CRUD)
+  async getJobs(filters?: { current?: boolean }) {
+    const query = filters?.current !== undefined ? `?current=${filters.current}` : '';
+    return this.request<ApiResponse<{ jobs: any[] }>>(`/jobs${query}`);
+  }
+
+  async getJob(id: string) {
+    return this.request<ApiResponse<{ job: any }>>(`/jobs/${id}`);
+  }
+
+  async createJob(jobData: any) {
+    return this.request<ApiResponse<{ job: any; message: string }>>('/jobs', {
+      method: 'POST',
+      body: JSON.stringify(jobData),
+    });
+  }
+
+  async updateJob(id: string, jobData: any) {
+    return this.request<ApiResponse<{ job: any; message: string }>>(`/jobs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(jobData),
+    });
+  }
+
+  async deleteJob(id: string) {
+    return this.request<ApiResponse<{ message: string }>>(`/jobs/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getCurrentJob() {
+    return this.request<ApiResponse<{ job: any | null }>>('/jobs/current');
   }
 
   async getJobHistory() {
-    return this.request<ApiResponse<any>>('/jobs/history');
+    return this.request<ApiResponse<{ jobs: any[] }>>('/jobs/history');
   }
 
   async getJobStatistics() {
-    return this.request<ApiResponse<any>>('/jobs/statistics');
+    return this.request<ApiResponse<{ statistics: any }>>('/jobs/statistics');
   }
 
   // Skills endpoints
