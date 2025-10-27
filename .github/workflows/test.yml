@@ -2,9 +2,9 @@ name: Backend Tests
 
 on:
   push:
-    branches: [main, development]
+    branches: [main, development, google-auth]
   pull_request:
-    branches: [main, development]
+    branches: [main, development, google-auth]
 
 jobs:
   test:
