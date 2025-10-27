@@ -262,6 +262,38 @@ const schemas = {
   projectId: Joi.object({
     id: Joi.string().uuid().required(),
   }),
+
+  createProfile: Joi.object({
+    firstName: Joi.string().max(255).required(),
+    middleName: Joi.string().max(255).allow(null, "").optional(),
+    lastName: Joi.string().max(255).required(),
+    phone: Joi.string().max(15).allow(null, "").optional(),
+    city: Joi.string().max(255).allow(null, "").optional(),
+    state: Joi.string().length(2).uppercase().required(),
+    jobTitle: Joi.string().max(255).allow(null, "").optional(),
+    bio: Joi.string().max(500).allow(null, "").optional(),
+    industry: Joi.string().max(255).allow(null, "").optional(),
+    expLevel: Joi.string()
+      .valid("Entry", "Mid", "Senior")
+      .allow(null, "")
+      .optional(),
+  }),
+
+  updateProfile: Joi.object({
+    firstName: Joi.string().max(255).optional(),
+    middleName: Joi.string().max(255).allow(null, "").optional(),
+    lastName: Joi.string().max(255).optional(),
+    phone: Joi.string().max(15).allow(null, "").optional(),
+    city: Joi.string().max(255).allow(null, "").optional(),
+    state: Joi.string().length(2).uppercase().optional(),
+    jobTitle: Joi.string().max(255).allow(null, "").optional(),
+    bio: Joi.string().max(500).allow(null, "").optional(),
+    industry: Joi.string().max(255).allow(null, "").optional(),
+    expLevel: Joi.string()
+      .valid("Entry", "Mid", "Senior")
+      .allow(null, "")
+      .optional(),
+  }),
 };
 
 // Validation middleware factory
@@ -348,3 +380,5 @@ export const validateFileId = validateParams(schemas.fileId);
 export const validateCreateProject = validate(schemas.createProject);
 export const validateUpdateProject = validate(schemas.updateProject);
 export const validateProjectId = validateParams(schemas.projectId);
+export const validateCreateProfile = validate(schemas.createProfile);
+export const validateUpdateProfile = validate(schemas.updateProfile);
