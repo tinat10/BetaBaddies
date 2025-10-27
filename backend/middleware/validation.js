@@ -31,6 +31,21 @@ const schemas = {
       }),
   }),
 
+  deleteAccount: Joi.object({
+    password: Joi.string().min(8).required().messages({
+      "string.empty": "Password is required to delete account",
+      "string.min": "Password must be at least 8 characters",
+      "any.required": "Password is required to delete account",
+    }),
+    confirmationText: Joi.string()
+      .valid("DELETE MY ACCOUNT")
+      .required()
+      .messages({
+        "any.only": 'You must type "DELETE MY ACCOUNT" to confirm deletion',
+        "any.required": "Confirmation text is required",
+      }),
+  }),
+
   createEducation: Joi.object({
     school: Joi.string().max(255).required(),
     degreeType: Joi.string()
@@ -362,6 +377,7 @@ export const validateParams = (schema) => {
 export const validateRegister = validate(schemas.register);
 export const validateLogin = validate(schemas.login);
 export const validateChangePassword = validate(schemas.changePassword);
+export const validateDeleteAccount = validate(schemas.deleteAccount);
 export const validateCreateEducation = validate(schemas.createEducation);
 export const validateUpdateEducation = validate(schemas.updateEducation);
 export const validateCreateSkill = validate(schemas.createSkill);
