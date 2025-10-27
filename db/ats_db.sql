@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict iN77Z5eN2S4lVfjfvyMhPEcFero3DOqkKzWrECmY2n8p9XfTeMoPJyDSdHBriu2
+\restrict tv36hMxf4b847PLcxc2bszScKpzjUQt62MH8iQmStWfqZD1NePtVWsvkQIBBRqQ
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2025-10-26 16:30:15
+-- Started on 2025-10-27 06:33:32
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -90,7 +90,9 @@ CREATE TABLE public.educations (
     field character varying(255),
     honors character varying(1000),
     gpa numeric(4,3),
-    is_enrolled boolean NOT NULL
+    is_enrolled boolean NOT NULL,
+    graddate date NOT NULL,
+    startdate date
 );
 
 
@@ -227,7 +229,7 @@ COPY public.certifications (id, user_id, never_expires, name, org_name, date_ear
 -- Data for Name: educations; Type: TABLE DATA; Schema: public; Owner: superUser
 --
 
-COPY public.educations (id, user_id, school, degree_type, field, honors, gpa, is_enrolled) FROM stdin;
+COPY public.educations (id, user_id, school, degree_type, field, honors, gpa, is_enrolled, graddate, startdate) FROM stdin;
 \.
 
 
@@ -487,11 +489,11 @@ ALTER TABLE ONLY public.skills
     ADD CONSTRAINT skills_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(u_id) ON DELETE CASCADE;
 
 
--- Completed on 2025-10-26 16:30:16
+-- Completed on 2025-10-27 06:33:32
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict iN77Z5eN2S4lVfjfvyMhPEcFero3DOqkKzWrECmY2n8p9XfTeMoPJyDSdHBriu2
+\unrestrict tv36hMxf4b847PLcxc2bszScKpzjUQt62MH8iQmStWfqZD1NePtVWsvkQIBBRqQ
 
