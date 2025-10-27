@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Icon } from '@iconify/react'
+import { DashboardProfileData } from '../types'
+import { dashboardService } from '../services/dashboardService'
 
 // Icon component for professional icons using Mingcute
 function MingcuteIcon({ type }: { type: string }) {
@@ -15,69 +17,77 @@ function MingcuteIcon({ type }: { type: string }) {
 }
 
 export function Dashboard() {
-  // Mock data - will be replaced with API calls later
-  const [profileData] = useState({
-    name: 'John Doe',
-    profileCompletion: 75,
-    employment: 3,
-    skills: 12,
-    education: 2,
-    projects: 5,
-    recentActivity: [
-      { id: 1, action: 'Added new skill', item: 'React', timestamp: '2 hours ago' },
-      { id: 2, action: 'Updated employment', item: 'Software Engineer at Google', timestamp: '1 day ago' },
-      { id: 3, action: 'Added project', item: 'E-commerce Platform', timestamp: '2 days ago' },
-      { id: 4, action: 'Added education', item: 'BS Computer Science', timestamp: '3 days ago' },
-    ],
-    skillsDistribution: [
-      { category: 'Frontend', count: 5 },
-      { category: 'Backend', count: 4 },
-      { category: 'DevOps', count: 2 },
-      { category: 'Design', count: 1 },
-    ],
-    careerTimeline: [
-      { year: '2023', company: 'Tech Corp', position: 'Senior Developer' },
-      { year: '2021', company: 'StartupXYZ', position: 'Full Stack Developer' },
-      { year: '2019', company: 'Agency Inc', position: 'Junior Developer' },
-    ],
-    suggestions: [
-      'Add more project descriptions to improve profile visibility',
-      'Complete your education section with GPA information',
-      'Add certifications to strengthen your profile',
-    ],
-    profileStrength: {
-      overall: 75,
-      categories: [
-        { name: 'Employment History', score: 85 },
-        { name: 'Skills & Expertise', score: 90 },
-        { name: 'Education', score: 60 },
-        { name: 'Projects Portfolio', score: 70 },
-      ]
-    }
-  })
+  const [profileData, setProfileData] = useState<DashboardProfileData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleExportProfile = () => {
-    alert('Export profile functionality - will download PDF/JSON')
-  }
+  // No need to access user here - session cookie handles authentication
+  // TODO: When implementing AuthContext, you may want to trigger refetch on auth state change
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        // Session cookie automatically identifies the user
+        // Backend fetches data for the authenticated user via req.session.userId
+        const data = await dashboardService.getDashboardData()
+        setProfileData(data)
+      } catch (err) {
+        console.error('Failed to fetch dashboard data:', err)
+        setError('Failed to load dashboard data. Please try again.')
+        // Set default data on error
+        setProfileData(dashboardService.getDefaultDashboardData())
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
 
   const handleQuickAdd = (section: string) => {
     alert(`Quick add for ${section} - will open modal/form`)
   }
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-2xl font-semibold text-slate-900 mb-2">Loading your dashboard...</div>
+          <div className="text-base text-slate-500">Please wait while we fetch your data</div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error && !profileData) {
+    return (
+      <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-2xl font-semibold text-red-600 mb-2">Error</div>
+          <div className="text-base text-slate-500">{error}</div>
+        </div>
+      </div>
+    )
+  }
+
+  // Should never happen, but safety check
+  if (!profileData) {
+    return null
+  }
+
   return (
     <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full">
-      {/* Welcome Header */}
-      <div className="flex justify-between items-start mb-12 pb-8 border-b border-slate-200">
-        <div>
-          <h1 className="text-5xl font-bold text-slate-900 m-0 mb-3 leading-tight">Welcome back, {profileData.name}!</h1>
+
+      {/* Error banner if there was an error but we have cached/default data */}
+      {error && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+          <p className="text-sm text-yellow-800 m-0">{error}</p>
         </div>
-        <button 
-          className="bg-gradient-to-br from-blue-500 to-blue-700 text-white border-none rounded-xl px-7 py-4 text-base font-semibold cursor-pointer transition-all shadow-[0_4px_6px_rgba(59,130,246,0.15)] hover:shadow-lg hover:scale-105" 
-          onClick={handleExportProfile}
-        >
-          Export Profile
-        </button>
-      </div>
+      )}
 
       {/* Profile Completion Section */}
       <div className="bg-white rounded-2xl p-8 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)] border border-slate-100">
