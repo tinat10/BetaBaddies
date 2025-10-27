@@ -142,3 +142,11 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom placeholder styling */
+input::placeholder {
+  color: #999999 !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+}

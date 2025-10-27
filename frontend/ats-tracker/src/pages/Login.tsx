@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react'
 import { Icon } from '@iconify/react'
 import { api } from '@/services/api'
 import { ROUTES } from '@/config/routes'
+import loginSvg from '@/assets/login.svg'
 
 export function Login() {
   const [email, setEmail] = useState('')
@@ -33,98 +34,156 @@ export function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-8">
-        {/* Logo/Brand */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <Icon icon="mingcute:file-list-line" width={40} height={40} className="text-blue-400" />
-          <h1 className="text-3xl font-bold text-white">ATS Tracker</h1>
-        </div>
-
-        {/* Title */}
-        <h2 className="text-2xl font-semibold text-white text-center mb-2">
-          {isRegisterMode ? 'Create Account' : 'Welcome Back'}
-        </h2>
-        <p className="text-slate-300 text-center mb-6">
-          {isRegisterMode ? 'Sign up to get started' : 'Sign in to your account'}
-        </p>
-
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
-            <Icon icon="mingcute:alert-line" width={20} height={20} />
-            <span className="text-sm">{error}</span>
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-2">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400"
-              placeholder="you@example.com"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-              className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400"
-              placeholder="••••••••"
-              disabled={isLoading}
-            />
-            {isRegisterMode && (
-              <p className="text-xs text-slate-400 mt-1">
-                Must be at least 8 characters with uppercase, lowercase, and number
-              </p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-gradient-to-br from-blue-500 to-blue-700 text-white py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <>
-                <Icon icon="mingcute:loading-line" width={20} height={20} className="animate-spin" />
-                <span>{isRegisterMode ? 'Creating account...' : 'Signing in...'}</span>
-              </>
-            ) : (
-              <span>{isRegisterMode ? 'Sign Up' : 'Sign In'}</span>
-            )}
-          </button>
-        </form>
-
-        {/* Toggle Register/Login */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => {
-              setIsRegisterMode(!isRegisterMode)
-              setError(null)
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Left Section - Gradient Background with Login Form */}
+      <div 
+        className="flex-[0.35] flex flex-col justify-center items-center px-8 lg:px-16 min-h-screen lg:min-h-auto"
+        style={{
+          background: 'linear-gradient(to right, #EC85CA, #3351FD)',
+          borderRadius: '0 50px 50px 0'
+        }}
+      >
+        {/* Welcome Section */}
+        <div className="mb-8 lg:mb-12 text-left">
+          <h1 
+            className="text-white mb-2 lg:mb-3"
+            style={{ 
+              fontFamily: 'Poppins, sans-serif',
+              fontWeight: 700,
+              fontSize: 'clamp(32px, 5vw, 64px)'
             }}
-            className="text-sm text-blue-400 hover:text-blue-300 font-medium"
           >
-            {isRegisterMode ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-          </button>
+            Welcome!
+          </h1>
+          <p 
+            className="text-white"
+            style={{ 
+              fontFamily: 'Poppins, sans-serif',
+              fontWeight: 600,
+              fontSize: '48px'
+            }}
+          >
+            Ready to get started?
+          </p>
         </div>
+
+        {/* Login Form Card */}
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+          {/* Title */}
+          <h2 
+            className="text-black mb-6"
+            style={{ 
+              fontFamily: 'Poppins, sans-serif',
+              fontWeight: 500,
+              fontSize: '36px'
+            }}
+          >
+            Log In
+          </h2>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+              <Icon icon="mingcute:alert-line" width={20} height={20} />
+              <span className="text-sm">{error}</span>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label 
+                htmlFor="email" 
+                className="block text-black mb-2"
+                style={{ 
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '18px'
+                }}
+              >
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
+                placeholder="Enter your email"
+                disabled={isLoading}
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  color: '#000000'
+                }}
+              />
+            </div>
+
+            <div>
+              <label 
+                htmlFor="password" 
+                className="block text-black mb-2"
+                style={{ 
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '18px'
+                }}
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
+                placeholder="Enter your password"
+                disabled={isLoading}
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '16px',
+                  color: '#000000'
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full text-white py-3 font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{
+                background: 'linear-gradient(to right, #6A94EE, #916BE3)',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: 500,
+                fontSize: '22px',
+                borderRadius: '15px'
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <Icon icon="mingcute:loading-line" width={20} height={20} className="animate-spin" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                'LOG IN'
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Right Section - SVG Illustration */}
+      <div className="flex-[0.65] bg-white flex items-center justify-center p-8 hidden lg:flex">
+        <img 
+          src={loginSvg} 
+          alt="Login Illustration" 
+          className="w-2/3 h-auto object-contain"
+        />
       </div>
     </div>
   )
