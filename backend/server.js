@@ -13,6 +13,7 @@ import jobRoutes from "./routes/jobRoutes.js";
 import certificationRoutes from "./routes/certificationRoutes.js";
 import fileUploadRoutes from "./routes/fileUploadRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 
 // Import middleware
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
@@ -47,7 +48,7 @@ app.use(
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 1000, // limit each IP to 1000 requests per windowMs (increased for development)
   message: {
     ok: false,
     error: {
@@ -102,6 +103,7 @@ app.use("/api/v1/jobs", jobRoutes);
 app.use("/api/v1/certifications", certificationRoutes);
 app.use("/api/v1/files", fileUploadRoutes);
 app.use("/api/v1/projects", projectRoutes);
+app.use("/api/v1/profile", profileRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

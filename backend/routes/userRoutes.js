@@ -12,14 +12,14 @@ const router = express.Router();
 // Public routes (no authentication required)
 router.post(
   "/register",
-  authRateLimit(15 * 60 * 1000, 5), // 5 attempts per 15 minutes
+  authRateLimit(15 * 60 * 1000, 100), // 100 attempts per 15 minutes (increased for development)
   validateRegister,
   userController.register
 );
 
 router.post(
   "/login",
-  authRateLimit(15 * 60 * 1000, 10), // 10 attempts per 15 minutes
+  authRateLimit(15 * 60 * 1000, 100), // 100 attempts per 15 minutes (increased for development)
   validateLogin,
   userController.login
 );
