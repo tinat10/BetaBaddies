@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Icon } from '@iconify/react'
 import { api } from '@/services/api'
 import { ROUTES } from '@/config/routes'
@@ -9,7 +10,6 @@ export function Login() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isRegisterMode, setIsRegisterMode] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -17,13 +17,7 @@ export function Login() {
     setError(null)
 
     try {
-      if (isRegisterMode) {
-        await api.register(email, password)
-        // After successful registration, log them in
-        await api.login(email, password)
-      } else {
-        await api.login(email, password)
-      }
+      await api.login(email, password)
       // Redirect to dashboard on success - use window.location for full page reload
       console.log('Login successful, redirecting to:', ROUTES.DASHBOARD)
       window.location.href = ROUTES.DASHBOARD
@@ -174,6 +168,19 @@ export function Login() {
               )}
             </button>
           </form>
+
+          {/* Register Link */}
+          <div className="mt-6 text-center">
+            <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Don't have an account?{' '}
+              <Link 
+                to={ROUTES.REGISTER} 
+                className="text-purple-600 hover:text-purple-700 font-semibold hover:underline"
+              >
+                Sign Up
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
 
