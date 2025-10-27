@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
+    "migrate:oauth": "node scripts/run-migration.js",
     "test": "node tests/login-functionality.test.js",
     "test:education": "node tests/education-functionality.test.js",
     "test:user-api": "node tests/user-api.test.js",
