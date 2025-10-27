@@ -5,4 +5,5 @@ export * from './api.types';
 export * from './profile.types';
 export * from './education.types';
 export * from './project.types';
+export * from './certification.types';
 

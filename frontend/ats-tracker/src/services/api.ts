@@ -1,4 +1,4 @@
-import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput, ProjectData, ProjectInput, ProjectFilters, ProjectSortOptions } from '../types';
+import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput, ProjectData, ProjectInput, ProjectFilters, ProjectSortOptions, CertificationData, CertificationInput } from '../types';
 
 // In development, use proxy (relative path). In production, use env variable or full URL
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -185,6 +185,59 @@ class ApiService {
 
   async getProjectStatistics() {
     return this.request<ApiResponse<any>>('/projects/statistics');
+  }
+
+  // Certifications endpoints
+  async getCertifications() {
+    return this.request<ApiResponse<{ certifications: CertificationData[]; count: number }>>('/certifications');
+  }
+
+  async getCertification(id: string) {
+    return this.request<ApiResponse<{ certification: CertificationData }>>(`/certifications/${id}`);
+  }
+
+  async createCertification(data: CertificationInput) {
+    return this.request<ApiResponse<{ certification: CertificationData; message: string }>>('/certifications', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateCertification(id: string, data: Partial<CertificationInput>) {
+    return this.request<ApiResponse<{ certification: CertificationData; message: string }>>(`/certifications/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteCertification(id: string) {
+    return this.request<ApiResponse<{ message: string }>>(`/certifications/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getCurrentCertifications() {
+    return this.request<ApiResponse<{ certifications: CertificationData[]; count: number }>>('/certifications/current');
+  }
+
+  async getCertificationHistory() {
+    return this.request<ApiResponse<{ certifications: CertificationData[]; count: number }>>('/certifications/history');
+  }
+
+  async getExpiringCertifications(days: number = 30) {
+    return this.request<ApiResponse<{ certifications: CertificationData[]; count: number; daysAhead: number }>>(`/certifications/expiring?days=${days}`);
+  }
+
+  async getCertificationStatistics() {
+    return this.request<ApiResponse<{ statistics: any }>>('/certifications/statistics');
+  }
+
+  async searchCertifications(searchTerm: string) {
+    return this.request<ApiResponse<{ certifications: CertificationData[]; count: number; searchTerm: string }>>(`/certifications/search?q=${encodeURIComponent(searchTerm)}`);
+  }
+
+  async getCertificationsByOrganization(organization: string) {
+    return this.request<ApiResponse<{ certifications: CertificationData[]; count: number; organization: string }>>(`/certifications/organization?organization=${encodeURIComponent(organization)}`);
   }
 }
 
