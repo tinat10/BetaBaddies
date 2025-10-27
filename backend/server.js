@@ -5,6 +5,9 @@ import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 
+// Import Passport for OAuth
+import passport from "./config/passport.js";
+
 // Import routes
 import userRoutes from "./routes/userRoutes.js";
 import educationRoutes from "./routes/educationRoutes.js";
@@ -14,6 +17,7 @@ import certificationRoutes from "./routes/certificationRoutes.js";
 import fileUploadRoutes from "./routes/fileUploadRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
+import oauthRoutes from "./routes/oauthRoutes.js";
 
 // Import middleware
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
@@ -83,6 +87,10 @@ app.use(
   })
 );
 
+// Passport initialization (must be AFTER session middleware)
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -96,6 +104,7 @@ app.get("/health", (req, res) => {
 });
 
 // API routes
+app.use("/api/v1/auth", oauthRoutes); // OAuth routes (must be before other routes)
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/education", educationRoutes);
 app.use("/api/v1/skills", skillRoutes);

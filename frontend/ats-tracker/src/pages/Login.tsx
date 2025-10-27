@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react'
 import { api } from '@/services/api'
 import { ROUTES } from '@/config/routes'
 import loginSvg from '@/assets/login.svg'
+import { OAuthButton } from '@/components/OAuthButton'
 
 export function Login() {
   const [email, setEmail] = useState('')
@@ -168,6 +169,27 @@ export function Login() {
               )}
             </button>
           </form>
+
+          {/* OAuth Section */}
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span 
+                  className="px-3 bg-white text-gray-500"
+                  style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 500 }}
+                >
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <OAuthButton provider="google" />
+            </div>
+          </div>
 
           {/* Register Link */}
           <div className="mt-6 text-center">
