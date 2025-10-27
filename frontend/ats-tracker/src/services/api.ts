@@ -1,4 +1,4 @@
-import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput } from '../types';
+import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput, ProjectData, ProjectInput, ProjectFilters, ProjectSortOptions } from '../types';
 
 // In development, use proxy (relative path). In production, use env variable or full URL
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -133,8 +133,54 @@ class ApiService {
   }
 
   // Projects endpoints
-  async getProjects() {
-    return this.request<ApiResponse<any>>('/projects');
+  async getProjects(filters?: ProjectFilters, sortOptions?: ProjectSortOptions) {
+    const params = new URLSearchParams();
+    
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, value.toString());
+        }
+      });
+    }
+    
+    if (sortOptions) {
+      if (sortOptions.sortBy) params.append('sortBy', sortOptions.sortBy);
+      if (sortOptions.sortOrder) params.append('sortOrder', sortOptions.sortOrder);
+    }
+    
+    const queryString = params.toString();
+    const endpoint = queryString ? `/projects?${queryString}` : '/projects';
+    
+    return this.request<ApiResponse<{ projects: ProjectData[] }>>(endpoint);
+  }
+
+  async getProject(id: string) {
+    return this.request<ApiResponse<{ project: ProjectData }>>(`/projects/${id}`);
+  }
+
+  async createProject(data: ProjectInput) {
+    return this.request<ApiResponse<{ project: ProjectData; message: string }>>('/projects', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateProject(id: string, data: Partial<ProjectInput>) {
+    return this.request<ApiResponse<{ project: ProjectData; message: string }>>(`/projects/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteProject(id: string) {
+    return this.request<ApiResponse<{ message: string }>>(`/projects/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async searchProjects(searchTerm: string) {
+    return this.request<ApiResponse<{ projects: ProjectData[]; count: number }>>(`/projects/search?q=${encodeURIComponent(searchTerm)}`);
   }
 
   async getProjectStatistics() {
