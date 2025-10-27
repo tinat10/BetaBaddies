@@ -15,7 +15,7 @@ export function Landing() {
   }
 
   const handleSignUp = () => {
-    navigate(ROUTES.LOGIN) // Sign up is on the same page, they can toggle
+    navigate(ROUTES.REGISTER)
   }
 
   return (
