@@ -1,5 +1,5 @@
 import { api } from './api';
-import { DashboardProfileData } from '../types';
+import { DashboardProfileData, EducationData } from '../types';
 
 export class DashboardService {
   /**
@@ -37,7 +37,7 @@ export class DashboardService {
       const jobHistory = jobHistoryResponse.status === 'fulfilled' ? jobHistoryResponse.value.data?.history || [] : [];
       const skills = skillsResponse.status === 'fulfilled' ? skillsResponse.value.data?.skills || [] : [];
       const skillsByCategory = skillsCategoryResponse.status === 'fulfilled' ? skillsCategoryResponse.value.data?.skillsByCategory || {} : {};
-      const education = educationResponse.status === 'fulfilled' ? educationResponse.value.data?.educations || [] : [];
+      const education: EducationData[] = educationResponse.status === 'fulfilled' ? educationResponse.value.data?.educations || [] : [];
       const projects = projectsResponse.status === 'fulfilled' ? projectsResponse.value.data?.projects || [] : [];
 
       // Get display name from profile data

@@ -1,4 +1,4 @@
-import { ApiResponse, ProfileData, ProfileInput } from '../types';
+import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput } from '../types';
 
 // In development, use proxy (relative path). In production, use env variable or full URL
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -109,7 +109,27 @@ class ApiService {
 
   // Education endpoints
   async getEducation() {
-    return this.request<ApiResponse<any>>('/education');
+    return this.request<ApiResponse<{ educations: EducationData[] }>>('/education');
+  }
+
+  async createEducation(data: EducationInput) {
+    return this.request<ApiResponse<{ education: EducationData; message: string }>>('/education', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateEducation(id: string, data: Partial<EducationInput>) {
+    return this.request<ApiResponse<{ education: EducationData; message: string }>>(`/education/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteEducation(id: string) {
+    return this.request<ApiResponse<{ message: string }>>(`/education/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // Projects endpoints
