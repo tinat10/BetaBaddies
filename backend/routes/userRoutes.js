@@ -5,6 +5,7 @@ import {
   validateRegister,
   validateLogin,
   validateChangePassword,
+  validateDeleteAccount,
 } from "../middleware/validation.js";
 
 const router = express.Router();
@@ -36,6 +37,11 @@ router.put(
   userController.changePassword
 );
 
-router.delete("/account", isAuthenticated, userController.deleteAccount);
+router.delete(
+  "/account",
+  isAuthenticated,
+  validateDeleteAccount,
+  userController.deleteAccount
+);
 
 export default router;

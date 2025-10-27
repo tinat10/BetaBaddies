@@ -186,6 +186,14 @@ class ApiService {
   async getProjectStatistics() {
     return this.request<ApiResponse<any>>('/projects/statistics');
   }
+
+  // Account deletion (UC-009)
+  async deleteAccount(password: string, confirmationText: string) {
+    return this.request<ApiResponse<{ message: string; deletedAt: string }>>('/users/account', {
+      method: 'DELETE',
+      body: JSON.stringify({ password, confirmationText }),
+    });
+  }
 }
 
 export const api = new ApiService();
