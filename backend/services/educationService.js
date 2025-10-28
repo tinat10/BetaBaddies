@@ -11,6 +11,8 @@ class EducationService {
       gpa,
       isEnrolled,
       honors,
+      startDate,
+      endDate,
     } = educationData;
 
     try {
@@ -19,9 +21,9 @@ class EducationService {
       const query = `
         INSERT INTO educations (
           id, user_id, school, degree_type, field,
-          gpa, is_enrolled, honors
+          gpa, is_enrolled, honors, startdate, graddate
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *
       `;
 
@@ -34,6 +36,8 @@ class EducationService {
         gpa || null,
         isEnrolled,
         honors || null,
+        startDate || null,
+        endDate || null,
       ]);
 
       return {
@@ -45,6 +49,8 @@ class EducationService {
         gpa: result.rows[0].gpa ? parseFloat(result.rows[0].gpa) : null,
         isEnrolled: result.rows[0].is_enrolled,
         honors: result.rows[0].honors,
+        startDate: result.rows[0].startdate,
+        endDate: result.rows[0].graddate,
       };
     } catch (error) {
       console.error("❌ Error creating education:", error);
@@ -59,7 +65,10 @@ class EducationService {
         SELECT *
         FROM educations
         WHERE user_id = $1
-        ORDER BY school ASC
+        ORDER BY 
+          CASE WHEN is_enrolled = true THEN 0 ELSE 1 END,
+          COALESCE(graddate, '9999-12-31'::date) DESC,
+          COALESCE(startdate, '1900-01-01'::date) DESC
       `;
 
       const result = await database.query(query, [userId]);
@@ -72,6 +81,8 @@ class EducationService {
         gpa: row.gpa ? parseFloat(row.gpa) : null,
         isEnrolled: row.is_enrolled,
         honors: row.honors,
+        startDate: row.startdate,
+        endDate: row.graddate,
       }));
     } catch (error) {
       console.error("❌ Error getting educations:", error);
@@ -104,6 +115,8 @@ class EducationService {
         gpa: row.gpa ? parseFloat(row.gpa) : null,
         isEnrolled: row.is_enrolled,
         honors: row.honors,
+        startDate: row.startdate,
+        endDate: row.graddate,
       };
     } catch (error) {
       console.error("❌ Error getting education by ID:", error);
@@ -120,6 +133,8 @@ class EducationService {
       gpa,
       isEnrolled,
       honors,
+      startDate,
+      endDate,
     } = educationData;
 
     try {
@@ -137,7 +152,9 @@ class EducationService {
           field = $5,
           gpa = $6,
           is_enrolled = COALESCE($7, is_enrolled),
-          honors = $8
+          honors = $8,
+          startdate = $9,
+          graddate = $10
         WHERE id = $1 AND user_id = $2
         RETURNING *
       `;
@@ -151,6 +168,8 @@ class EducationService {
         gpa,
         isEnrolled,
         honors,
+        startDate,
+        endDate,
       ]);
 
       if (result.rows.length === 0) {
@@ -167,6 +186,8 @@ class EducationService {
         gpa: row.gpa ? parseFloat(row.gpa) : null,
         isEnrolled: row.is_enrolled,
         honors: row.honors,
+        startDate: row.startdate,
+        endDate: row.graddate,
       };
     } catch (error) {
       console.error("❌ Error updating education:", error);
