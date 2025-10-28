@@ -11,6 +11,7 @@ export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [displayName, setDisplayName] = useState<string>('User')
   const [userEmail, setUserEmail] = useState<string>('')
+  const [profilePicture, setProfilePicture] = useState<string>('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png')
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -31,13 +32,13 @@ export function Navbar() {
           setIsLoggedIn(true)
           console.log('Navbar: User is logged in:', userResponse.data.user.email)
           
-          // Then try to fetch profile for full name
+          // Then try to fetch profile for full name and picture
           try {
             const profileResponse = await api.getProfile()
             console.log('Navbar: Profile response:', profileResponse)
             
             if (profileResponse.ok && profileResponse.data?.profile) {
-              const { fullName, first_name, last_name } = profileResponse.data.profile
+              const { fullName, first_name, last_name, pfp_link } = profileResponse.data.profile
               const name = fullName || `${first_name} ${last_name}`.trim()
               if (name) {
                 setDisplayName(name)
@@ -47,6 +48,12 @@ export function Navbar() {
                 const emailName = userResponse.data.user.email.split('@')[0]
                 setDisplayName(emailName)
                 console.log('Navbar: Using email username:', emailName)
+              }
+              
+              // Set profile picture if available
+              if (pfp_link) {
+                setProfilePicture(pfp_link)
+                console.log('Navbar: Profile picture set to:', pfp_link)
               }
             }
           } catch (profileError) {
@@ -87,6 +94,22 @@ export function Navbar() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [isDropdownOpen])
+
+  // Listen for profile picture updates
+  useEffect(() => {
+    const handleProfilePictureUpdate = (event: CustomEvent) => {
+      console.log('Navbar: Profile picture updated event received:', event.detail)
+      if (event.detail?.filePath) {
+        setProfilePicture(event.detail.filePath)
+      }
+    }
+
+    window.addEventListener('profilePictureUpdated', handleProfilePictureUpdate as EventListener)
+
+    return () => {
+      window.removeEventListener('profilePictureUpdated', handleProfilePictureUpdate as EventListener)
+    }
+  }, [])
 
   return (
     <nav className="bg-white sticky top-0 z-50">
@@ -138,8 +161,24 @@ export function Navbar() {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-3 px-4 py-2 bg-transparent border border-slate-200 rounded-lg cursor-pointer transition-all duration-200 hover:bg-slate-50"
               >
-                <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-base font-semibold">
-                  {displayName.charAt(0).toUpperCase()}
+                <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-base font-semibold overflow-hidden">
+                  {profilePicture ? (
+                    <img 
+                      src={profilePicture} 
+                      alt={displayName}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to initial if image fails to load
+                        e.currentTarget.style.display = 'none';
+                        if (e.currentTarget.nextElementSibling) {
+                          (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <span style={{ display: profilePicture ? 'none' : 'flex' }} className="w-full h-full items-center justify-center">
+                    {displayName.charAt(0).toUpperCase()}
+                  </span>
                 </div>
                 <span className="text-base font-medium text-slate-900">{displayName}</span>
                 <Icon 
@@ -154,8 +193,23 @@ export function Navbar() {
               {isDropdownOpen && (
                 <div className="absolute top-full right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg min-w-[280px] overflow-hidden z-50">
                   <div className="p-4 flex items-center gap-3 bg-slate-50">
-                    <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-semibold">
-                      {displayName.charAt(0).toUpperCase()}
+                    <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-semibold overflow-hidden">
+                      {profilePicture ? (
+                        <img 
+                          src={profilePicture} 
+                          alt={displayName}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            if (e.currentTarget.nextElementSibling) {
+                              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <span style={{ display: profilePicture ? 'none' : 'flex' }} className="w-full h-full items-center justify-center">
+                        {displayName.charAt(0).toUpperCase()}
+                      </span>
                     </div>
                     <div className="flex-1">
                       <div className="text-base font-semibold text-slate-900 mb-0.5">{displayName}</div>

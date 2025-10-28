@@ -1,4 +1,4 @@
-import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput, ProjectData, ProjectInput, ProjectFilters, ProjectSortOptions, CertificationData, CertificationInput, SkillData, SkillInput, SkillsByCategory, CategoryCounts } from '../types';
+import { ApiResponse, ProfileData, ProfileInput, EducationData, EducationInput, ProjectData, ProjectInput, ProjectFilters, ProjectSortOptions, CertificationData, CertificationInput, SkillData, SkillInput, SkillsByCategory, CategoryCounts, ProfilePictureData, FileUploadResponse } from '../types';
 
 // In development, use proxy (relative path). In production, use env variable or full URL
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
@@ -98,6 +98,37 @@ class ApiService {
 
   async getProfileStatistics() {
     return this.request<ApiResponse<{ statistics: any }>>('/profile/statistics');
+  }
+
+  // File Upload endpoints
+  async uploadProfilePicture(file: File) {
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+    
+    const response = await fetch(`${API_BASE}/files/profile-picture`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData, // Don't set Content-Type header, browser will set it with boundary
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ 
+        error: { message: 'Upload failed' } 
+      }));
+      throw new Error(error.error?.message || 'Upload failed');
+    }
+
+    return response.json() as Promise<ApiResponse<FileUploadResponse>>;
+  }
+
+  async getCurrentProfilePicture() {
+    return this.request<ApiResponse<{ profilePicture: ProfilePictureData }>>('/files/profile-picture');
+  }
+
+  async deleteFile(fileId: string) {
+    return this.request<ApiResponse<{ message: string }>>(`/files/${fileId}`, {
+      method: 'DELETE',
+    });
   }
 
   // Job/Employment endpoints (Full CRUD)
