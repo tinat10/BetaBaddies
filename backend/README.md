@@ -29,6 +29,16 @@ SERVER_PORT=3001
 SESSION_SECRET=your-secret-key-change-in-production
 NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
+
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:3001/api/v1/users/auth/google/callback
+
+# LinkedIn OAuth (optional)
+LINKEDIN_CLIENT_ID=your_linkedin_client_id
+LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
+LINKEDIN_CALLBACK_URL=http://localhost:3001/api/v1/users/auth/linkedin/callback
 ```
 
 ## 📡 API Endpoints
@@ -50,6 +60,10 @@ http://localhost:3001/api/v1
 - `GET /profile` - Get user profile
 - `PUT /change-password` - Change password
 - `DELETE /account` - Delete account
+- `GET /auth/google` - Google OAuth login
+- `GET /auth/google/callback` - Google OAuth callback
+- `GET /auth/linkedin` - LinkedIn OAuth login
+- `GET /auth/linkedin/callback` - LinkedIn OAuth callback
 
 #### Jobs Management (`/api/v1/jobs`)
 

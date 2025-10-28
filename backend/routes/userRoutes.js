@@ -7,7 +7,7 @@ import {
   validateChangePassword,
   validateDeleteAccount,
   validateForgotPassword,
-  validateResetPassword
+  validateResetPassword,
 } from "../middleware/validation.js";
 
 const router = express.Router();
@@ -33,6 +33,23 @@ router.get(
   "/auth/google/callback",
   userController.googleCallback,
   userController.handleGoogleCallback
+);
+
+// LinkedIn OAuth routes
+router.get(
+  "/auth/linkedin",
+  process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_SECRET
+    ? userController.linkedinAuth
+    : userController.linkedinAuthFallback
+);
+router.get(
+  "/auth/linkedin/callback",
+  process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_SECRET
+    ? userController.linkedinCallback
+    : userController.linkedinAuthFallback,
+  process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_SECRET
+    ? userController.handleLinkedInCallback
+    : userController.linkedinAuthFallback
 );
 
 router.post("/logout", userController.logout);

@@ -127,11 +127,91 @@ class UserService {
     }
   }
 
+  // Create a new LinkedIn OAuth user
+  async createLinkedInOAuthUser(userData) {
+    const { email, linkedinId } = userData;
+
+    try {
+      // Check if user already exists
+      const existingUser = await this.getUserByEmail(email);
+      if (existingUser) {
+        throw new Error("User with this email already exists");
+      }
+
+      const userId = uuidv4();
+
+      // Create LinkedIn OAuth user in database (no password)
+      const userQuery = `
+        INSERT INTO users (u_id, email, password, created_at, updated_at, linkedin_id, auth_provider)
+        VALUES ($1, $2, NULL, NOW(), NOW(), $3, 'linkedin')
+        RETURNING u_id, email, created_at, updated_at, linkedin_id, auth_provider
+      `;
+
+      const userResult = await database.query(userQuery, [
+        userId,
+        email,
+        linkedinId,
+      ]);
+
+      return {
+        id: userResult.rows[0].u_id,
+        email: userResult.rows[0].email,
+        linkedinId: userResult.rows[0].linkedin_id,
+        authProvider: userResult.rows[0].auth_provider,
+        createdAt: userResult.rows[0].created_at,
+        updatedAt: userResult.rows[0].updated_at,
+      };
+    } catch (error) {
+      console.error("❌ Error creating LinkedIn OAuth user:", error);
+      throw error;
+    }
+  }
+
+  // Link LinkedIn account to existing user
+  async linkLinkedInAccount(userId, linkedinId) {
+    try {
+      const query = `
+        UPDATE users 
+        SET linkedin_id = $2, updated_at = NOW()
+        WHERE u_id = $1
+        RETURNING u_id, email, linkedin_id, auth_provider
+      `;
+
+      const result = await database.query(query, [userId, linkedinId]);
+
+      if (result.rows.length === 0) {
+        throw new Error("User not found");
+      }
+
+      return result.rows[0];
+    } catch (error) {
+      console.error("❌ Error linking LinkedIn account:", error);
+      throw error;
+    }
+  }
+
+  // Get user by LinkedIn ID
+  async getUserByLinkedInId(linkedinId) {
+    try {
+      const query = `
+        SELECT u_id, email, linkedin_id, auth_provider, created_at, updated_at
+        FROM users
+        WHERE linkedin_id = $1
+      `;
+
+      const result = await database.query(query, [linkedinId]);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error("❌ Error getting user by LinkedIn ID:", error);
+      throw error;
+    }
+  }
+
   // Get user by email (authentication only)
   async getUserByEmail(email) {
     try {
       const query = `
-        SELECT u_id, email, password, created_at, updated_at, google_id, auth_provider
+        SELECT u_id, email, password, created_at, updated_at, google_id, linkedin_id, auth_provider
         FROM users
         WHERE email = $1
       `;
@@ -209,8 +289,8 @@ class UserService {
   // Generate reset token
   async generateResetToken(userId) {
     try {
-      const crypto = await import('crypto');
-      const resetToken = crypto.randomBytes(32).toString('hex');
+      const crypto = await import("crypto");
+      const resetToken = crypto.randomBytes(32).toString("hex");
       const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
 
       const query = `
@@ -220,7 +300,11 @@ class UserService {
         RETURNING u_id, email
       `;
 
-      const result = await database.query(query, [userId, resetToken, resetTokenExpires]);
+      const result = await database.query(query, [
+        userId,
+        resetToken,
+        resetTokenExpires,
+      ]);
 
       if (result.rows.length === 0) {
         throw new Error("User not found");
@@ -262,7 +346,10 @@ class UserService {
         RETURNING u_id, email
       `;
 
-      const updateResult = await database.query(updateQuery, [user.u_id, hashedPassword]);
+      const updateResult = await database.query(updateQuery, [
+        user.u_id,
+        hashedPassword,
+      ]);
 
       if (updateResult.rows.length === 0) {
         throw new Error("Failed to update password");
@@ -274,7 +361,7 @@ class UserService {
       throw error;
     }
   }
-  
+
   // Delete user account with password verification
   async deleteUser(userId, password) {
     try {
