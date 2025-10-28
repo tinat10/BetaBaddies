@@ -7,15 +7,28 @@ class SkillController {
     const userId = req.session.userId;
     const skillData = req.body;
 
-    const skill = await skillService.createSkill(userId, skillData);
+    try {
+      const skill = await skillService.createSkill(userId, skillData);
 
-    res.status(201).json({
-      ok: true,
-      data: {
-        skill,
-        message: "Skill created successfully",
-      },
-    });
+      res.status(201).json({
+        ok: true,
+        data: {
+          skill,
+          message: "Skill created successfully",
+        },
+      });
+    } catch (error) {
+      if (error.code === "DUPLICATE_SKILL" || error.message === "DUPLICATE_SKILL") {
+        return res.status(409).json({
+          ok: false,
+          error: {
+            code: "DUPLICATE_SKILL",
+            message: "You already have this skill",
+          },
+        });
+      }
+      throw error;
+    }
   });
 
   // Get all skills for the current user

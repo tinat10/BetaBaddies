@@ -1,27 +1,41 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Icon } from '@iconify/react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { api } from '../services/api';
-import { 
-  SkillData, 
-  SkillInput, 
-  SkillCategory, 
-  ProficiencyLevel, 
-  COMMON_SKILLS, 
-  PROFICIENCY_CONFIG, 
-  CATEGORY_CONFIG 
-} from '../types';
+import { useState, useEffect, useMemo } from "react";
+import { Icon } from "@iconify/react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { api } from "../services/api";
+import {
+  SkillData,
+  SkillInput,
+  SkillCategory,
+  ProficiencyLevel,
+  COMMON_SKILLS,
+  PROFICIENCY_CONFIG,
+  CATEGORY_CONFIG,
+} from "../types";
 
 // Sortable skill item for drag-and-drop
-function SortableSkillItem({ 
-  skill, 
-  onEdit, 
-  onDelete 
-}: { 
-  skill: SkillData; 
-  onEdit: (skill: SkillData) => void; 
+function SortableSkillItem({
+  skill,
+  onEdit,
+  onDelete,
+}: {
+  skill: SkillData;
+  onEdit: (skill: SkillData) => void;
   onDelete: (skill: SkillData) => void;
 }) {
   const {
@@ -45,7 +59,9 @@ function SortableSkillItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group bg-white rounded-lg border border-slate-200 p-4 transition-all hover:shadow-md ${isDragging ? 'shadow-lg' : ''}`}
+      className={`group bg-white rounded-lg border border-slate-200 p-4 transition-all hover:shadow-md ${
+        isDragging ? "shadow-lg" : ""
+      }`}
     >
       <div className="flex items-center gap-3">
         {/* Drag Handle */}
@@ -59,12 +75,12 @@ function SortableSkillItem({
 
         {/* Skill Badge (if available) */}
         {skill.skillBadge && (
-          <img 
-            src={skill.skillBadge} 
+          <img
+            src={skill.skillBadge}
             alt={`${skill.skillName} badge`}
             className="w-8 h-8 object-contain rounded"
             onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
+              (e.target as HTMLImageElement).style.display = "none";
             }}
           />
         )}
@@ -85,7 +101,10 @@ function SortableSkillItem({
                 }}
               />
             </div>
-            <span className="text-xs font-medium" style={{ color: proficiencyConfig.textColor }}>
+            <span
+              className="text-xs font-medium"
+              style={{ color: proficiencyConfig.textColor }}
+            >
               {proficiencyConfig.label}
             </span>
           </div>
@@ -114,25 +133,25 @@ function SortableSkillItem({
 }
 
 // Category section with collapsible content
-function CategorySection({ 
-  category, 
-  skills, 
+function CategorySection({
+  category,
+  skills,
   onReorder,
-  onEdit, 
+  onEdit,
   onDelete,
   isCollapsed,
   onToggleCollapse,
-}: { 
-  category: SkillCategory; 
+}: {
+  category: SkillCategory;
   skills: SkillData[];
   onReorder: (skills: SkillData[]) => void;
-  onEdit: (skill: SkillData) => void; 
+  onEdit: (skill: SkillData) => void;
   onDelete: (skill: SkillData) => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
 }) {
   const categoryConfig = CATEGORY_CONFIG[category];
-  
+
   // Calculate proficiency breakdown
   const proficiencyBreakdown = skills.reduce((acc, skill) => {
     acc[skill.proficiency] = (acc[skill.proficiency] || 0) + 1;
@@ -150,9 +169,9 @@ function CategorySection({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = skills.findIndex(s => s.id === active.id);
-      const newIndex = skills.findIndex(s => s.id === over.id);
-      
+      const oldIndex = skills.findIndex((s) => s.id === active.id);
+      const newIndex = skills.findIndex((s) => s.id === over.id);
+
       if (oldIndex !== -1 && newIndex !== -1) {
         onReorder(arrayMove(skills, oldIndex, newIndex));
       }
@@ -162,28 +181,36 @@ function CategorySection({
   return (
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       {/* Category Header */}
-      <div 
+      <div
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 transition-colors border-b border-slate-200"
         onClick={onToggleCollapse}
       >
         <div className="flex items-center gap-3">
-          <div 
+          <div
             className="w-10 h-10 rounded-lg flex items-center justify-center"
             style={{ backgroundColor: `${categoryConfig.color}20` }}
           >
-            <Icon icon={categoryConfig.icon} width={24} height={24} style={{ color: categoryConfig.color }} />
+            <Icon
+              icon={categoryConfig.icon}
+              width={24}
+              height={24}
+              style={{ color: categoryConfig.color }}
+            />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-slate-900">
-              {category} <span className="text-slate-500">({skills.length})</span>
+              {category}{" "}
+              <span className="text-slate-500">({skills.length})</span>
             </h3>
-            <p className="text-xs text-slate-500">{categoryConfig.description}</p>
+            <p className="text-xs text-slate-500">
+              {categoryConfig.description}
+            </p>
           </div>
         </div>
-        <Icon 
-          icon={isCollapsed ? "mingcute:down-line" : "mingcute:up-line"} 
-          width={20} 
-          height={20} 
+        <Icon
+          icon={isCollapsed ? "mingcute:down-line" : "mingcute:up-line"}
+          width={20}
+          height={20}
           className="text-slate-400"
         />
       </div>
@@ -193,7 +220,12 @@ function CategorySection({
         <div className="p-4">
           {skills.length === 0 ? (
             <div className="text-center py-8 text-slate-500">
-              <Icon icon="mingcute:information-line" width={32} height={32} className="mx-auto mb-2 text-slate-400" />
+              <Icon
+                icon="mingcute:information-line"
+                width={32}
+                height={32}
+                className="mx-auto mb-2 text-slate-400"
+              />
               <p className="text-sm">No skills in this category yet</p>
             </div>
           ) : (
@@ -204,7 +236,7 @@ function CategorySection({
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={skills.map(s => s.id)}
+                  items={skills.map((s) => s.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-2">
@@ -222,18 +254,27 @@ function CategorySection({
 
               {/* Proficiency Summary */}
               <div className="mt-4 pt-4 border-t border-slate-100">
-                <p className="text-xs font-medium text-slate-700 mb-2">Proficiency Breakdown:</p>
+                <p className="text-xs font-medium text-slate-700 mb-2">
+                  Proficiency Breakdown:
+                </p>
                 <div className="flex flex-wrap gap-2">
-                  {(['Expert', 'Advanced', 'Intermediate', 'Beginner'] as ProficiencyLevel[]).map(level => {
+                  {(
+                    [
+                      "Expert",
+                      "Advanced",
+                      "Intermediate",
+                      "Beginner",
+                    ] as ProficiencyLevel[]
+                  ).map((level) => {
                     const count = proficiencyBreakdown[level] || 0;
                     if (count === 0) return null;
                     return (
-                      <span 
+                      <span
                         key={level}
                         className="px-2 py-1 rounded text-xs font-medium"
-                        style={{ 
+                        style={{
                           backgroundColor: PROFICIENCY_CONFIG[level].bgColor,
-                          color: PROFICIENCY_CONFIG[level].textColor 
+                          color: PROFICIENCY_CONFIG[level].textColor,
                         }}
                       >
                         {count} {level}
@@ -265,10 +306,10 @@ function SkillModal({
   isSubmitting: boolean;
 }) {
   const [formData, setFormData] = useState<SkillInput>({
-    skillName: skill?.skillName || '',
-    proficiency: skill?.proficiency || 'Beginner',
-    category: skill?.category || 'Technical',
-    skillBadge: skill?.skillBadge || '',
+    skillName: skill?.skillName || "",
+    proficiency: skill?.proficiency || "Beginner",
+    category: skill?.category || "Technical",
+    skillBadge: skill?.skillBadge || "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -279,15 +320,15 @@ function SkillModal({
       setFormData({
         skillName: skill.skillName,
         proficiency: skill.proficiency,
-        category: skill.category || 'Technical',
-        skillBadge: skill.skillBadge || '',
+        category: skill.category || "Technical",
+        skillBadge: skill.skillBadge || "",
       });
     } else {
       setFormData({
-        skillName: '',
-        proficiency: 'Beginner',
-        category: 'Technical',
-        skillBadge: '',
+        skillName: "",
+        proficiency: "Beginner",
+        category: "Technical",
+        skillBadge: "",
       });
     }
     setErrors({});
@@ -296,10 +337,13 @@ function SkillModal({
   // Filter suggestions based on input and category
   useEffect(() => {
     if (formData.skillName && formData.category) {
-      const categorySkills = COMMON_SKILLS[formData.category as SkillCategory] || [];
-      const filtered = categorySkills.filter(s => 
-        s.toLowerCase().includes(formData.skillName.toLowerCase())
-      ).slice(0, 10);
+      const categorySkills =
+        COMMON_SKILLS[formData.category as SkillCategory] || [];
+      const filtered = categorySkills
+        .filter((s) =>
+          s.toLowerCase().includes(formData.skillName.toLowerCase())
+        )
+        .slice(0, 10);
       setFilteredSuggestions(filtered);
     } else {
       setFilteredSuggestions([]);
@@ -310,17 +354,17 @@ function SkillModal({
     const newErrors: Record<string, string> = {};
 
     if (!formData.skillName.trim()) {
-      newErrors.skillName = 'Skill name is required';
+      newErrors.skillName = "Skill name is required";
     } else if (formData.skillName.length > 100) {
-      newErrors.skillName = 'Skill name must be less than 100 characters';
+      newErrors.skillName = "Skill name must be less than 100 characters";
     }
 
     if (!formData.proficiency) {
-      newErrors.proficiency = 'Proficiency level is required';
+      newErrors.proficiency = "Proficiency level is required";
     }
 
     if (formData.skillBadge && !isValidUrl(formData.skillBadge)) {
-      newErrors.skillBadge = 'Please enter a valid URL';
+      newErrors.skillBadge = "Please enter a valid URL";
     }
 
     setErrors(newErrors);
@@ -356,7 +400,7 @@ function SkillModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <h2 className="text-2xl font-semibold text-slate-900">
-            {skill ? 'Edit Skill' : 'Add New Skill'}
+            {skill ? "Edit Skill" : "Add New Skill"}
           </h2>
           <button
             onClick={onClose}
@@ -384,7 +428,7 @@ function SkillModal({
               onFocus={() => setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow ${
-                errors.skillName ? 'border-red-500' : 'border-slate-300'
+                errors.skillName ? "border-red-500" : "border-slate-300"
               }`}
               placeholder="e.g., JavaScript, Leadership"
               disabled={isSubmitting}
@@ -419,21 +463,32 @@ function SkillModal({
               Proficiency Level <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
-              {(['Beginner', 'Intermediate', 'Advanced', 'Expert'] as ProficiencyLevel[]).map((level) => (
+              {(
+                [
+                  "Beginner",
+                  "Intermediate",
+                  "Advanced",
+                  "Expert",
+                ] as ProficiencyLevel[]
+              ).map((level) => (
                 <button
                   key={level}
                   type="button"
-                  onClick={() => setFormData({ ...formData, proficiency: level })}
+                  onClick={() =>
+                    setFormData({ ...formData, proficiency: level })
+                  }
                   disabled={isSubmitting}
                   className={`px-4 py-3 rounded-lg border-2 transition-all text-sm font-medium ${
                     formData.proficiency === level
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-slate-200 hover:border-slate-300 text-slate-700'
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-slate-200 hover:border-slate-300 text-slate-700"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span>{level}</span>
-                    <span className="text-xs text-slate-500">{PROFICIENCY_CONFIG[level].percent}%</span>
+                    <span className="text-xs text-slate-500">
+                      {PROFICIENCY_CONFIG[level].percent}%
+                    </span>
                   </div>
                   <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div
@@ -459,7 +514,12 @@ function SkillModal({
             </label>
             <select
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value as SkillCategory })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  category: e.target.value as SkillCategory,
+                })
+              }
               disabled={isSubmitting}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
             >
@@ -469,21 +529,26 @@ function SkillModal({
               <option value="Industry-Specific">Industry-Specific</option>
             </select>
             <p className="text-xs text-slate-500 mt-1">
-              {formData.category && CATEGORY_CONFIG[formData.category as SkillCategory]?.description}
+              {formData.category &&
+                CATEGORY_CONFIG[formData.category as SkillCategory]
+                  ?.description}
             </p>
           </div>
 
           {/* Skill Badge URL */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Skill Badge URL <span className="text-slate-400 text-xs">(Optional)</span>
+              Skill Badge URL{" "}
+              <span className="text-slate-400 text-xs">(Optional)</span>
             </label>
             <input
               type="text"
               value={formData.skillBadge}
-              onChange={(e) => setFormData({ ...formData, skillBadge: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, skillBadge: e.target.value })
+              }
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow ${
-                errors.skillBadge ? 'border-red-500' : 'border-slate-300'
+                errors.skillBadge ? "border-red-500" : "border-slate-300"
               }`}
               placeholder="https://example.com/badge.png"
               disabled={isSubmitting}
@@ -494,12 +559,12 @@ function SkillModal({
             {formData.skillBadge && isValidUrl(formData.skillBadge) && (
               <div className="mt-2">
                 <p className="text-xs text-slate-500 mb-1">Badge Preview:</p>
-                <img 
-                  src={formData.skillBadge} 
+                <img
+                  src={formData.skillBadge}
                   alt="Badge preview"
                   className="w-12 h-12 object-contain border border-slate-200 rounded"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
+                    (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
               </div>
@@ -523,11 +588,16 @@ function SkillModal({
             >
               {isSubmitting ? (
                 <>
-                  <Icon icon="mingcute:loading-line" width={18} height={18} className="animate-spin" />
+                  <Icon
+                    icon="mingcute:loading-line"
+                    width={18}
+                    height={18}
+                    className="animate-spin"
+                  />
                   Saving...
                 </>
               ) : (
-                <>{skill ? 'Update Skill' : 'Add Skill'}</>
+                <>{skill ? "Update Skill" : "Add Skill"}</>
               )}
             </button>
           </div>
@@ -558,14 +628,23 @@ function DeleteModal({
       <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-            <Icon icon="mingcute:alert-line" width={24} height={24} className="text-red-600" />
+            <Icon
+              icon="mingcute:alert-line"
+              width={24}
+              height={24}
+              className="text-red-600"
+            />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Delete Skill?</h3>
-            <p className="text-sm text-slate-500">This action cannot be undone</p>
+            <h3 className="text-lg font-semibold text-slate-900">
+              Delete Skill?
+            </h3>
+            <p className="text-sm text-slate-500">
+              This action cannot be undone
+            </p>
           </div>
         </div>
-        
+
         <p className="text-slate-700 mb-6">
           Are you sure you want to delete <strong>{skill.skillName}</strong>?
         </p>
@@ -585,11 +664,16 @@ function DeleteModal({
           >
             {isDeleting ? (
               <>
-                <Icon icon="mingcute:loading-line" width={18} height={18} className="animate-spin" />
+                <Icon
+                  icon="mingcute:loading-line"
+                  width={18}
+                  height={18}
+                  className="animate-spin"
+                />
                 Deleting...
               </>
             ) : (
-              'Delete Skill'
+              "Delete Skill"
             )}
           </button>
         </div>
@@ -604,23 +688,27 @@ export function Skills() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  
+
   // View mode
-  const [viewMode, setViewMode] = useState<'category' | 'list'>('category');
-  
+  const [viewMode, setViewMode] = useState<"category" | "list">("category");
+
   // Search and filter
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | SkillCategory>('all');
-  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState<"all" | SkillCategory>(
+    "all"
+  );
+
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState<SkillData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Collapsed categories
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<SkillCategory>>(new Set());
+  const [collapsedCategories, setCollapsedCategories] = useState<
+    Set<SkillCategory>
+  >(new Set());
 
   // Fetch skills on mount
   useEffect(() => {
@@ -636,8 +724,8 @@ export function Skills() {
         setSkills(response.data!.skills);
       }
     } catch (err: any) {
-      console.error('Failed to fetch skills:', err);
-      setError('Failed to load skills. Please try again.');
+      console.error("Failed to fetch skills:", err);
+      setError("Failed to load skills. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -648,13 +736,13 @@ export function Skills() {
     let filtered = skills;
 
     // Apply category filter
-    if (activeFilter !== 'all') {
-      filtered = filtered.filter(skill => skill.category === activeFilter);
+    if (activeFilter !== "all") {
+      filtered = filtered.filter((skill) => skill.category === activeFilter);
     }
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(skill =>
+      filtered = filtered.filter((skill) =>
         skill.skillName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -665,14 +753,14 @@ export function Skills() {
   // Group skills by category
   const skillsByCategory = useMemo(() => {
     const grouped: Record<SkillCategory, SkillData[]> = {
-      'Technical': [],
-      'Soft Skills': [],
-      'Languages': [],
-      'Industry-Specific': [],
+      Technical: [],
+      "Soft Skills": [],
+      Languages: [],
+      "Industry-Specific": [],
     };
 
-    filteredSkills.forEach(skill => {
-      const category = skill.category || 'Technical';
+    filteredSkills.forEach((skill) => {
+      const category = skill.category || "Technical";
       grouped[category].push(skill);
     });
 
@@ -688,13 +776,16 @@ export function Skills() {
       if (response.ok) {
         setSkills([...skills, response.data!.skill]);
         setIsAddModalOpen(false);
-        showSuccess('Skill added successfully!');
+        showSuccess("Skill added successfully!");
       }
     } catch (err: any) {
-      if (err.message.includes('DUPLICATE_SKILL')) {
-        setError('You already have this skill. Try editing the existing one instead.');
+      // Handle ApiError with status and code information
+      if (err.status === 409) {
+        setError(
+          "You already have this skill. Try editing the existing one instead."
+        );
       } else {
-        setError(err.message || 'Failed to add skill');
+        setError(err.message || "Failed to add skill");
       }
     } finally {
       setIsSubmitting(false);
@@ -710,13 +801,22 @@ export function Skills() {
       setError(null);
       const response = await api.updateSkill(selectedSkill.id, data);
       if (response.ok) {
-        setSkills(skills.map(s => s.id === selectedSkill.id ? response.data!.skill : s));
+        setSkills(
+          skills.map((s) =>
+            s.id === selectedSkill.id ? response.data!.skill : s
+          )
+        );
         setIsEditModalOpen(false);
         setSelectedSkill(null);
-        showSuccess('Skill updated successfully!');
+        showSuccess("Skill updated successfully!");
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to update skill');
+      // Handle ApiError with status and code information
+      if (err.status === 409) {
+        setError("Another skill with this name already exists.");
+      } else {
+        setError(err.message || "Failed to update skill");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -731,22 +831,25 @@ export function Skills() {
       setError(null);
       const response = await api.deleteSkill(selectedSkill.id);
       if (response.ok) {
-        setSkills(skills.filter(s => s.id !== selectedSkill.id));
+        setSkills(skills.filter((s) => s.id !== selectedSkill.id));
         setIsDeleteModalOpen(false);
         setSelectedSkill(null);
-        showSuccess('Skill deleted successfully!');
+        showSuccess("Skill deleted successfully!");
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to delete skill');
+      setError(err.message || "Failed to delete skill");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   // Handle skill reorder within category
-  const handleReorder = (category: SkillCategory, reorderedSkills: SkillData[]) => {
+  const handleReorder = (
+    category: SkillCategory,
+    reorderedSkills: SkillData[]
+  ) => {
     // Update the skills array with reordered items
-    const otherSkills = skills.filter(s => s.category !== category);
+    const otherSkills = skills.filter((s) => s.category !== category);
     setSkills([...otherSkills, ...reorderedSkills]);
   };
 
@@ -759,39 +862,43 @@ export function Skills() {
   // Export functions
   const exportAsJSON = () => {
     const exportData = {
-      exportDate: new Date().toISOString().split('T')[0],
+      exportDate: new Date().toISOString().split("T")[0],
       totalSkills: skills.length,
       skillsByCategory,
     };
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `skills-export-${exportData.exportDate}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    showSuccess('Skills exported as JSON!');
+    showSuccess("Skills exported as JSON!");
   };
 
   const exportAsCSV = () => {
     const csv = [
-      ['Category', 'Skill Name', 'Proficiency', 'Proficiency %'],
-      ...skills.map(s => [
-        s.category || 'Technical',
+      ["Category", "Skill Name", "Proficiency", "Proficiency %"],
+      ...skills.map((s) => [
+        s.category || "Technical",
         s.skillName,
         s.proficiency,
-        PROFICIENCY_CONFIG[s.proficiency].percent.toString()
-      ])
-    ].map(row => row.join(',')).join('\n');
+        PROFICIENCY_CONFIG[s.proficiency].percent.toString(),
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
 
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `skills-export-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `skills-export-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    showSuccess('Skills exported as CSV!');
+    showSuccess("Skills exported as CSV!");
   };
 
   // Toggle category collapse
@@ -810,8 +917,15 @@ export function Skills() {
     return (
       <div className="p-10 max-w-[1400px] mx-auto bg-white font-poppins min-h-full flex items-center justify-center">
         <div className="text-center">
-          <Icon icon="mingcute:loading-line" width={48} height={48} className="animate-spin text-blue-500 mx-auto mb-4" />
-          <div className="text-2xl font-semibold text-slate-900 mb-2">Loading your skills...</div>
+          <Icon
+            icon="mingcute:loading-line"
+            width={48}
+            height={48}
+            className="animate-spin text-blue-500 mx-auto mb-4"
+          />
+          <div className="text-2xl font-semibold text-slate-900 mb-2">
+            Loading your skills...
+          </div>
           <div className="text-base text-slate-500">Please wait</div>
         </div>
       </div>
@@ -823,9 +937,12 @@ export function Skills() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-semibold text-slate-900 mb-2">Skills Portfolio</h1>
+          <h1 className="text-4xl font-semibold text-slate-900 mb-2">
+            Skills Portfolio
+          </h1>
           <p className="text-slate-600">
-            Manage your technical and professional skills • {skills.length} total
+            Manage your technical and professional skills • {skills.length}{" "}
+            total
           </p>
         </div>
         <button
@@ -840,14 +957,24 @@ export function Skills() {
       {/* Success/Error Messages */}
       {successMessage && (
         <div className="mb-6 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
-          <Icon icon="mingcute:check-circle-line" width={20} height={20} className="text-green-600" />
+          <Icon
+            icon="mingcute:check-circle-line"
+            width={20}
+            height={20}
+            className="text-green-600"
+          />
           <p className="text-green-800 text-sm m-0">{successMessage}</p>
         </div>
       )}
-      
+
       {error && (
         <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
-          <Icon icon="mingcute:alert-line" width={20} height={20} className="text-red-600" />
+          <Icon
+            icon="mingcute:alert-line"
+            width={20}
+            height={20}
+            className="text-red-600"
+          />
           <p className="text-red-800 text-sm m-0">{error}</p>
         </div>
       )}
@@ -859,25 +986,35 @@ export function Skills() {
           <span className="text-sm font-medium text-slate-700">View:</span>
           <div className="flex gap-2">
             <button
-              onClick={() => setViewMode('category')}
+              onClick={() => setViewMode("category")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                viewMode === 'category'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
+                viewMode === "category"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"
               }`}
             >
-              <Icon icon="mingcute:grid-line" width={16} height={16} className="inline mr-1" />
+              <Icon
+                icon="mingcute:grid-line"
+                width={16}
+                height={16}
+                className="inline mr-1"
+              />
               Category View
             </button>
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => setViewMode("list")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                viewMode === 'list'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
+                viewMode === "list"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"
               }`}
             >
-              <Icon icon="mingcute:list-check-line" width={16} height={16} className="inline mr-1" />
+              <Icon
+                icon="mingcute:list-check-line"
+                width={16}
+                height={16}
+                className="inline mr-1"
+              />
               List View
             </button>
           </div>
@@ -885,7 +1022,12 @@ export function Skills() {
 
         {/* Search */}
         <div className="relative mb-4">
-          <Icon icon="mingcute:search-line" width={20} height={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Icon
+            icon="mingcute:search-line"
+            width={20}
+            height={20}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          />
           <input
             type="text"
             value={searchTerm}
@@ -899,28 +1041,38 @@ export function Skills() {
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium text-slate-700">Filter:</span>
           <button
-            onClick={() => setActiveFilter('all')}
+            onClick={() => setActiveFilter("all")}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              activeFilter === 'all'
-                ? 'bg-slate-900 text-white'
-                : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
+              activeFilter === "all"
+                ? "bg-slate-900 text-white"
+                : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"
             }`}
           >
             All ({skills.length})
           </button>
-          {(['Technical', 'Soft Skills', 'Languages', 'Industry-Specific'] as SkillCategory[]).map(category => {
-            const count = skills.filter(s => s.category === category).length;
+          {(
+            [
+              "Technical",
+              "Soft Skills",
+              "Languages",
+              "Industry-Specific",
+            ] as SkillCategory[]
+          ).map((category) => {
+            const count = skills.filter((s) => s.category === category).length;
             return (
               <button
                 key={category}
                 onClick={() => setActiveFilter(category)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   activeFilter === category
-                    ? 'text-white'
-                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
+                    ? "text-white"
+                    : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"
                 }`}
                 style={{
-                  backgroundColor: activeFilter === category ? CATEGORY_CONFIG[category].color : undefined
+                  backgroundColor:
+                    activeFilter === category
+                      ? CATEGORY_CONFIG[category].color
+                      : undefined,
                 }}
               >
                 {category} ({count})
@@ -960,16 +1112,23 @@ export function Skills() {
       {/* Skills Display */}
       {filteredSkills.length === 0 ? (
         <div className="text-center py-20">
-          <Icon icon="mingcute:star-line" width={64} height={64} className="mx-auto mb-4 text-slate-300" />
+          <Icon
+            icon="mingcute:star-line"
+            width={64}
+            height={64}
+            className="mx-auto mb-4 text-slate-300"
+          />
           <h2 className="text-2xl font-semibold text-slate-900 mb-2">
-            {searchTerm || activeFilter !== 'all' ? 'No skills found' : 'No skills yet'}
+            {searchTerm || activeFilter !== "all"
+              ? "No skills found"
+              : "No skills yet"}
           </h2>
           <p className="text-slate-600 mb-6">
-            {searchTerm || activeFilter !== 'all'
-              ? 'Try adjusting your search or filters'
-              : 'Start building your skills portfolio by adding your first skill'}
+            {searchTerm || activeFilter !== "all"
+              ? "Try adjusting your search or filters"
+              : "Start building your skills portfolio by adding your first skill"}
           </p>
-          {!searchTerm && activeFilter === 'all' && (
+          {!searchTerm && activeFilter === "all" && (
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
@@ -978,12 +1137,20 @@ export function Skills() {
             </button>
           )}
         </div>
-      ) : viewMode === 'category' ? (
+      ) : viewMode === "category" ? (
         <div className="space-y-6">
-          {(['Technical', 'Soft Skills', 'Languages', 'Industry-Specific'] as SkillCategory[]).map(category => {
+          {(
+            [
+              "Technical",
+              "Soft Skills",
+              "Languages",
+              "Industry-Specific",
+            ] as SkillCategory[]
+          ).map((category) => {
             const categorySkills = skillsByCategory[category];
-            if (categorySkills.length === 0 && activeFilter !== 'all') return null;
-            
+            if (categorySkills.length === 0 && activeFilter !== "all")
+              return null;
+
             return (
               <CategorySection
                 key={category}
@@ -1006,7 +1173,7 @@ export function Skills() {
         </div>
       ) : (
         <div className="space-y-2">
-          {filteredSkills.map(skill => (
+          {filteredSkills.map((skill) => (
             <SortableSkillItem
               key={skill.id}
               skill={skill}
