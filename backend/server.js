@@ -88,6 +88,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Serve static files from uploads directory
+app.use("/uploads", express.static("uploads"));
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({

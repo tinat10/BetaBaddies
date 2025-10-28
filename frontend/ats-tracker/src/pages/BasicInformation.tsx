@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { api } from '../services/api';
 import { ProfileData, ProfileInput } from '../types';
+import ProfilePictureUpload from '../components/ProfilePictureUpload';
 
 export default function BasicInformation() {
   const [formData, setFormData] = useState({
@@ -201,6 +202,15 @@ export default function BasicInformation() {
           </button>
         </div>
       )}
+
+      {/* Profile Picture Section */}
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200 mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Icon icon="mingcute:camera-line" className="text-blue-600" width={24} />
+          <h2 className="text-2xl font-semibold text-gray-800">Profile Picture</h2>
+        </div>
+        <ProfilePictureUpload />
+      </div>
 
       {/* Profile Form */}
       <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
