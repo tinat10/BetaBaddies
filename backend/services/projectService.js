@@ -317,12 +317,12 @@ class ProjectService {
   mapRowToProject(row) {
     return {
       id: row.id,
-      userId: row.user_id,
+      user_id: row.user_id,
       name: row.name,
       link: row.link,
       description: row.description,
-      startDate: row.start_date,
-      endDate: row.end_date,
+      start_date: row.start_date,
+      end_date: row.end_date,
       technologies: row.technologies,
       collaborators: row.collaborators,
       status: row.status,

@@ -27,6 +27,7 @@ import {
   PROFICIENCY_CONFIG,
   CATEGORY_CONFIG,
 } from "../types";
+import { isValidUrl, getUrlErrorMessage } from "../utils/urlValidation";
 
 // Sortable skill item for drag-and-drop
 function SortableSkillItem({
@@ -364,20 +365,11 @@ function SkillModal({
     }
 
     if (formData.skillBadge && !isValidUrl(formData.skillBadge)) {
-      newErrors.skillBadge = "Please enter a valid URL";
+      newErrors.skillBadge = getUrlErrorMessage("badge URL");
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const isValidUrl = (url: string): boolean => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {

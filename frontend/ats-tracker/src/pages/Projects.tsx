@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { ProjectData, ProjectInput } from "../types";
 import { api } from "../services/api";
+import { isValidUrl, getUrlErrorMessage } from "../utils/urlValidation";
 
 export function Projects() {
   const [projects, setProjects] = useState<ProjectData[]>([]);
@@ -35,6 +36,9 @@ export function Projects() {
     status: "Ongoing",
     industry: "",
   });
+
+  // Form errors state
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Fetch projects on mount
   useEffect(() => {
@@ -90,6 +94,11 @@ export function Projects() {
   };
 
   const handleAddProject = async () => {
+    // Validate form first
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       // Convert snake_case to camelCase for backend
       const backendData: any = {
@@ -129,6 +138,12 @@ export function Projects() {
 
   const handleUpdateProject = async () => {
     if (!selectedProject) return;
+
+    // Validate form first
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       // Convert snake_case to camelCase for backend
       const backendData: any = {
@@ -184,12 +199,26 @@ export function Projects() {
 
   const openEditModal = (project: ProjectData) => {
     setSelectedProject(project);
+    
+    // Helper function to format date for HTML date input (YYYY-MM-DD)
+    const formatDateForInput = (dateString: string | null | undefined): string => {
+      if (!dateString) return "";
+      try {
+        // Parse the ISO date and extract YYYY-MM-DD
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+      } catch (e) {
+        console.error("Error formatting date:", dateString, e);
+        return "";
+      }
+    };
+    
     setFormData({
       name: project.name,
       link: project.link || "",
       description: project.description || "",
-      start_date: project.start_date,
-      end_date: project.end_date || "",
+      start_date: formatDateForInput(project.start_date),
+      end_date: formatDateForInput(project.end_date),
       technologies: project.technologies || "",
       collaborators: project.collaborators || "",
       status: project.status,
@@ -215,6 +244,44 @@ export function Projects() {
       status: "Ongoing",
       industry: "",
     });
+    setFormErrors({});
+  };
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    // Validate required fields
+    if (!formData.name || !formData.name.trim()) {
+      errors.name = "Project name is required";
+      console.log("❌ Validation failed: Project name is required");
+    }
+
+    if (!formData.start_date) {
+      errors.start_date = "Start date is required";
+      console.log("❌ Validation failed: Start date is required");
+    }
+
+    // Validate URL if provided (optional field)
+    if (formData.link && formData.link.trim()) {
+      const isValid = isValidUrl(formData.link);
+      console.log(`URL validation: "${formData.link}" -> ${isValid ? "✅ Valid" : "❌ Invalid"}`);
+      
+      if (!isValid) {
+        errors.link = getUrlErrorMessage("project link");
+      }
+    } else {
+      console.log("URL field is empty, skipping validation");
+    }
+
+    setFormErrors(errors);
+    
+    if (Object.keys(errors).length > 0) {
+      console.log("❌ Form validation failed:", errors);
+      return false;
+    }
+    
+    console.log("✅ Form validation passed");
+    return true;
   };
 
   const getStatusColor = (status: string) => {
@@ -569,12 +636,26 @@ export function Projects() {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    // Clear error on change
+                    if (formErrors.name) {
+                      const newErrors = { ...formErrors };
+                      delete newErrors.name;
+                      setFormErrors(newErrors);
+                    }
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    formErrors.name ? "border-red-500" : "border-slate-200"
+                  }`}
                   placeholder="My Awesome Project"
                 />
+                {formErrors.name && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <Icon icon="mingcute:alert-line" width={14} height={14} />
+                    {formErrors.name}
+                  </p>
+                )}
               </div>
 
               {/* Status and Industry */}
@@ -639,11 +720,25 @@ export function Projects() {
                   <input
                     type="date"
                     value={formData.start_date}
-                    onChange={(e) =>
-                      setFormData({ ...formData, start_date: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(e) => {
+                      setFormData({ ...formData, start_date: e.target.value });
+                      // Clear error on change
+                      if (formErrors.start_date) {
+                        const newErrors = { ...formErrors };
+                        delete newErrors.start_date;
+                        setFormErrors(newErrors);
+                      }
+                    }}
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      formErrors.start_date ? "border-red-500" : "border-slate-200"
+                    }`}
                   />
+                  {formErrors.start_date && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <Icon icon="mingcute:alert-line" width={14} height={14} />
+                      {formErrors.start_date}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -684,12 +779,46 @@ export function Projects() {
                 <input
                   type="url"
                   value={formData.link || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, link: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => {
+                    setFormData({ ...formData, link: e.target.value });
+                    // Clear error on change
+                    if (formErrors.link) {
+                      const newErrors = { ...formErrors };
+                      delete newErrors.link;
+                      setFormErrors(newErrors);
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // Validate on blur
+                    const value = e.target.value.trim();
+                    const newErrors = { ...formErrors };
+                    
+                    if (value && !isValidUrl(value)) {
+                      newErrors.link = getUrlErrorMessage("project link");
+                    } else {
+                      // Clear error if field is empty or valid
+                      delete newErrors.link;
+                    }
+                    
+                    setFormErrors(newErrors);
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    formErrors.link ? "border-red-500" : "border-slate-200"
+                  }`}
                   placeholder="https://github.com/..."
                 />
+                {formErrors.link && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <Icon icon="mingcute:alert-line" width={14} height={14} />
+                    {formErrors.link}
+                  </p>
+                )}
+                {formData.link && !formErrors.link && isValidUrl(formData.link) && (
+                  <p className="text-green-600 text-xs mt-1 flex items-center gap-1">
+                    <Icon icon="mingcute:check-circle-line" width={14} height={14} />
+                    Valid URL
+                  </p>
+                )}
               </div>
 
               {/* Collaborators */}

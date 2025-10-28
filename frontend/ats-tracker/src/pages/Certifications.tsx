@@ -225,11 +225,25 @@ export function Certifications() {
 
   const openEditModal = (cert: CertificationData) => {
     setSelectedCertification(cert);
+    
+    // Helper function to format date for HTML date input (YYYY-MM-DD)
+    const formatDateForInput = (dateString: string | null | undefined): string => {
+      if (!dateString) return "";
+      try {
+        // Parse the ISO date and extract YYYY-MM-DD
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+      } catch (e) {
+        console.error("Error formatting date:", dateString, e);
+        return "";
+      }
+    };
+    
     setFormData({
       name: cert.name,
       org_name: cert.org_name,
-      date_earned: cert.date_earned,
-      expiration_date: cert.expiration_date || "",
+      date_earned: formatDateForInput(cert.date_earned),
+      expiration_date: formatDateForInput(cert.expiration_date),
       never_expires: cert.never_expires,
     });
     setShowEditModal(true);
