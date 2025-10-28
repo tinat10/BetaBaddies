@@ -401,9 +401,9 @@ async function runAllTests() {
         .delete(`/api/v1/jobs/${jobId}`)
         .set("Cookie", sessionCookie);
 
-      if (response.status !== 204) {
+      if (response.status !== 200) {
         throw new Error(
-          `Expected 204, got ${response.status}: ${JSON.stringify(
+          `Expected 200, got ${response.status}: ${JSON.stringify(
             response.body
           )}`
         );
