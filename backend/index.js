@@ -1,10 +1,15 @@
-import app from "./server.js";
+// Load environment variables FIRST, before any other imports
 import dotenv from "dotenv";
+dotenv.config();
+
+import app from "./server.js";
 import database from "./services/database.js";
-import { setupUploadDirectories, createGitkeepFiles } from "./utils/setupDirectories.js";
+import {
+  setupUploadDirectories,
+  createGitkeepFiles,
+} from "./utils/setupDirectories.js";
 
 async function main() {
-  dotenv.config();
   const port = process.env.SERVER_PORT || 3001;
 
   try {
