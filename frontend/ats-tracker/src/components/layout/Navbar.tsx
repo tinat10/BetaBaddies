@@ -14,6 +14,7 @@ export function Navbar() {
   const [profilePicture, setProfilePicture] = useState<string>('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png')
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true)
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
@@ -151,10 +152,10 @@ export function Navbar() {
 
           {/* User Profile Area */}
           <div className="flex items-center">
-            {isCheckingAuth ? (
+            {isCheckingAuth || isLoggingOut ? (
               <div className="flex items-center gap-2 text-slate-600">
                 <Icon icon="mingcute:loading-line" width={20} height={20} className="animate-spin" />
-                <span className="text-sm">Loading...</span>
+                <span className="text-sm">{isLoggingOut ? 'Logging out...' : 'Loading...'}</span>
               </div>
             ) : isLoggedIn ? (
             <div className="relative" ref={dropdownRef}>
@@ -242,24 +243,39 @@ export function Navbar() {
                   </button>
                   <div className="h-px bg-slate-100 my-2" />
                   <button 
-                    className="w-full flex items-center gap-3 px-4 py-3 bg-transparent border-none text-left cursor-pointer text-sm font-medium text-red-500 transition-colors duration-200 hover:bg-red-50"
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-transparent border-none text-left cursor-pointer text-sm font-medium text-red-500 transition-colors duration-200 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isLoggingOut}
                     onClick={async () => {
+                      // Immediately set logout state and close dropdown
+                      setIsLoggingOut(true)
+                      setIsDropdownOpen(false)
+                      
+                      // Clear local state immediately to prevent seeing old data
+                      setIsLoggedIn(false)
+                      setDisplayName('User')
+                      setUserEmail('')
+                      setProfilePicture('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png')
+                      
                       try {
+                        // Call logout API to clear session on backend
                         await api.logout()
                       } catch (error) {
-                        console.error('Logout failed:', error)
+                        console.error('Logout API failed:', error)
+                        // Continue with redirect even if API fails
                       } finally {
-                        // Always clear state and redirect, even if API fails
-                        setIsLoggedIn(false)
-                        setDisplayName('User')
-                        setUserEmail('')
-                        // Use window.location for hard redirect to clear all state
-                        window.location.href = ROUTES.LOGIN
+                        // Use navigate with replace to redirect to landing page
+                        // replace: true prevents going back to the protected page
+                        navigate(ROUTES.LANDING, { replace: true })
                       }
                     }}
                   >
-                    <Icon icon="mingcute:logout-line" width={20} height={20} />
-                    <span>Logout</span>
+                    <Icon 
+                      icon={isLoggingOut ? "mingcute:loading-line" : "mingcute:logout-line"} 
+                      width={20} 
+                      height={20}
+                      className={isLoggingOut ? "animate-spin" : ""}
+                    />
+                    <span>{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
                   </button>
                 </div>
               )}

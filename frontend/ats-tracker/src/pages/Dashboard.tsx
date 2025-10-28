@@ -35,11 +35,21 @@ export function Dashboard() {
         setError(null);
         const data = await dashboardService.getDashboardData();
         setProfileData(data);
-      } catch (err) {
+        setIsLoading(false);
+      } catch (err: any) {
         console.error("Failed to fetch dashboard data:", err);
+        
+        // If authentication failed (401), don't show default data
+        // Keep loading state to prevent flashing empty dashboard
+        // ProtectedRoute will handle the redirect
+        if (err?.status === 401 || err?.message?.includes('Unauthorized')) {
+          console.log('Authentication failed, staying in loading state');
+          setIsLoading(true);
+          return;
+        }
+        
         setError("Failed to load dashboard data. Please try again.");
         setProfileData(dashboardService.getDefaultDashboardData());
-      } finally {
         setIsLoading(false);
       }
     };

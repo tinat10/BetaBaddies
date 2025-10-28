@@ -102,7 +102,13 @@ class UserController {
         });
       }
 
-      res.clearCookie("connect.sid");
+      // Clear the session cookie with the same options used to set it
+      res.clearCookie("connect.sid", {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax",
+      });
+      
       res.status(200).json({
         ok: true,
         data: {
