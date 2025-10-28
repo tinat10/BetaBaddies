@@ -73,6 +73,24 @@ class UserService {
         googleId,
       ]);
 
+      // Create a basic profile with the name from Google OAuth
+      if (firstName && lastName) {
+        const profileQuery = `
+          INSERT INTO profiles (user_id, first_name, last_name, state, pfp_link)
+          VALUES ($1, $2, $3, 'NY', $4)
+        `;
+
+        const defaultPfpLink =
+          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
+
+        await database.query(profileQuery, [
+          userId,
+          firstName,
+          lastName,
+          defaultPfpLink,
+        ]);
+      }
+
       return {
         id: userResult.rows[0].u_id,
         email: userResult.rows[0].email,
@@ -88,7 +106,7 @@ class UserService {
   }
 
   // Link Google account to existing user
-  async linkGoogleAccount(userId, googleId) {
+  async linkGoogleAccount(userId, googleId, firstName, lastName) {
     try {
       const query = `
         UPDATE users 
@@ -101,6 +119,44 @@ class UserService {
 
       if (result.rows.length === 0) {
         throw new Error("User not found");
+      }
+
+      // Update profile with name if provided and profile exists, or create profile
+      if (firstName && lastName) {
+        const checkProfileQuery = `
+          SELECT user_id FROM profiles WHERE user_id = $1
+        `;
+        const profileCheck = await database.query(checkProfileQuery, [userId]);
+
+        const defaultPfpLink =
+          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
+
+        if (profileCheck.rows.length === 0) {
+          // Create profile if it doesn't exist
+          const insertProfileQuery = `
+            INSERT INTO profiles (user_id, first_name, last_name, state, pfp_link)
+            VALUES ($1, $2, $3, 'NY', $4)
+          `;
+          await database.query(insertProfileQuery, [
+            userId,
+            firstName,
+            lastName,
+            defaultPfpLink,
+          ]);
+        } else {
+          // Update name if profile exists but name fields are empty
+          const updateProfileQuery = `
+            UPDATE profiles 
+            SET first_name = $2, last_name = $3 
+            WHERE user_id = $1 
+              AND (first_name IS NULL OR first_name = '' OR first_name = 'User')
+          `;
+          await database.query(updateProfileQuery, [
+            userId,
+            firstName,
+            lastName,
+          ]);
+        }
       }
 
       return result.rows[0];
@@ -164,10 +220,15 @@ class UserService {
   // Verify password
   async verifyPassword(password, hashedPassword) {
     try {
+      // Safety check for invalid input
+      if (!password || !hashedPassword) {
+        return false;
+      }
       return await bcrypt.compare(password, hashedPassword);
     } catch (error) {
       console.error("❌ Error verifying password:", error);
-      throw error;
+      // Return false instead of throwing to prevent 500 errors
+      return false;
     }
   }
 
@@ -209,8 +270,8 @@ class UserService {
   // Generate reset token
   async generateResetToken(userId) {
     try {
-      const crypto = await import('crypto');
-      const resetToken = crypto.randomBytes(32).toString('hex');
+      const crypto = await import("crypto");
+      const resetToken = crypto.randomBytes(32).toString("hex");
       const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
 
       const query = `
@@ -220,7 +281,11 @@ class UserService {
         RETURNING u_id, email
       `;
 
-      const result = await database.query(query, [userId, resetToken, resetTokenExpires]);
+      const result = await database.query(query, [
+        userId,
+        resetToken,
+        resetTokenExpires,
+      ]);
 
       if (result.rows.length === 0) {
         throw new Error("User not found");
@@ -262,7 +327,10 @@ class UserService {
         RETURNING u_id, email
       `;
 
-      const updateResult = await database.query(updateQuery, [user.u_id, hashedPassword]);
+      const updateResult = await database.query(updateQuery, [
+        user.u_id,
+        hashedPassword,
+      ]);
 
       if (updateResult.rows.length === 0) {
         throw new Error("Failed to update password");
@@ -274,7 +342,7 @@ class UserService {
       throw error;
     }
   }
-  
+
   // Delete user account with password verification
   async deleteUser(userId, password) {
     try {

@@ -22,13 +22,45 @@ export function Login() {
     setIsLoading(true);
     setError(null);
 
+    // Validate inputs
+    if (!email.trim()) {
+      setError("Please enter your email address");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Please enter your password");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       await api.login(email, password);
       // Redirect to dashboard on success - use window.location for full page reload
       console.log("Login successful, redirecting to:", ROUTES.DASHBOARD);
       window.location.href = ROUTES.DASHBOARD;
     } catch (err: any) {
-      setError(err.message || "Authentication failed");
+      // Provide more specific error messages
+      let errorMessage = "Authentication failed";
+
+      if (err.status === 401) {
+        errorMessage =
+          "Invalid email or password. Please check your credentials and try again.";
+      } else if (err.code === "INVALID_CREDENTIALS") {
+        errorMessage =
+          "The email or password you entered is incorrect. Please try again.";
+      } else if (err.status === 429) {
+        errorMessage =
+          "Too many login attempts. Please wait a moment and try again.";
+      } else if (err.message) {
+        errorMessage = err.message;
+      } else {
+        errorMessage =
+          "Unable to connect to the server. Please check your internet connection.";
+      }
+
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -83,9 +115,9 @@ export function Login() {
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+            <div className="bg-red-50 border-2 border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center gap-2 animate-shake">
               <Icon icon="mingcute:alert-line" width={20} height={20} />
-              <span className="text-sm">{error}</span>
+              <span className="text-sm font-medium">{error}</span>
             </div>
           )}
 
@@ -107,7 +139,10 @@ export function Login() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError(null);
+                }}
                 required
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
                 placeholder="Enter your email"
@@ -137,7 +172,10 @@ export function Login() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError(null);
+                }}
                 required
                 minLength={8}
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
