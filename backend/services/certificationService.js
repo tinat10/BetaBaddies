@@ -106,9 +106,9 @@ class CertificationService {
       // Validate dates if provided
       if (dateEarned || expirationDate !== undefined) {
         this.validateDates(
-          dateEarned || existingCert.dateEarned,
+          dateEarned || existingCert.date_earned,
           expirationDate,
-          neverExpires !== undefined ? neverExpires : existingCert.neverExpires
+          neverExpires !== undefined ? neverExpires : existingCert.never_expires
         );
       }
 
@@ -285,12 +285,12 @@ class CertificationService {
   formatCertification(cert) {
     return {
       id: cert.id,
-      userId: cert.user_id,
+      user_id: cert.user_id,
       name: cert.name,
-      orgName: cert.org_name,
-      dateEarned: cert.date_earned,
-      expirationDate: cert.expiration_date,
-      neverExpires: cert.never_expires,
+      org_name: cert.org_name,
+      date_earned: cert.date_earned,
+      expiration_date: cert.expiration_date,
+      never_expires: cert.never_expires,
       // Calculate status based on expiration
       status: this.calculateStatus(cert.expiration_date, cert.never_expires),
       // Calculate days until expiration
