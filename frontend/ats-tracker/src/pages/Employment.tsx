@@ -492,13 +492,25 @@ function JobFormModal({
   onSubmit: (data: JobInput) => void; 
   onClose: () => void; 
 }) {
+  // Helper function to format ISO date to YYYY-MM-DD for HTML date input
+  const formatDateForInput = (dateString: string | null | undefined): string => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0];
+    } catch (e) {
+      console.error('Error formatting date:', dateString, e);
+      return '';
+    }
+  };
+
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     company: initialData?.company || '',
     location: initialData?.location || '',
     salary: initialData?.salary?.toString() || '',
-    startDate: initialData?.startDate || '',
-    endDate: initialData?.endDate || '',
+    startDate: formatDateForInput(initialData?.startDate),
+    endDate: formatDateForInput(initialData?.endDate),
     description: initialData?.description || '',
     isCurrent: initialData?.isCurrent || false,
   })
