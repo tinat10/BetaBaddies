@@ -21,51 +21,6 @@ export function Landing() {
   return (
     <div className="min-h-screen font-poppins relative overflow-x-hidden w-full bg-white md:bg-gradient-to-t md:from-[#B1D0FF] md:via-[#F8FAFC] md:to-white">
       {/* Annotations - Hide on mobile and tablet */}
-      {/* Candidate Profile Management */}
-      <div className="absolute top-24 right-[70px] z-10 hidden lg:block">
-        <div className="relative flex items-center gap-2">
-          <span
-            style={{
-              fontFamily: "Poppins",
-              fontWeight: "600",
-              fontSize: "25px",
-              transform: "rotate(12deg)",
-              display: "block",
-              maxWidth: "240px",
-              lineHeight: "1.2",
-              textAlign: "center",
-            }}
-          >
-            Candidate Profile Management
-          </span>
-          <svg
-            width="70"
-            height="80"
-            style={{ transform: "rotate(12deg)", marginTop: "-20px" }}
-          >
-            <path
-              d="M 0 75 Q 30 85 60 0"
-              stroke="black"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              markerEnd="url(#arrowhead1)"
-            />
-            <defs>
-              <marker
-                id="arrowhead1"
-                markerWidth="10"
-                markerHeight="10"
-                refX="9"
-                refY="3"
-                orient="auto"
-              >
-                <polygon points="0 0, 10 3, 0 6" fill="black" />
-              </marker>
-            </defs>
-          </svg>
-        </div>
-      </div>
 
       {/* AI Powered Content Generation */}
       <div className="absolute top-[615px] left-[50px] z-10 hidden lg:block">
