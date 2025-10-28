@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict tv36hMxf4b847PLcxc2bszScKpzjUQt62MH8iQmStWfqZD1NePtVWsvkQIBBRqQ
+\restrict 8cefIDIueZbJCGs5T4fbr5dVkBaP2yCn4QkYQnRPgtlH2Wczna8vnATrfNB994p
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2025-10-27 06:33:32
+-- Started on 2025-10-27 20:56:29
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -123,10 +123,11 @@ CREATE TABLE public.jobs (
     title character varying(255) NOT NULL,
     company character varying(255) NOT NULL,
     location character varying(255),
-    start_date date NOT NULL,
     end_date date,
     is_current boolean DEFAULT false NOT NULL,
-    description character varying(1000)
+    description character varying(1000),
+    salary numeric,
+    start_date date NOT NULL
 );
 
 
@@ -249,7 +250,7 @@ COPY public.files (file_id, file_data, file_path) FROM stdin;
 -- Data for Name: jobs; Type: TABLE DATA; Schema: public; Owner: superUser
 --
 
-COPY public.jobs (id, user_id, title, company, location, start_date, end_date, is_current, description) FROM stdin;
+COPY public.jobs (id, user_id, title, company, location, end_date, is_current, description, salary, start_date) FROM stdin;
 \.
 
 
@@ -489,11 +490,11 @@ ALTER TABLE ONLY public.skills
     ADD CONSTRAINT skills_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(u_id) ON DELETE CASCADE;
 
 
--- Completed on 2025-10-27 06:33:32
+-- Completed on 2025-10-27 20:56:29
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict tv36hMxf4b847PLcxc2bszScKpzjUQt62MH8iQmStWfqZD1NePtVWsvkQIBBRqQ
+\unrestrict 8cefIDIueZbJCGs5T4fbr5dVkBaP2yCn4QkYQnRPgtlH2Wczna8vnATrfNB994p
 

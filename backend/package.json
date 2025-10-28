@@ -14,6 +14,8 @@
     "test:certifications": "node tests/certifications-functionality.test.js",
     "test:certifications-api": "node tests/certifications-api.test.js",
     "test:profile-api": "node tests/profile-api.test.js",
+    "test:reset-password": "node tests/reset-password-functionality.test.js",
+    "test:reset-password-api": "node tests/reset-password-api.test.js",
     "test:all": "npm run test && npm run test:user-api && npm run test:jobs-service && npm run test:jobs-api && npm run test:certifications && npm run test:certifications-api && npm run test:profile-api"
   },
   "keywords": [],
@@ -34,6 +36,7 @@
     "joi": "^18.0.1",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "nodemailer": "^7.0.10",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.16.3",

@@ -19,6 +19,22 @@ const schemas = {
     password: Joi.string().required(),
   }),
 
+  forgotPassword: Joi.object({
+    email: Joi.string().email().required(),
+  }),
+  
+  resetPassword: Joi.object({
+    token: Joi.string().required(),
+    newPassword: Joi.string()
+      .min(8)
+      .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)"))
+      .required()
+      .messages({
+        "string.pattern.base":
+          "Password must contain at least one lowercase letter, one uppercase letter, and one number",
+      }),
+  }),
+  
   changePassword: Joi.object({
     currentPassword: Joi.string().required(),
     newPassword: Joi.string()
@@ -63,7 +79,22 @@ const schemas = {
     gpa: Joi.number().min(0).max(4.0).allow(null).optional(),
     isEnrolled: Joi.boolean().required(),
     honors: Joi.string().max(1000).allow(null, "").optional(),
-  }),
+    startDate: Joi.date().allow(null).optional(),
+    endDate: Joi.date().required().messages({
+      "any.required": "Graduation date is required",
+      "date.base": "Graduation date must be a valid date",
+    }),
+  })
+    .custom((value, helpers) => {
+      // If both dates exist, endDate should be after startDate
+      if (value.startDate && value.endDate && value.endDate < value.startDate) {
+        return helpers.error("date.endBeforeStart");
+      }
+      return value;
+    })
+    .messages({
+      "date.endBeforeStart": "Graduation date must be after start date",
+    }),
 
   updateEducation: Joi.object({
     school: Joi.string().max(255).optional(),
@@ -82,7 +113,19 @@ const schemas = {
     gpa: Joi.number().min(0).max(4.0).allow(null).optional(),
     isEnrolled: Joi.boolean().optional(),
     honors: Joi.string().max(1000).allow(null, "").optional(),
-  }),
+    startDate: Joi.date().allow(null).optional(),
+    endDate: Joi.date().optional(),
+  })
+    .custom((value, helpers) => {
+      // If both dates exist, endDate should be after startDate
+      if (value.startDate && value.endDate && value.endDate < value.startDate) {
+        return helpers.error("date.endBeforeStart");
+      }
+      return value;
+    })
+    .messages({
+      "date.endBeforeStart": "Graduation date must be after start date",
+    }),
 
   createSkill: Joi.object({
     skillName: Joi.string().max(100).required(),
@@ -398,3 +441,5 @@ export const validateUpdateProject = validate(schemas.updateProject);
 export const validateProjectId = validateParams(schemas.projectId);
 export const validateCreateProfile = validate(schemas.createProfile);
 export const validateUpdateProfile = validate(schemas.updateProfile);
+export const validateForgotPassword = validate(schemas.forgotPassword);
+export const validateResetPassword = validate(schemas.resetPassword);

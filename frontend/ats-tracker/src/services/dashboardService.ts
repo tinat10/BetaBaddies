@@ -31,7 +31,7 @@ export class DashboardService {
       ]);
 
       // Extract data or use empty arrays/defaults
-      // API responses have structure: { ok: true, data: { jobs: [...], ...} }
+      // API responses have structure: { ok: true, data: { jobs: [...], history: [...], ...} }
       const profileData = profileResponse.status === 'fulfilled' ? profileResponse.value.data : null;
       const jobs = jobsResponse.status === 'fulfilled' ? jobsResponse.value.data?.jobs || [] : [];
       const jobHistory = jobHistoryResponse.status === 'fulfilled' ? jobHistoryResponse.value.data?.history || [] : [];
@@ -192,15 +192,31 @@ export class DashboardService {
   /**
    * Process job history into career timeline
    */
-  private processCareerTimeline(jobHistory: any[]): Array<{ year: string; company: string; position: string }> {
+  private processCareerTimeline(jobHistory: any[]): Array<{ 
+    id: string; 
+    year: string; 
+    company: string; 
+    position: string; 
+    startDate: string; 
+    endDate?: string; 
+    isCurrent: boolean; 
+    duration: string; 
+    location?: string; 
+  }> {
     if (!Array.isArray(jobHistory) || jobHistory.length === 0) {
       return [];
     }
 
     return jobHistory.map((job: any) => ({
-      year: job.start_date ? new Date(job.start_date).getFullYear().toString() : 'Present',
+      id: job.id || '',
+      year: job.startDate ? new Date(job.startDate).getFullYear().toString() : 'Present',
       company: job.company || 'Unknown Company',
       position: job.title || 'Unknown Position',
+      startDate: job.startDate || '',
+      endDate: job.endDate,
+      isCurrent: job.isCurrent || false,
+      duration: this.calculateDuration(job.startDate, job.endDate, job.isCurrent),
+      location: job.location,
     }));
   }
 
@@ -322,6 +338,31 @@ export class DashboardService {
       .sort((a, b) => b.date.getTime() - a.date.getTime())
       .slice(0, 4)
       .map(({ date, ...rest }) => rest);
+  }
+
+  /**
+   * Calculate duration between two dates
+   */
+  private calculateDuration(startDate?: string, endDate?: string, isCurrent?: boolean): string {
+    if (!startDate) return '';
+    
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : (isCurrent ? new Date() : new Date());
+    
+    const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+    
+    if (months < 1) return 'Less than 1 month';
+    
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    
+    if (years === 0) {
+      return `${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}`;
+    } else if (remainingMonths === 0) {
+      return `${years} year${years !== 1 ? 's' : ''}`;
+    } else {
+      return `${years} year${years !== 1 ? 's' : ''} ${remainingMonths} month${remainingMonths !== 1 ? 's' : ''}`;
+    }
   }
 
   /**

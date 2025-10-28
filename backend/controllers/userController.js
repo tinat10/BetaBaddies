@@ -182,6 +182,69 @@ class UserController {
     });
   });
 
+  // Forgot password - send reset email
+forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Check if user exists
+    const user = await userService.getUserByEmail(email);
+    
+    if (user) {
+      // Generate reset token
+      const resetToken = await userService.generateResetToken(user.u_id);
+      
+      // Send reset email
+      await emailService.sendPasswordResetEmail(email, resetToken);
+    }
+
+    // Always return success message for security
+    res.status(200).json({
+      ok: true,
+      data: {
+        message: "If an account with that email exists, we've sent a password reset link.",
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error in forgot password:", error);
+    // Still return success for security
+    res.status(200).json({
+      ok: true,
+      data: {
+        message: "If an account with that email exists, we've sent a password reset link.",
+      },
+    });
+  }
+});
+
+// Reset password with token
+resetPassword = asyncHandler(async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    // Verify token and reset password
+    await userService.resetPasswordWithToken(token, newPassword);
+
+    res.status(200).json({
+      ok: true,
+      data: {
+        message: "Password has been reset successfully. You can now log in with your new password.",
+      },
+    });
+  } catch (error) {
+    if (error.message.includes("Invalid or expired token")) {
+      return res.status(400).json({
+        ok: false,
+        error: {
+          code: "INVALID_TOKEN",
+          message: "Invalid or expired reset token. Please request a new password reset.",
+        },
+      });
+    }
+    throw error;
+  }
+});
+  
   // Delete user account (UC-009)
   deleteAccount = asyncHandler(async (req, res) => {
     const userId = req.session.userId;

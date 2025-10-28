@@ -26,9 +26,15 @@ export interface SkillDistribution {
 }
 
 export interface CareerTimelineItem {
+  id: string;
   year: string;
   company: string;
   position: string;
+  startDate: string;
+  endDate?: string;
+  isCurrent: boolean;
+  duration: string;
+  location?: string;
 }
 
 export interface ProfileStrength {

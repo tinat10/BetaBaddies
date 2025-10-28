@@ -14,6 +14,8 @@ import { Settings } from './pages/Settings'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ROUTES } from './config/routes'
+import { ForgotPassword } from './pages/ForgotPassword'
+import { ResetPassword } from './pages/ResetPassword'
 import './App.css'
 
 function App() {
@@ -43,6 +45,23 @@ function App() {
 		      <Register />
 		    </ProtectedRoute>
 		  } 
+		/>
+		<Route 
+			path={ROUTES.FORGOT_PASSWORD} 
+			element={
+				<ProtectedRoute requireAuth={false}>
+				<ForgotPassword />
+				</ProtectedRoute>
+			} 
+			/>
+
+			<Route 
+			path={ROUTES.RESET_PASSWORD} 
+			element={
+				<ProtectedRoute requireAuth={false}>
+				<ResetPassword />
+				</ProtectedRoute>
+			} 
 		/>
 		
 		{/* Protected pages - require authentication */}

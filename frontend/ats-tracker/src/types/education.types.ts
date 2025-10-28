@@ -8,6 +8,8 @@ export interface EducationData {
   gpa?: number;
   isEnrolled: boolean;
   honors?: string;
+  startDate?: string; // ISO date string (YYYY-MM-DD) from PostgreSQL
+  endDate?: string; // ISO date string (YYYY-MM-DD) from PostgreSQL
 }
 
 // For creating/updating education (what backend expects)
@@ -18,6 +20,8 @@ export interface EducationInput {
   gpa?: number;
   isEnrolled?: boolean;
   honors?: string;
+  startDate?: string; // ISO date string (YYYY-MM-DD) for PostgreSQL
+  endDate?: string; // ISO date string (YYYY-MM-DD) for PostgreSQL
 }
 
 // Education level options

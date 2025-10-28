@@ -17,6 +17,7 @@ class JobController {
           title: job.title,
           company: job.company,
           location: job.location,
+          salary: job.salary,
           startDate: job.startDate,
           endDate: job.endDate,
           isCurrent: job.isCurrent,
@@ -45,6 +46,7 @@ class JobController {
           title: job.title,
           company: job.company,
           location: job.location,
+          salary: job.salary,
           startDate: job.startDate,
           endDate: job.endDate,
           isCurrent: job.isCurrent,
@@ -96,6 +98,7 @@ class JobController {
           title: currentJob.title,
           company: currentJob.company,
           location: currentJob.location,
+          salary: currentJob.salary,
           startDate: currentJob.startDate,
           endDate: currentJob.endDate,
           isCurrent: currentJob.isCurrent,
@@ -130,6 +133,7 @@ class JobController {
           title: job.title,
           company: job.company,
           location: job.location,
+          salary: job.salary,
           startDate: job.startDate,
           endDate: job.endDate,
           isCurrent: job.isCurrent,
@@ -155,6 +159,7 @@ class JobController {
           title: job.title,
           company: job.company,
           location: job.location,
+          salary: job.salary,
           startDate: job.startDate,
           endDate: job.endDate,
           isCurrent: job.isCurrent,
@@ -172,7 +177,7 @@ class JobController {
 
     const deletedJob = await jobService.deleteJob(id, userId);
 
-    res.status(204).json({
+    res.status(200).json({
       ok: true,
       data: {
         message: "Job deleted successfully",
@@ -199,6 +204,7 @@ class JobController {
           title: job.title,
           company: job.company,
           location: job.location,
+          salary: job.salary,
           startDate: job.startDate,
           endDate: job.endDate,
           isCurrent: job.isCurrent,
@@ -224,6 +230,12 @@ class JobController {
           pastJobs: statistics.pastJobs,
           earliestStart: statistics.earliestStart,
           latestEnd: statistics.latestEnd,
+          averageSalary: statistics.averageSalary,
+          minSalary: statistics.minSalary,
+          maxSalary: statistics.maxSalary,
+          companiesWorked: statistics.companiesWorked,
+          totalExperienceYears: statistics.totalExperienceYears,
+          averageTenureMonths: statistics.averageTenureMonths,
         },
       },
     });
