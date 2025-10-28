@@ -1,11 +1,12 @@
 import { useState, FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { api } from "@/services/api";
 import { ROUTES } from "@/config/routes";
 import loginSvg from "@/assets/login.svg";
 
 export function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -179,9 +180,9 @@ export function Login() {
             </button>
             <button
               type="button"
-              onClick={() => window.location.href = ROUTES.FORGOT_PASSWORD}
+              onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
               className="w-full text-purple-600 hover:text-purple-700 font-semibold hover:underline text-center py-2"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: "Poppins, sans-serif" }}
             >
               Reset Password
             </button>
