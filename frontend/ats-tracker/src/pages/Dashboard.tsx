@@ -6,19 +6,6 @@ import { dashboardService } from '../services/dashboardService'
 import { ROUTES } from '../config/routes'
 import { exportProfileToPDF } from '../utils/pdfExport'
 
-// Icon component for professional icons using Mingcute
-function MingcuteIcon({ type }: { type: string }) {
-  const iconSize = 40
-  const iconMap: Record<string, string> = {
-    'Employment': 'mingcute:briefcase-line',
-    'Skills': 'mingcute:star-line',
-    'Education': 'mingcute:school-line',
-    'Projects': 'mingcute:folder-line',
-  }
-  
-  return <Icon icon={iconMap[type]} width={iconSize} height={iconSize} />
-}
-
 export function Dashboard() {
   const navigate = useNavigate()
   const [profileData, setProfileData] = useState<DashboardProfileData | null>(null)
@@ -81,10 +68,10 @@ export function Dashboard() {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="p-10 max-w-[1600px] mx-auto font-poppins min-h-full flex items-center justify-center">
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1600px] mx-auto font-poppins min-h-full flex items-center justify-center">
         <div className="text-center text-white">
-          <div className="text-2xl font-semibold mb-2">Loading your dashboard...</div>
-          <div className="text-base">Please wait while we fetch your data</div>
+          <div className="text-xl sm:text-2xl font-semibold mb-2">Loading your dashboard...</div>
+          <div className="text-sm sm:text-base">Please wait while we fetch your data</div>
         </div>
       </div>
     )
@@ -93,10 +80,10 @@ export function Dashboard() {
   // Show error state
   if (error && !profileData) {
     return (
-      <div className="p-10 max-w-[1600px] mx-auto font-poppins min-h-full flex items-center justify-center">
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1600px] mx-auto font-poppins min-h-full flex items-center justify-center">
         <div className="text-center text-white">
-          <div className="text-2xl font-semibold text-red-200 mb-2">Error</div>
-          <div className="text-base">{error}</div>
+          <div className="text-xl sm:text-2xl font-semibold text-red-200 mb-2">Error</div>
+          <div className="text-sm sm:text-base">{error}</div>
         </div>
       </div>
     )
@@ -110,17 +97,17 @@ export function Dashboard() {
   return (
     <div className="font-poppins min-h-full">
       {/* Welcome Message */}
-      <div className="max-w-[1600px] mx-auto p-10 pb-6">
-        <div className="flex items-center justify-between">
-          <h2 className="mb-2" style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 100 }}>
-            Welcome Back, <span style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 600, color: '#3351FD' }}>{profileData.name}</span>
+      <div className="max-w-full xl:max-w-[1600px] mx-auto p-4 sm:p-6 md:p-8 lg:p-10 pb-3 sm:pb-4 md:pb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h2 className="mb-0" style={{ fontFamily: 'Poppins', fontSize: 'clamp(28px, 5vw, 64px)', fontWeight: 100 }}>
+            Welcome Back, <span style={{ fontFamily: 'Poppins', fontWeight: 600, color: '#3351FD' }}>{profileData.name}</span>
           </h2>
           <button 
-            className="flex items-center gap-2 px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-3 py-2 sm:px-4 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-xs sm:text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             onClick={handleExportProfile}
             disabled={isExporting || !profileData}
           >
-            <Icon icon={isExporting ? "mingcute:loading-line" : "mingcute:download-line"} width={20} height={20} className={isExporting ? "animate-spin" : ""} />
+            <Icon icon={isExporting ? "mingcute:loading-line" : "mingcute:download-line"} width={18} height={18} className={isExporting ? "animate-spin" : ""} />
             {isExporting ? 'Exporting...' : 'Export Profile'}
           </button>
         </div>
@@ -128,7 +115,7 @@ export function Dashboard() {
 
       {/* Error banner if there was an error but we have cached/default data */}
       {error && (
-        <div className="max-w-[1600px] mx-auto px-10 mb-6">
+        <div className="max-w-full xl:max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 mb-6">
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
             <p className="text-sm text-yellow-800 m-0">{error}</p>
           </div>
@@ -136,21 +123,21 @@ export function Dashboard() {
       )}
 
       {/* Main Content Layout with Gradient behind cards only */}
-      <div className="relative -mt-8 pb-4">
-        <div className="max-w-[1600px] mx-auto px-10 pb-4 pt-24 relative">
-          {/* Gradient Background - simple approach that extends to container edge plus some */}
+      <div className="relative sm:-mt-4 md:-mt-6 lg:-mt-8 pb-4">
+        <div className="max-w-full xl:max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 pb-4 pt-8 sm:pt-12 md:pt-16 lg:pt-24 relative">
+          {/* Gradient Background - hidden on mobile, visible on larger screens */}
           <div 
-            className="absolute pointer-events-none"
+            className="absolute pointer-events-none hidden lg:block"
             style={{ 
-              left: 'calc(350px + 2rem - 1.5rem)', // sidebar width + gap - negative margin
-              right: '-10rem', // extend beyond container with safe margin
+              left: 'calc(350px + 2rem - 1.5rem)',
+              right: '-10rem',
               top: '5%',
               bottom: '-1rem',
               background: 'linear-gradient(180deg, #B1D0FF 0%, #EC85CA 100%)',
               borderTopLeftRadius: '25px'
             }}
           />
-          <div className="grid grid-cols-[350px_1fr] gap-8 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[350px_1fr] gap-6 md:gap-8 relative">
           
           {/* Left Sidebar */}
           <div className="space-y-6 relative z-10">
@@ -226,25 +213,25 @@ export function Dashboard() {
                   </div>
 
           {/* Right Main Content - Bento Grid */}
-          <div className="-ml-6 relative z-10">
-            <div className="grid grid-cols-[373px_373px_374px] gap-6 auto-rows-auto">
+          <div className="lg:-ml-6 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 auto-rows-auto">
           {/* Profile Completion Card - Row 1 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200" style={{ gridColumn: 'span 2 / span 2' }}>
-            <h3 className="text-3xl font-medium text-slate-900 mb-6">Profile Completion</h3>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="flex-1 h-6 bg-slate-200 rounded-2xl overflow-hidden">
+          <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-slate-200 md:col-span-2 xl:col-span-2">
+            <h3 className="text-2xl md:text-3xl font-medium text-slate-900 mb-4 md:mb-6">Profile Completion</h3>
+            <div className="flex items-center gap-3 md:gap-4 mb-4">
+              <div className="flex-1 h-5 md:h-6 bg-slate-200 rounded-2xl overflow-hidden">
                 <div 
                   className="h-full bg-blue-500 transition-all duration-300 rounded-l-2xl"
                   style={{ width: `${profileData.profileCompletion}%` }}
                 />
               </div>
-              <div className="text-3xl font-medium text-slate-900">{profileData.profileCompletion}%</div>
+              <div className="text-2xl md:text-3xl font-medium text-slate-900">{profileData.profileCompletion}%</div>
             </div>
-            <p className="text-base text-slate-500 mb-4">The profile is {profileData.profileCompletion}% complete</p>
-            <h4 className="text-lg font-medium text-slate-900 mb-3">Recommended Actions ({profileData.suggestions.length})</h4>
+            <p className="text-sm md:text-base text-slate-500 mb-4">The profile is {profileData.profileCompletion}% complete</p>
+            <h4 className="text-base md:text-lg font-medium text-slate-900 mb-3">Recommended Actions ({profileData.suggestions.length})</h4>
             <ul className="space-y-1">
               {profileData.suggestions.map((suggestion, index) => (
-                <li key={index} className="text-sm text-slate-600">
+                <li key={index} className="text-xs md:text-sm text-slate-600">
                   {suggestion}
                 </li>
               ))}
@@ -252,11 +239,11 @@ export function Dashboard() {
           </div>
 
           {/* Profile Strength Card - Row 1 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
-            <div className="flex justify-between items-start mb-6">
-              <h3 className="text-3xl font-medium text-slate-900">Profile Strength</h3>
-              <div className="w-24 h-24 rounded-full border-4 border-blue-500 flex flex-col items-center justify-center bg-white">
-                <span className="text-2xl font-medium text-blue-500">{profileData.profileStrength.overall}</span>
+          <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-slate-200">
+            <div className="flex justify-between items-start mb-4 md:mb-6">
+              <h3 className="text-2xl md:text-3xl font-medium text-slate-900">Profile Strength</h3>
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-blue-500 flex flex-col items-center justify-center bg-white flex-shrink-0">
+                <span className="text-xl md:text-2xl font-medium text-blue-500">{profileData.profileStrength.overall}</span>
                 <span className="text-xs text-slate-500">Overall</span>
               </div>
             </div>
@@ -279,14 +266,14 @@ export function Dashboard() {
           </div>
 
           {/* Employment Card - Row 2 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 relative">
-            <div className="absolute top-5 right-5">
-              <MingcuteIcon type="Employment" />
+          <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-slate-200 relative">
+            <div className="absolute top-4 right-4 md:top-5 md:right-5">
+              <Icon icon="mingcute:briefcase-line" width={32} height={32} className="md:w-10 md:h-10" />
             </div>
-            <h3 className="text-3xl font-medium text-slate-900 mb-12">Employment</h3>
-            <div className="text-8xl font-medium text-slate-900 mb-12 text-center" style={{ fontFamily: 'Poppins' }}>{profileData.employment}</div>
+            <h3 className="text-2xl md:text-3xl font-medium text-slate-900 mb-8 md:mb-12">Employment</h3>
+            <div className="text-6xl md:text-8xl font-medium text-slate-900 mb-8 md:mb-12 text-center" style={{ fontFamily: 'Poppins' }}>{profileData.employment}</div>
             <button 
-              className="w-full bg-blue-500 text-white rounded-md py-2 text-sm font-medium cursor-pointer transition-all hover:bg-blue-600"
+              className="w-full bg-blue-500 text-white rounded-md py-2.5 text-sm font-medium cursor-pointer transition-all hover:bg-blue-600"
               onClick={() => handleQuickAdd('Employment')}
             >
               Quick Add
@@ -294,14 +281,14 @@ export function Dashboard() {
           </div>
 
           {/* Skills Card - Row 2 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 relative">
-            <div className="absolute top-5 right-5">
-              <MingcuteIcon type="Skills" />
+          <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-slate-200 relative">
+            <div className="absolute top-4 right-4 md:top-5 md:right-5">
+              <Icon icon="mingcute:star-line" width={32} height={32} className="md:w-10 md:h-10" />
             </div>
-            <h3 className="text-3xl font-medium text-slate-900 mb-12">Skills</h3>
-            <div className="text-8xl font-medium text-slate-900 mb-12 text-center" style={{ fontFamily: 'Poppins' }}>{profileData.skills}</div>
+            <h3 className="text-2xl md:text-3xl font-medium text-slate-900 mb-8 md:mb-12">Skills</h3>
+            <div className="text-6xl md:text-8xl font-medium text-slate-900 mb-8 md:mb-12 text-center" style={{ fontFamily: 'Poppins' }}>{profileData.skills}</div>
             <button 
-              className="w-full bg-blue-500 text-white rounded-md py-2 text-sm font-medium cursor-pointer transition-all hover:bg-blue-600"
+              className="w-full bg-blue-500 text-white rounded-md py-2.5 text-sm font-medium cursor-pointer transition-all hover:bg-blue-600"
               onClick={() => handleQuickAdd('Skills')}
             >
               Quick Add
@@ -309,14 +296,14 @@ export function Dashboard() {
           </div>
 
           {/* Education Card - Row 2 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 relative">
-            <div className="absolute top-5 right-5">
-              <MingcuteIcon type="Education" />
+          <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-slate-200 relative">
+            <div className="absolute top-4 right-4 md:top-5 md:right-5">
+              <Icon icon="mingcute:school-line" width={32} height={32} className="md:w-10 md:h-10" />
             </div>
-            <h3 className="text-3xl font-medium text-slate-900 mb-12">Education</h3>
-            <div className="text-8xl font-medium text-slate-900 mb-12 text-center" style={{ fontFamily: 'Poppins' }}>{profileData.education}</div>
+            <h3 className="text-2xl md:text-3xl font-medium text-slate-900 mb-8 md:mb-12">Education</h3>
+            <div className="text-6xl md:text-8xl font-medium text-slate-900 mb-8 md:mb-12 text-center" style={{ fontFamily: 'Poppins' }}>{profileData.education}</div>
             <button 
-              className="w-full bg-blue-500 text-white rounded-md py-2 text-sm font-medium cursor-pointer transition-all hover:bg-blue-600"
+              className="w-full bg-blue-500 text-white rounded-md py-2.5 text-sm font-medium cursor-pointer transition-all hover:bg-blue-600"
               onClick={() => handleQuickAdd('Education')}
             >
               Quick Add
@@ -324,14 +311,14 @@ export function Dashboard() {
           </div>
 
           {/* Projects Card - Row 3 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 relative">
-            <div className="absolute top-5 right-5">
-              <MingcuteIcon type="Projects" />
+          <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-slate-200 relative">
+            <div className="absolute top-4 right-4 md:top-5 md:right-5">
+              <Icon icon="mingcute:folder-line" width={32} height={32} className="md:w-10 md:h-10" />
             </div>
-            <h3 className="text-3xl font-medium text-slate-900 mb-12">Projects</h3>
-            <div className="text-8xl font-medium text-slate-900 mb-12 text-center" style={{ fontFamily: 'Poppins' }}>{profileData.projects}</div>
+            <h3 className="text-2xl md:text-3xl font-medium text-slate-900 mb-8 md:mb-12">Projects</h3>
+            <div className="text-6xl md:text-8xl font-medium text-slate-900 mb-8 md:mb-12 text-center" style={{ fontFamily: 'Poppins' }}>{profileData.projects}</div>
             <button 
-              className="w-full bg-blue-500 text-white rounded-md py-2 text-sm font-medium cursor-pointer transition-all hover:bg-blue-600"
+              className="w-full bg-blue-500 text-white rounded-md py-2.5 text-sm font-medium cursor-pointer transition-all hover:bg-blue-600"
               onClick={() => handleQuickAdd('Projects')}
             >
               Quick Add
@@ -339,8 +326,8 @@ export function Dashboard() {
           </div>
 
           {/* Skill Distribution Card - Row 3 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200" style={{ gridColumn: 'span 2 / span 2' }}>
-            <h3 className="text-3xl font-medium text-slate-900 mb-6">Skill Distribution</h3>
+          <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-slate-200 md:col-span-2 xl:col-span-2">
+            <h3 className="text-2xl md:text-3xl font-medium text-slate-900 mb-4 md:mb-6">Skill Distribution</h3>
             <div className="space-y-4">
               {profileData.skillsDistribution.map((skill) => (
                 <div key={skill.category}>

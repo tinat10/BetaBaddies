@@ -351,11 +351,11 @@ function SkillModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
-          <h2 className="text-2xl font-semibold text-slate-900">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-200">
+          <h2 className="text-xl sm:text-2xl font-semibold text-slate-900">
             {skill ? 'Edit Skill' : 'Add New Skill'}
           </h2>
           <button
@@ -368,7 +368,7 @@ function SkillModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {/* Skill Name */}
           <div className="relative">
             <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -512,14 +512,14 @@ function SkillModal({
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -554,15 +554,15 @@ function DeleteModal({
   if (!isOpen || !skill) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-4 sm:p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-            <Icon icon="mingcute:alert-line" width={24} height={24} className="text-red-600" />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+            <Icon icon="mingcute:alert-line" width={20} height={20} className="text-red-600 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-900">Delete Skill?</h3>
-            <p className="text-sm text-slate-500">This action cannot be undone</p>
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-900">Delete Skill?</h3>
+            <p className="text-xs sm:text-sm text-slate-500">This action cannot be undone</p>
           </div>
         </div>
         
@@ -574,14 +574,14 @@ function DeleteModal({
           <button
             onClick={onClose}
             disabled={isDeleting}
-            className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={isDeleting}
-            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isDeleting ? (
               <>
@@ -808,31 +808,31 @@ export function Skills() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="p-10 max-w-[1400px] mx-auto bg-white font-poppins min-h-full flex items-center justify-center">
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto bg-white font-poppins min-h-full flex items-center justify-center">
         <div className="text-center">
-          <Icon icon="mingcute:loading-line" width={48} height={48} className="animate-spin text-blue-500 mx-auto mb-4" />
-          <div className="text-2xl font-semibold text-slate-900 mb-2">Loading your skills...</div>
-          <div className="text-base text-slate-500">Please wait</div>
+          <Icon icon="mingcute:loading-line" width={40} height={40} className="animate-spin text-blue-500 mx-auto mb-4" />
+          <div className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2">Loading your skills...</div>
+          <div className="text-sm sm:text-base text-slate-500">Please wait</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-10 max-w-[1400px] mx-auto bg-white font-poppins min-h-full">
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto bg-white font-poppins min-h-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
         <div>
-          <h1 className="text-4xl font-semibold text-slate-900 mb-2">Skills Portfolio</h1>
-          <p className="text-slate-600">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-slate-900 mb-2">Skills Portfolio</h1>
+          <p className="text-sm sm:text-base text-slate-600">
             Manage your technical and professional skills • {skills.length} total
           </p>
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm text-sm sm:text-base"
         >
-          <Icon icon="mingcute:add-line" width={20} height={20} />
+          <Icon icon="mingcute:add-line" width={18} height={18} />
           Add Skill
         </button>
       </div>
@@ -853,32 +853,32 @@ export function Skills() {
       )}
 
       {/* Toolbar */}
-      <div className="bg-slate-50 rounded-xl p-6 mb-6 border border-slate-200">
-        {/* View Mode Toggle */}
-        <div className="flex items-center gap-4 mb-4">
+      <div className="bg-slate-50 rounded-xl p-4 md:p-6 mb-6 border border-slate-200">
+        {/* View Mode Toggle - Hidden on mobile */}
+        <div className="hidden sm:flex items-center gap-4 mb-4">
           <span className="text-sm font-medium text-slate-700">View:</span>
           <div className="flex gap-2">
             <button
               onClick={() => setViewMode('category')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors ${
                 viewMode === 'category'
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
               }`}
             >
               <Icon icon="mingcute:grid-line" width={16} height={16} className="inline mr-1" />
-              Category View
+              <span className="hidden md:inline">Category</span>
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors ${
                 viewMode === 'list'
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
               }`}
             >
               <Icon icon="mingcute:list-check-line" width={16} height={16} className="inline mr-1" />
-              List View
+              <span className="hidden md:inline">List</span>
             </button>
           </div>
         </div>

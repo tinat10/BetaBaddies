@@ -205,26 +205,26 @@ export function Projects() {
 
   if (isLoading) {
     return (
-      <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full flex items-center justify-center">
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto bg-white font-sans min-h-full flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl font-semibold text-slate-900 mb-2">Loading projects...</div>
-          <div className="text-base text-slate-500">Please wait</div>
+          <div className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2">Loading projects...</div>
+          <div className="text-sm sm:text-base text-slate-500">Please wait</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full">
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto bg-white font-sans min-h-full">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Projects Portfolio</h1>
-          <p className="text-lg text-slate-600">Showcase your work and achievements</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">Projects Portfolio</h1>
+          <p className="text-sm sm:text-base lg:text-lg text-slate-600">Showcase your work and achievements</p>
         </div>
         <button
           onClick={openAddModal}
-          className="bg-blue-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-600 transition-all flex items-center gap-2 shadow-md"
+          className="w-full sm:w-auto bg-blue-500 text-white px-4 sm:px-6 py-3 rounded-xl font-medium hover:bg-blue-600 transition-all flex items-center justify-center gap-2 shadow-md text-sm sm:text-base"
         >
           <Icon icon="mingcute:add-line" width={20} />
           Add Project
@@ -381,19 +381,19 @@ export function Projects() {
               <div className="flex gap-2 pt-4 border-t border-slate-100">
                 <button
                   onClick={() => openDetailModal(project)}
-                  className="flex-1 px-4 py-2 bg-slate-50 text-slate-900 rounded-lg hover:bg-slate-100 transition-all text-sm font-medium"
+                  className="flex-1 px-4 py-3 bg-slate-50 text-slate-900 rounded-lg hover:bg-slate-100 transition-all text-sm font-medium"
                 >
                   View Details
                 </button>
                 <button
                   onClick={() => openEditModal(project)}
-                  className="px-3 py-2 bg-slate-50 text-slate-900 rounded-lg hover:bg-slate-100 transition-all"
+                  className="px-3 py-3 bg-slate-50 text-slate-900 rounded-lg hover:bg-slate-100 transition-all"
                 >
                   <Icon icon="mingcute:edit-line" width={18} />
                 </button>
                 <button
                   onClick={() => handleDeleteProject(project.id)}
-                  className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all"
+                  className="px-3 py-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all"
                 >
                   <Icon icon="mingcute:delete-line" width={18} />
                 </button>
@@ -445,19 +445,19 @@ export function Projects() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => openDetailModal(project)}
-                    className="px-4 py-2 bg-slate-50 text-slate-900 rounded-lg hover:bg-slate-100 transition-all text-sm font-medium"
+                    className="px-4 py-3 bg-slate-50 text-slate-900 rounded-lg hover:bg-slate-100 transition-all text-sm font-medium"
                   >
                     Details
                   </button>
                   <button
                     onClick={() => openEditModal(project)}
-                    className="px-3 py-2 bg-slate-50 text-slate-900 rounded-lg hover:bg-slate-100 transition-all"
+                    className="px-3 py-3 bg-slate-50 text-slate-900 rounded-lg hover:bg-slate-100 transition-all"
                   >
                     <Icon icon="mingcute:edit-line" width={18} />
                   </button>
                   <button
                     onClick={() => handleDeleteProject(project.id)}
-                    className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all"
+                    className="px-3 py-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all"
                   >
                     <Icon icon="mingcute:delete-line" width={18} />
                   </button>
@@ -470,9 +470,9 @@ export function Projects() {
 
       {/* Add/Edit Modal */}
       {(showAddModal || showEditModal) && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
               {showAddModal ? 'Add New Project' : 'Edit Project'}
             </h2>
             
@@ -617,11 +617,11 @@ export function Projects() {
 
       {/* Detail Modal */}
       {showDetailModal && selectedProject && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">{selectedProject.name}</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-3xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-start gap-4 mb-4 sm:mb-6">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 mb-2 break-words">{selectedProject.name}</h2>
                 <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(selectedProject.status)}`}>
                   {selectedProject.status}
                 </span>

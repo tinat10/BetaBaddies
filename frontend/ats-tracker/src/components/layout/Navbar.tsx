@@ -9,11 +9,13 @@ import logo from '@/assets/logo.png'
 
 export function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [displayName, setDisplayName] = useState<string>('User')
   const [userEmail, setUserEmail] = useState<string>('')
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -77,31 +79,39 @@ export function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false)
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false)
+      }
     }
 
-    if (isDropdownOpen) {
+    if (isDropdownOpen || isMobileMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isDropdownOpen])
+  }, [isDropdownOpen, isMobileMenuOpen])
+
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [location.pathname])
 
   return (
-    <nav className="bg-white sticky top-0 z-50">
-      <div className="max-w-[1600px] mx-auto px-10">
-        {/* Top Row: Logo, Navigation, Export Button, and User Profile */}
-        <div className="flex items-center py-4">
+    <nav className="bg-white sticky top-0 z-50 border-b border-slate-200">
+      <div className="max-w-full xl:max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+        {/* Top Row: Logo, Navigation, and User Profile */}
+        <div className="flex items-center justify-between py-3 sm:py-4">
           {/* Logo/Brand */}
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="ATS Logo" className="w-10 h-10" />
-            <h1 className="text-2xl font-bold text-slate-900 m-0 font-poppins">ATS For Candidates</h1>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <img src={logo} alt="ATS Logo" className="w-8 h-8 sm:w-10 sm:h-10" />
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 m-0 font-poppins">ATS For Candidates</h1>
           </div>
 
-          {/* Navigation Menu - Centered */}
+          {/* Desktop Navigation Menu - Hidden on mobile */}
           {isLoggedIn && (
-            <div className="flex-1 flex justify-center">
+            <div className="hidden md:flex flex-1 justify-center mx-4">
               <Menubar className="border-0 bg-transparent shadow-none p-0 h-auto space-x-1">
                 {navigationItems.map((item) => {
                   const isActive = location.pathname === item.path
@@ -110,10 +120,10 @@ export function Navbar() {
                       <MenubarTrigger
                         onClick={() => navigate(item.path)}
                         className={cn(
-                          "cursor-pointer bg-transparent data-[state=open]:bg-transparent focus:bg-transparent text-sm font-medium",
+                          "cursor-pointer bg-transparent data-[state=open]:bg-transparent focus:bg-transparent text-xs lg:text-sm font-medium",
                           isActive 
-                            ? "bg-black text-white hover:bg-black rounded-md px-4 py-2" 
-                            : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-md px-4 py-2"
+                            ? "bg-black text-white hover:bg-black rounded-md px-3 py-2 lg:px-4" 
+                            : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-md px-3 py-2 lg:px-4"
                         )}
                       >
                         {item.label}
@@ -125,28 +135,43 @@ export function Navbar() {
             </div>
           )}
 
-          {/* User Profile Area */}
-          <div className="flex items-center">
+          {/* Right Side: Mobile Menu Button + User Profile */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Mobile Menu Button - Only show on mobile when logged in */}
+            {isLoggedIn && (
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                aria-label="Toggle mobile menu"
+              >
+                <Icon 
+                  icon={isMobileMenuOpen ? "mingcute:close-line" : "mingcute:menu-line"} 
+                  width={24} 
+                  height={24}
+                />
+              </button>
+            )}
+
             {isCheckingAuth ? (
               <div className="flex items-center gap-2 text-slate-600">
                 <Icon icon="mingcute:loading-line" width={20} height={20} className="animate-spin" />
-                <span className="text-sm">Loading...</span>
+                <span className="text-sm hidden sm:inline">Loading...</span>
               </div>
             ) : isLoggedIn ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-3 px-4 py-2 bg-transparent border border-slate-200 rounded-lg cursor-pointer transition-all duration-200 hover:bg-slate-50"
+                className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 bg-transparent border border-slate-200 rounded-lg cursor-pointer transition-all duration-200 hover:bg-slate-50"
               >
-                <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-base font-semibold">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm sm:text-base font-semibold">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-base font-medium text-slate-900">{displayName}</span>
+                <span className="hidden sm:inline text-sm md:text-base font-medium text-slate-900">{displayName}</span>
                 <Icon 
                   icon={isDropdownOpen ? "mingcute:up-line" : "mingcute:down-line"} 
                   width={20} 
                   height={20}
-                  className="text-slate-600"
+                  className="text-slate-600 hidden sm:block"
                 />
               </button>
 
@@ -219,6 +244,34 @@ export function Navbar() {
             )}
           </div>
         </div>
+
+        {/* Mobile Navigation Menu Drawer */}
+        {isLoggedIn && isMobileMenuOpen && (
+          <div 
+            ref={mobileMenuRef}
+            className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-slate-200 shadow-lg"
+          >
+            <div className="px-4 py-3 space-y-1">
+              {navigationItems.map((item) => {
+                const isActive = location.pathname === item.path
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => navigate(item.path)}
+                    className={cn(
+                      "w-full text-left px-4 py-3 rounded-lg font-medium transition-colors",
+                      isActive
+                        ? "bg-black text-white"
+                        : "text-slate-700 hover:bg-slate-100"
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )

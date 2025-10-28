@@ -160,20 +160,20 @@ export default function BasicInformation() {
 
   if (loading) {
     return (
-      <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full">
-        <div className="text-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading profile...</p>
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto bg-white font-sans min-h-full">
+        <div className="text-center py-12 md:py-20">
+          <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-sm md:text-base text-gray-600">Loading profile...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">Basic Information</h1>
-        <p className="text-lg text-gray-600">Manage your personal details and contact information</p>
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto bg-white font-sans min-h-full">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 md:mb-4">Basic Information</h1>
+        <p className="text-sm sm:text-base lg:text-lg text-gray-600">Manage your personal details and contact information</p>
       </div>
 
       {/* Message Display */}

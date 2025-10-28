@@ -148,11 +148,11 @@ export function Employment() {
   // Loading State
   if (isLoading) {
     return (
-      <div className="p-10 max-w-[1400px] mx-auto font-poppins min-h-full flex items-center justify-center">
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto font-poppins min-h-full flex items-center justify-center">
         <div className="text-center">
-          <Icon icon="mingcute:loading-line" className="animate-spin text-blue-500 mx-auto mb-4" width={48} />
-          <div className="text-2xl font-semibold text-slate-900 mb-2">Loading employment history...</div>
-          <div className="text-base text-slate-500">Please wait</div>
+          <Icon icon="mingcute:loading-line" className="animate-spin text-blue-500 mx-auto mb-4" width={40} />
+          <div className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2">Loading employment history...</div>
+          <div className="text-sm sm:text-base text-slate-500">Please wait</div>
         </div>
       </div>
     )
@@ -165,18 +165,18 @@ export function Employment() {
     : jobs
 
   return (
-    <div className="p-10 max-w-[1400px] mx-auto font-poppins min-h-full">
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto font-poppins min-h-full">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Employment History</h1>
-          <p className="text-slate-600">Manage your work experience and career timeline</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">Employment History</h1>
+          <p className="text-sm sm:text-base text-slate-600">Manage your work experience and career timeline</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center gap-2"
+          className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
         >
-          <Icon icon="mingcute:add-line" width={20} />
+          <Icon icon="mingcute:add-line" width={18} height={18} />
           Add Position
         </button>
       </div>
@@ -196,36 +196,36 @@ export function Employment() {
       )}
 
       {/* Controls */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">
-        <div className="flex flex-wrap gap-4 items-center justify-between">
-          {/* View Mode Toggle */}
-          <div className="flex gap-2">
+      <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200 mb-6">
+        <div className="flex flex-col md:flex-row flex-wrap gap-3 md:gap-4 items-stretch md:items-center justify-between">
+          {/* View Mode Toggle - Hidden on mobile */}
+          <div className="hidden sm:flex gap-2">
             <button
               onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'list'
                   ? 'bg-blue-500 text-white'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              <Icon icon="mingcute:list-check-line" width={20} className="inline mr-2" />
-              List View
+              <Icon icon="mingcute:list-check-line" width={18} className="inline mr-1 md:mr-2" />
+              List
             </button>
             <button
               onClick={() => setViewMode('timeline')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'timeline'
                   ? 'bg-blue-500 text-white'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              <Icon icon="mingcute:timeline-line" width={20} className="inline mr-2" />
-              Timeline View
+              <Icon icon="mingcute:timeline-line" width={18} className="inline mr-1 md:mr-2" />
+              Timeline
             </button>
           </div>
 
           {/* Filter */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => setFilterMode('all')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -273,24 +273,24 @@ export function Employment() {
 
       {/* Statistics */}
       {statistics && (
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="text-3xl font-bold text-blue-500 mb-2">{statistics.totalJobs}</div>
-            <div className="text-sm text-slate-600">Total Positions</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200">
+            <div className="text-2xl md:text-3xl font-bold text-blue-500 mb-1 md:mb-2">{statistics.totalJobs}</div>
+            <div className="text-xs md:text-sm text-slate-600">Total Positions</div>
           </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="text-3xl font-bold text-blue-500 mb-2">{statistics.totalExperienceYears}</div>
-            <div className="text-sm text-slate-600">Total Experience</div>
+          <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200">
+            <div className="text-2xl md:text-3xl font-bold text-blue-500 mb-1 md:mb-2">{statistics.totalExperienceYears}</div>
+            <div className="text-xs md:text-sm text-slate-600">Total Experience</div>
           </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="text-3xl font-bold text-blue-500 mb-2">
+          <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200">
+            <div className="text-2xl md:text-3xl font-bold text-blue-500 mb-1 md:mb-2">
               {statistics.averageTenureMonths ? `${Math.round(statistics.averageTenureMonths / 12 * 10) / 10}y` : 'N/A'}
             </div>
-            <div className="text-sm text-slate-600">Avg Tenure</div>
+            <div className="text-xs md:text-sm text-slate-600">Avg Tenure</div>
           </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="text-3xl font-bold text-blue-500 mb-2">{statistics.companiesWorked}</div>
-            <div className="text-sm text-slate-600">Companies</div>
+          <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200">
+            <div className="text-2xl md:text-3xl font-bold text-blue-500 mb-1 md:mb-2">{statistics.companiesWorked}</div>
+            <div className="text-xs md:text-sm text-slate-600">Companies</div>
           </div>
         </div>
       )}

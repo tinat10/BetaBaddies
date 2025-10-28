@@ -50,13 +50,13 @@ export function Settings() {
   }
   
   return (
-    <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full">
-      <h1 className="text-4xl font-bold text-gray-800 mb-2">Settings</h1>
-      <p className="text-gray-600 mb-8">Manage your account settings and preferences</p>
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto bg-white font-sans min-h-full">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Settings</h1>
+      <p className="text-sm sm:text-base text-gray-600 mb-6 md:mb-8">Manage your account settings and preferences</p>
       
       {/* Account Section */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6">
-        <h2 className="text-2xl font-semibold mb-6">Account Settings</h2>
+      <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100 mb-6">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Account Settings</h2>
         
         {/* Change Password */}
         <div className="mb-6 pb-6 border-b border-slate-100">
@@ -64,7 +64,7 @@ export function Settings() {
           <p className="text-sm text-slate-600 mb-4">
             Update your password to keep your account secure
           </p>
-          <button className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
+          <button className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium">
             Change Password
           </button>
         </div>
@@ -110,22 +110,22 @@ export function Settings() {
       </div>
       
       {/* Danger Zone */}
-      <div className="bg-red-50 rounded-2xl p-6 border-2 border-red-200">
+      <div className="bg-red-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border-2 border-red-200">
         <div className="flex items-center gap-2 mb-4">
-          <Icon icon="mingcute:alert-fill" className="text-red-600" width={24} />
-          <h2 className="text-2xl font-semibold text-red-700">Danger Zone</h2>
+          <Icon icon="mingcute:alert-fill" className="text-red-600" width={20} height={20} />
+          <h2 className="text-xl sm:text-2xl font-semibold text-red-700">Danger Zone</h2>
         </div>
         
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-1">Delete Account</h3>
-            <p className="text-sm text-gray-600">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex-1">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-1">Delete Account</h3>
+            <p className="text-xs sm:text-sm text-gray-600">
               Permanently delete your account and all associated data. This action cannot be undone.
             </p>
           </div>
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex-shrink-0 ml-4"
+            className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm sm:text-base"
           >
             Delete Account
           </button>
@@ -134,11 +134,11 @@ export function Settings() {
       
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center gap-3 mb-6">
-              <Icon icon="mingcute:alert-fill" className="text-red-500" width={32} />
-              <h2 className="text-2xl font-bold text-gray-900">Delete Account?</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-md w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <Icon icon="mingcute:alert-fill" className="text-red-500 flex-shrink-0" width={24} height={24} />
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Delete Account?</h2>
             </div>
             
             {/* Warning Message */}

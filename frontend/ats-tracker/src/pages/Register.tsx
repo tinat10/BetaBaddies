@@ -102,14 +102,14 @@ export function Register() {
         </div>
 
         {/* Register Form Card */}
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-6 md:p-8">
           {/* Title */}
           <h2 
-            className="text-black mb-6"
+            className="text-black mb-4 sm:mb-6"
             style={{ 
               fontFamily: 'Poppins, sans-serif',
               fontWeight: 500,
-              fontSize: '36px'
+              fontSize: 'clamp(24px, 5vw, 36px)'
             }}
           >
             Sign Up

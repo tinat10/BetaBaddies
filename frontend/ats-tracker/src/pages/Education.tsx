@@ -196,25 +196,25 @@ export function Education() {
 
 
   return (
-    <div className="p-10 max-w-[1400px] mx-auto bg-white font-sans min-h-full">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-2">Education</h1>
-        <p className="text-gray-600">Manage your educational background and qualifications</p>
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-full xl:max-w-[1400px] mx-auto bg-white font-sans min-h-full">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Education</h1>
+        <p className="text-sm sm:text-base text-gray-600">Manage your educational background and qualifications</p>
       </div>
 
       {/* Message Display */}
       {message && (
         <div className={`mb-6 p-4 rounded-lg ${message.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-          {message.text}
+          <p className="text-sm">{message.text}</p>
         </div>
       )}
 
       {/* Controls: Add Button and View Toggle */}
       {!isFormOpen && (
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
           <button
             onClick={() => setIsFormOpen(true)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base"
           >
             + Add Education
           </button>
