@@ -10,6 +10,7 @@ export function Employment() {
   const [statistics, setStatistics] = useState<JobStatistics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
   
   // Modal States
   const [showAddModal, setShowAddModal] = useState(false)
@@ -26,6 +27,11 @@ export function Employment() {
   useEffect(() => {
     fetchJobs()
   }, [filterMode, sortBy])
+
+  const showMessage = (text: string, type: 'success' | 'error') => {
+    setMessage({ text, type })
+    setTimeout(() => setMessage(null), 5000)
+  }
 
   const fetchJobs = async () => {
     try {
@@ -92,10 +98,10 @@ export function Employment() {
       if (response.ok) {
         setShowAddModal(false)
         await fetchJobs()
-        alert('✅ Position added successfully!')
+        showMessage('Position added successfully!', 'success')
       }
     } catch (err: any) {
-      alert(`❌ Error: ${err.message}`)
+      showMessage(err.message || 'Failed to add position', 'error')
     }
   }
 
@@ -107,10 +113,10 @@ export function Employment() {
         setShowEditModal(false)
         setSelectedJob(null)
         await fetchJobs()
-        alert('✅ Position updated successfully!')
+        showMessage('Position updated successfully!', 'success')
       }
     } catch (err: any) {
-      alert(`❌ Error: ${err.message}`)
+      showMessage(err.message || 'Failed to update position', 'error')
     }
   }
 
@@ -122,10 +128,10 @@ export function Employment() {
         setShowDeleteModal(false)
         setSelectedJob(null)
         await fetchJobs()
-        alert('✅ Position deleted successfully!')
+        showMessage('Position deleted successfully!', 'success')
       }
     } catch (err: any) {
-      alert(`❌ Error: ${err.message}`)
+      showMessage(err.message || 'Failed to delete position', 'error')
     }
   }
 
@@ -179,6 +185,13 @@ export function Employment() {
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
           <p className="text-sm text-red-800">{error}</p>
+        </div>
+      )}
+
+      {/* Message Banner */}
+      {message && (
+        <div className={`rounded-xl p-4 mb-6 ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}`}>
+          <p className="text-sm font-medium">{message.text}</p>
         </div>
       )}
 
