@@ -15,6 +15,7 @@ class JobService {
       title,
       company,
       location,
+      salary,
       startDate,
       endDate,
       isCurrent,
@@ -42,9 +43,9 @@ class JobService {
 
       // Create job in database
       const jobQuery = `
-        INSERT INTO jobs (id, user_id, title, company, location, start_date, end_date, is_current, description)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-        RETURNING id, title, company, location, start_date, end_date, is_current, description
+        INSERT INTO jobs (id, user_id, title, company, location, salary, start_date, end_date, is_current, description)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING id, title, company, location, salary, start_date, end_date, is_current, description
       `;
 
       const jobResult = await database.query(jobQuery, [
@@ -53,6 +54,7 @@ class JobService {
         title,
         company,
         location || null,
+        salary || null,
         startDate,
         endDate || null,
         isCurrent || false,
@@ -64,6 +66,7 @@ class JobService {
         title: jobResult.rows[0].title,
         company: jobResult.rows[0].company,
         location: jobResult.rows[0].location,
+        salary: jobResult.rows[0].salary,
         startDate: jobResult.rows[0].start_date,
         endDate: jobResult.rows[0].end_date,
         isCurrent: jobResult.rows[0].is_current,
@@ -79,7 +82,7 @@ class JobService {
   async getJobById(jobId, userId) {
     try {
       const query = `
-        SELECT id, title, company, location, start_date, end_date, is_current, description
+        SELECT id, title, company, location, salary, start_date, end_date, is_current, description
         FROM jobs
         WHERE id = $1 AND user_id = $2
       `;
@@ -96,6 +99,7 @@ class JobService {
         title: job.title,
         company: job.company,
         location: job.location,
+        salary: job.salary,
         startDate: job.start_date,
         endDate: job.end_date,
         isCurrent: job.is_current,
@@ -123,7 +127,7 @@ class JobService {
       }
 
       const query = `
-        SELECT id, title, company, location, start_date, end_date, is_current, description
+        SELECT id, title, company, location, salary, start_date, end_date, is_current, description
         FROM jobs
         WHERE user_id = $1
         ${sortClause}
@@ -141,6 +145,7 @@ class JobService {
         title: job.title,
         company: job.company,
         location: job.location,
+        salary: job.salary,
         startDate: job.start_date,
         endDate: job.end_date,
         isCurrent: job.is_current,
@@ -156,7 +161,7 @@ class JobService {
   async getCurrentJob(userId) {
     try {
       const query = `
-        SELECT id, title, company, location, start_date, end_date, is_current, description
+        SELECT id, title, company, location, salary, start_date, end_date, is_current, description
         FROM jobs
         WHERE user_id = $1 AND is_current = true
         LIMIT 1
@@ -174,6 +179,7 @@ class JobService {
         title: job.title,
         company: job.company,
         location: job.location,
+        salary: job.salary,
         startDate: job.start_date,
         endDate: job.end_date,
         isCurrent: job.is_current,
@@ -189,7 +195,7 @@ class JobService {
   async getJobHistory(userId) {
     try {
       const query = `
-        SELECT id, title, company, location, start_date, end_date, is_current, description
+        SELECT id, title, company, location, salary, start_date, end_date, is_current, description
         FROM jobs
         WHERE user_id = $1
         ORDER BY start_date DESC, end_date DESC NULLS LAST
@@ -202,6 +208,7 @@ class JobService {
         title: job.title,
         company: job.company,
         location: job.location,
+        salary: job.salary,
         startDate: job.start_date,
         endDate: job.end_date,
         isCurrent: job.is_current,
@@ -261,6 +268,10 @@ class JobService {
         updateFields.push(`location = $${paramCount++}`);
         updateValues.push(updateData.location);
       }
+      if (updateData.salary !== undefined) {
+        updateFields.push(`salary = $${paramCount++}`);
+        updateValues.push(updateData.salary);
+      }
       if (updateData.startDate !== undefined) {
         updateFields.push(`start_date = $${paramCount++}`);
         updateValues.push(updateData.startDate);
@@ -289,7 +300,7 @@ class JobService {
         UPDATE jobs 
         SET ${updateFields.join(", ")}
         WHERE id = $${paramCount++} AND user_id = $${paramCount++}
-        RETURNING id, title, company, location, start_date, end_date, is_current, description
+        RETURNING id, title, company, location, salary, start_date, end_date, is_current, description
       `;
 
       const result = await database.query(query, updateValues);
@@ -304,6 +315,7 @@ class JobService {
         title: job.title,
         company: job.company,
         location: job.location,
+        salary: job.salary,
         startDate: job.start_date,
         endDate: job.end_date,
         isCurrent: job.is_current,
@@ -350,7 +362,11 @@ class JobService {
           COUNT(CASE WHEN is_current = true THEN 1 END) as current_jobs,
           COUNT(CASE WHEN is_current = false THEN 1 END) as past_jobs,
           MIN(start_date) as earliest_start,
-          MAX(CASE WHEN is_current = false THEN end_date END) as latest_end
+          MAX(CASE WHEN is_current = false THEN end_date END) as latest_end,
+          AVG(salary) as average_salary,
+          MIN(salary) as min_salary,
+          MAX(salary) as max_salary,
+          COUNT(DISTINCT company) as companies_worked
         FROM jobs
         WHERE user_id = $1
       `;
@@ -358,12 +374,57 @@ class JobService {
       const result = await database.query(query, [userId]);
       const stats = result.rows[0];
 
+      // Calculate total experience years
+      let totalExperienceYears = 0;
+      let averageTenureMonths = 0;
+
+      if (stats.earliest_start) {
+        const jobsQuery = `
+          SELECT start_date, end_date, is_current
+          FROM jobs
+          WHERE user_id = $1
+          ORDER BY start_date ASC
+        `;
+        const jobsResult = await database.query(jobsQuery, [userId]);
+        const jobs = jobsResult.rows;
+
+        let totalMonths = 0;
+        jobs.forEach((job) => {
+          const startDate = new Date(job.start_date);
+          const endDate = job.is_current
+            ? new Date()
+            : new Date(job.end_date || new Date());
+
+          const months =
+            (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+            (endDate.getMonth() - startDate.getMonth());
+
+          totalMonths += Math.max(0, months);
+        });
+
+        totalExperienceYears = Math.round((totalMonths / 12) * 10) / 10;
+        averageTenureMonths =
+          jobs.length > 0 ? Math.round(totalMonths / jobs.length) : 0;
+      }
+
       return {
         totalJobs: parseInt(stats.total_jobs),
         currentJobs: parseInt(stats.current_jobs),
         pastJobs: parseInt(stats.past_jobs),
         earliestStart: stats.earliest_start,
         latestEnd: stats.latest_end,
+        averageSalary: stats.average_salary
+          ? Math.round(parseFloat(stats.average_salary))
+          : null,
+        minSalary: stats.min_salary
+          ? Math.round(parseFloat(stats.min_salary))
+          : null,
+        maxSalary: stats.max_salary
+          ? Math.round(parseFloat(stats.max_salary))
+          : null,
+        companiesWorked: parseInt(stats.companies_worked),
+        totalExperienceYears,
+        averageTenureMonths,
       };
     } catch (error) {
       console.error("❌ Error getting job statistics:", error);
