@@ -136,16 +136,16 @@ export function Dashboard() {
       )}
 
       {/* Main Content Layout with Gradient behind cards only */}
-      <div className="relative -mt-8 pb-4">
+      <div className="relative -mt-8 pb-4 overflow-hidden">
         <div className="max-w-[1600px] mx-auto px-10 pb-4 pt-24 relative">
           {/* Gradient Background - positioned behind right column, extends to screen edge */}
           <div 
             className="absolute pointer-events-none"
             style={{ 
               left: 'calc(350px + 2rem - 1.5rem)', // sidebar width + gap - negative margin
-              width: '100vw', // extend to viewport width
-              top: '5%', // start below the header area
-              bottom: 0,
+              width: '200vw', // oversized width to ensure screen coverage
+              top: '5%',
+              bottom: '-1rem', // extend beyond container's bottom padding
               background: 'linear-gradient(180deg, #B1D0FF 0%, #EC85CA 100%)',
               borderTopLeftRadius: '25px'
             }}
