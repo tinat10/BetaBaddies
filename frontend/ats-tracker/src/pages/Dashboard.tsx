@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Icon } from '@iconify/react'
 import { DashboardProfileData } from '../types'
 import { dashboardService } from '../services/dashboardService'
+import { ROUTES } from '../config/routes'
+import { exportProfileToPDF } from '../utils/pdfExport'
 
 // Icon component for professional icons using Mingcute
 function MingcuteIcon({ type }: { type: string }) {
@@ -17,9 +20,11 @@ function MingcuteIcon({ type }: { type: string }) {
 }
 
 export function Dashboard() {
+  const navigate = useNavigate()
   const [profileData, setProfileData] = useState<DashboardProfileData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isExporting, setIsExporting] = useState(false)
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -41,7 +46,36 @@ export function Dashboard() {
   }, [])
 
   const handleQuickAdd = (section: string) => {
-    alert(`Quick add for ${section} - will open modal/form`)
+    switch (section) {
+      case 'Employment':
+        navigate(ROUTES.EMPLOYMENT)
+        break
+      case 'Skills':
+        navigate(ROUTES.SKILLS)
+        break
+      case 'Education':
+        navigate(ROUTES.EDUCATION)
+        break
+      case 'Projects':
+        navigate(ROUTES.PROJECTS)
+        break
+      default:
+        console.warn(`Unknown section: ${section}`)
+    }
+  }
+
+  const handleExportProfile = async () => {
+    if (!profileData) return
+    
+    try {
+      setIsExporting(true)
+      await exportProfileToPDF(profileData)
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert('Failed to export profile. Please try again.')
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   // Show loading state
@@ -82,11 +116,12 @@ export function Dashboard() {
             Welcome Back, <span style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 600, color: '#3351FD' }}>{profileData.name}</span>
           </h2>
           <button 
-            className="flex items-center gap-2 px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white"
-            onClick={() => alert('Export Profile - Coming soon!')}
+            className="flex items-center gap-2 px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleExportProfile}
+            disabled={isExporting || !profileData}
           >
-            <Icon icon="mingcute:download-line" width={20} height={20} />
-            Export Profile
+            <Icon icon={isExporting ? "mingcute:loading-line" : "mingcute:download-line"} width={20} height={20} className={isExporting ? "animate-spin" : ""} />
+            {isExporting ? 'Exporting...' : 'Export Profile'}
           </button>
         </div>
       </div>
