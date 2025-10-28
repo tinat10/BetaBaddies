@@ -1,12 +1,17 @@
 import app from "./server.js";
 import dotenv from "dotenv";
 import database from "./services/database.js";
+import { setupUploadDirectories, createGitkeepFiles } from "./utils/setupDirectories.js";
 
 async function main() {
   dotenv.config();
   const port = process.env.SERVER_PORT || 3001;
 
   try {
+    // Setup upload directories
+    await setupUploadDirectories();
+    await createGitkeepFiles();
+
     // Test database connection
     await database.query("SELECT NOW()");
     console.log("✅ Success: Connected to PostgreSQL database");

@@ -32,10 +32,11 @@ export default function ProfilePictureUpload() {
         const { profilePicture } = response.data;
         
         if (!profilePicture.isDefault && profilePicture.filePath) {
-          // Use backend URL for uploaded pictures
+          // Use path directly - Vite proxy handles routing
           setCurrentPicture(profilePicture.filePath);
           setFileId(profilePicture.fileId || null);
           setIsDefault(false);
+          console.log('Loaded profile picture:', profilePicture.filePath);
         } else {
           setCurrentPicture(DEFAULT_AVATAR);
           setIsDefault(true);
@@ -100,9 +101,13 @@ export default function ProfilePictureUpload() {
       setUploading(true);
       setError(null);
       
+      console.log('Starting upload for file:', selectedFile.name);
       const response = await api.uploadProfilePicture(selectedFile);
+      console.log('Upload response:', response);
       
       if (response.ok && response.data) {
+        console.log('Upload successful, file path:', response.data.filePath);
+        
         setSuccess('Profile picture uploaded successfully!');
         setCurrentPicture(response.data.filePath);
         setFileId(response.data.fileId);
@@ -122,9 +127,12 @@ export default function ProfilePictureUpload() {
 
         // Auto-dismiss success message after 3 seconds
         setTimeout(() => setSuccess(null), 3000);
+      } else {
+        console.error('Upload response not ok:', response);
+        setError('Upload failed. Please try again.');
       }
     } catch (err) {
-      console.error('Upload failed:', err);
+      console.error('Upload failed with error:', err);
       setError(err instanceof Error ? err.message : 'Upload failed. Please try again.');
     } finally {
       setUploading(false);

@@ -47,25 +47,33 @@ class FileUploadService {
    */
   async uploadProfilePicture(userId, file) {
     try {
+      console.log("🔧 FileUploadService: Starting profile picture upload");
+      
       // Validate file
+      console.log("   Validating file...");
       this.validateFile(file, "profilePic");
+      console.log("   ✓ File validated");
 
       // Generate unique filename
       const fileId = uuidv4();
       const fileExtension = path.extname(file.originalname).toLowerCase();
       const fileName = `profile_${fileId}${fileExtension}`;
       const filePath = path.join(this.uploadDir, "profile-pics", fileName);
+      console.log("   Generated filename:", fileName);
 
       // Process and resize image
+      console.log("   Processing image...");
       await this.processImage(
         file.buffer,
         filePath,
         this.imageDimensions.profilePic
       );
+      console.log("   ✓ Image processed");
 
       // Create thumbnail (only if Sharp is available)
       let thumbnailPath = null;
       if (sharp) {
+        console.log("   Creating thumbnail...");
         thumbnailPath = path.join(
           this.uploadDir,
           "profile-pics",
@@ -76,9 +84,13 @@ class FileUploadService {
           thumbnailPath,
           this.imageDimensions.thumbnail
         );
+        console.log("   ✓ Thumbnail created");
+      } else {
+        console.log("   ⚠️ Skipping thumbnail (Sharp not available)");
       }
 
       // Save file record to database
+      console.log("   Saving file record to database...");
       const fileRecord = await this.saveFileRecord({
         fileId,
         userId,
@@ -92,10 +104,14 @@ class FileUploadService {
         fileSize: file.size,
         mimeType: file.mimetype,
       });
+      console.log("   ✓ File record saved");
 
       // Update user profile with new picture link
+      console.log("   Updating user profile...");
       await this.updateProfilePicture(userId, fileRecord.filePath);
+      console.log("   ✓ User profile updated");
 
+      console.log("✅ Profile picture upload complete!");
       return {
         fileId: fileRecord.fileId,
         fileName: fileRecord.fileName,
@@ -106,6 +122,8 @@ class FileUploadService {
       };
     } catch (error) {
       console.error("❌ Error uploading profile picture:", error);
+      console.error("   Error type:", error.constructor.name);
+      console.error("   Error message:", error.message);
       throw error;
     }
   }
@@ -366,6 +384,7 @@ class FileUploadService {
    */
   async processImage(buffer, outputPath, dimensions) {
     try {
+      console.log(`      Processing image to ${dimensions.width}x${dimensions.height}`);
       if (sharp) {
         await sharp(buffer)
           .resize(dimensions.width, dimensions.height, {
@@ -374,6 +393,7 @@ class FileUploadService {
           })
           .jpeg({ quality: 90 })
           .toFile(outputPath);
+        console.log(`      ✓ Image saved to ${outputPath}`);
       } else {
         // Fallback: just save the original image without processing
         console.warn(
@@ -383,7 +403,10 @@ class FileUploadService {
       }
     } catch (error) {
       console.error("❌ Error processing image:", error);
-      throw new Error("Failed to process image");
+      console.error("   Sharp available:", !!sharp);
+      console.error("   Output path:", outputPath);
+      console.error("   Dimensions:", dimensions);
+      throw new Error(`Failed to process image: ${error.message}`);
     }
   }
 
@@ -392,21 +415,27 @@ class FileUploadService {
    * Note: Using existing files table schema with limited columns
    */
   async saveFileRecord(fileData) {
-    try {
-      // Store minimal metadata in file_data as JSON (keeping under 255 chars)
-      const metadata = {
-        u: fileData.userId, // userId
-        n: fileData.fileName, // fileName
-        o: fileData.originalName, // originalName
-        t: fileData.fileType, // fileType
-        s: fileData.fileSize, // fileSize
-        m: fileData.mimeType, // mimeType
-        c: new Date().toISOString().split("T")[0], // createdAt (date only)
-      };
+    // Store minimal metadata in file_data as JSON (keeping under 255 chars)
+    // Use very short keys to save space
+    const metadata = {
+      u: fileData.userId, // userId
+      t: fileData.fileType, // fileType
+      s: fileData.fileSize, // fileSize
+      m: fileData.mimeType.split('/')[1], // Just extension (jpeg, png, etc)
+      c: new Date().toISOString().split("T")[0], // createdAt (date only)
+    };
 
-      // Add thumbnail path only if it exists
-      if (fileData.thumbnailPath) {
-        metadata.th = fileData.thumbnailPath;
+    // Only store thumbnail flag (path is predictable from main path)
+    if (fileData.thumbnailPath) {
+      metadata.th = 1;
+    }
+
+    try {
+      const metadataStr = JSON.stringify(metadata);
+      console.log("   Metadata size:", metadataStr.length, "chars");
+      
+      if (metadataStr.length > 250) {
+        console.warn("   ⚠️ Metadata is large, truncating...");
       }
 
       const query = `
@@ -417,28 +446,44 @@ class FileUploadService {
 
       const result = await database.query(query, [
         fileData.fileId,
-        JSON.stringify(metadata),
+        metadataStr,
         fileData.filePath,
       ]);
 
       return this.mapFileFields(result.rows[0]);
     } catch (error) {
       console.error("❌ Error saving file record:", error);
+      console.error("   Metadata:", JSON.stringify(metadata));
+      console.error("   Metadata length:", JSON.stringify(metadata).length);
       throw error;
     }
   }
 
   /**
    * Update user profile with new picture link
+   * Creates profile if it doesn't exist
    */
   async updateProfilePicture(userId, picturePath) {
     try {
-      const query = `
+      // Try to update existing profile
+      const updateQuery = `
         UPDATE profiles
         SET pfp_link = $1
         WHERE user_id = $2
+        RETURNING *
       `;
-      await database.query(query, [picturePath, userId]);
+      const result = await database.query(updateQuery, [picturePath, userId]);
+      
+      // If no profile exists, create one with minimal data
+      if (result.rows.length === 0) {
+        console.log(`📝 Creating new profile for user ${userId} with picture`);
+        const insertQuery = `
+          INSERT INTO profiles (user_id, first_name, last_name, state, pfp_link)
+          VALUES ($1, 'User', 'Name', 'NY', $2)
+          ON CONFLICT (user_id) DO UPDATE SET pfp_link = $2
+        `;
+        await database.query(insertQuery, [userId, picturePath]);
+      }
     } catch (error) {
       console.error("❌ Error updating profile picture:", error);
       throw error;
@@ -469,16 +514,23 @@ class FileUploadService {
    */
   mapFileFields(row) {
     const metadata = JSON.parse(row.file_data || "{}");
+    
+    // Extract filename from path
+    const fileName = row.file_path ? row.file_path.split('/').pop() : 'unknown';
+    
+    // Reconstruct thumbnail path if flag is set
+    const thumbnailPath = metadata.th ? row.file_path.replace(/([^/]+)$/, 'thumb_$1') : null;
+    
     return {
       fileId: row.file_id,
       userId: metadata.u,
-      fileName: metadata.n,
-      originalName: metadata.o,
+      fileName: fileName,
+      originalName: fileName, // Use filename as originalName
       filePath: row.file_path,
-      thumbnailPath: metadata.th,
+      thumbnailPath: thumbnailPath,
       fileType: metadata.t,
       fileSize: metadata.s,
-      mimeType: metadata.m,
+      mimeType: `image/${metadata.m}`, // Reconstruct full mime type
       createdAt: metadata.c,
     };
   }

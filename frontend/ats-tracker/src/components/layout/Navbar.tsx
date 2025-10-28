@@ -52,6 +52,7 @@ export function Navbar() {
               
               // Set profile picture if available
               if (pfp_link) {
+                // Use the path directly - Vite proxy will handle routing to backend
                 setProfilePicture(pfp_link)
                 console.log('Navbar: Profile picture set to:', pfp_link)
               }
@@ -162,21 +163,25 @@ export function Navbar() {
                 className="flex items-center gap-3 px-4 py-2 bg-transparent border border-slate-200 rounded-lg cursor-pointer transition-all duration-200 hover:bg-slate-50"
               >
                 <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center text-base font-semibold overflow-hidden">
-                  {profilePicture ? (
+                  {profilePicture && !profilePicture.includes('blank-profile-picture') ? (
                     <img 
                       src={profilePicture} 
                       alt={displayName}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         // Fallback to initial if image fails to load
+                        console.error('Failed to load profile picture:', profilePicture);
                         e.currentTarget.style.display = 'none';
                         if (e.currentTarget.nextElementSibling) {
                           (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
                         }
                       }}
+                      onLoad={() => {
+                        console.log('✅ Profile picture loaded successfully');
+                      }}
                     />
                   ) : null}
-                  <span style={{ display: profilePicture ? 'none' : 'flex' }} className="w-full h-full items-center justify-center">
+                  <span style={{ display: (profilePicture && !profilePicture.includes('blank-profile-picture')) ? 'none' : 'flex' }} className="w-full h-full items-center justify-center">
                     {displayName.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -194,12 +199,13 @@ export function Navbar() {
                 <div className="absolute top-full right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg min-w-[280px] overflow-hidden z-50">
                   <div className="p-4 flex items-center gap-3 bg-slate-50">
                     <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-semibold overflow-hidden">
-                      {profilePicture ? (
+                      {profilePicture && !profilePicture.includes('blank-profile-picture') ? (
                         <img 
                           src={profilePicture} 
                           alt={displayName}
                           className="w-full h-full object-cover"
                           onError={(e) => {
+                            console.error('Failed to load dropdown profile picture:', profilePicture);
                             e.currentTarget.style.display = 'none';
                             if (e.currentTarget.nextElementSibling) {
                               (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
@@ -207,7 +213,7 @@ export function Navbar() {
                           }}
                         />
                       ) : null}
-                      <span style={{ display: profilePicture ? 'none' : 'flex' }} className="w-full h-full items-center justify-center">
+                      <span style={{ display: (profilePicture && !profilePicture.includes('blank-profile-picture')) ? 'none' : 'flex' }} className="w-full h-full items-center justify-center">
                         {displayName.charAt(0).toUpperCase()}
                       </span>
                     </div>

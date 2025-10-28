@@ -20,6 +20,10 @@ class FileUploadController {
     asyncHandler(async (req, res) => {
       const userId = req.session.userId;
 
+      console.log("📸 Profile picture upload request received");
+      console.log("   User ID:", userId);
+      console.log("   File received:", req.file ? "Yes" : "No");
+
       if (!req.file) {
         return res.status(400).json({
           ok: false,
@@ -30,11 +34,18 @@ class FileUploadController {
         });
       }
 
+      console.log("   File name:", req.file.originalname);
+      console.log("   File size:", req.file.size, "bytes");
+      console.log("   File type:", req.file.mimetype);
+
       try {
         const result = await fileUploadService.uploadProfilePicture(
           userId,
           req.file
         );
+
+        console.log("✅ Profile picture uploaded successfully");
+        console.log("   File path:", result.filePath);
 
         res.status(201).json({
           ok: true,
@@ -44,6 +55,9 @@ class FileUploadController {
           },
         });
       } catch (error) {
+        console.error("❌ Profile picture upload failed:", error);
+        console.error("   Error stack:", error.stack);
+        
         if (
           error.message.includes("File size exceeds") ||
           error.message.includes("File type") ||
@@ -57,7 +71,15 @@ class FileUploadController {
             },
           });
         }
-        throw error;
+        
+        // Return a more specific error message
+        return res.status(500).json({
+          ok: false,
+          error: {
+            code: "UPLOAD_ERROR",
+            message: error.message || "An unexpected error occurred during upload",
+          },
+        });
       }
     }),
   ];
