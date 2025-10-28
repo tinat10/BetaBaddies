@@ -28,35 +28,35 @@ export function ForgotPassword() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
         <div 
-          className="flex-[0.35] flex flex-col justify-center items-center px-8 lg:px-16 min-h-screen lg:min-h-auto"
+          className="flex-[0.35] flex flex-col justify-center items-center px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-12"
           style={{
             background: 'linear-gradient(to right, #EC85CA, #3351FD)',
-            borderRadius: '0 50px 50px 0'
+            borderRadius: '0 30px 30px 0'
           }}
         >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center">
-            <div className="mb-6">
-              <Icon icon="mingcute:check-circle-fill" width={64} height={64} className="text-green-500 mx-auto mb-4" />
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8 text-center">
+            <div className="mb-4 sm:mb-6">
+              <Icon icon="mingcute:check-circle-fill" width={48} height={48} className="text-green-500 mx-auto mb-3" />
               <h2 
-                className="text-black mb-4"
+                className="text-black mb-3"
                 style={{ 
                   fontFamily: 'Poppins, sans-serif',
                   fontWeight: 500,
-                  fontSize: '28px'
+                  fontSize: 'clamp(20px, 4vw, 28px)'
                 }}
               >
                 Check Your Email
               </h2>
-              <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-gray-600 mb-4 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 If an account with that email exists, we've sent a password reset link.
               </p>
             </div>
             
             <Link 
               to={ROUTES.LOGIN}
-              className="inline-block text-purple-600 hover:text-purple-700 font-semibold hover:underline"
+              className="inline-block text-purple-600 hover:text-purple-700 font-semibold hover:underline text-sm"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Back to Login
@@ -76,21 +76,21 @@ export function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
       <div 
-        className="flex-[0.35] flex flex-col justify-center items-center px-8 lg:px-16 min-h-screen lg:min-h-auto"
+        className="flex-[0.35] flex flex-col justify-center items-center px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-12"
         style={{
           background: 'linear-gradient(to right, #EC85CA, #3351FD)',
-          borderRadius: '0 50px 50px 0'
+          borderRadius: '0 30px 30px 0'
         }}
       >
-        <div className="mb-8 lg:mb-12 text-left w-full max-w-md">
+        <div className="mb-4 sm:mb-6 lg:mb-8 text-left w-full max-w-md">
           <h1 
-            className="text-white mb-2 lg:mb-3"
+            className="text-white mb-1 sm:mb-2"
             style={{ 
               fontFamily: 'Poppins, sans-serif',
               fontWeight: 700,
-              fontSize: 'clamp(32px, 5vw, 64px)'
+              fontSize: 'clamp(28px, 4vw, 48px)'
             }}
           >
             Reset Password
@@ -100,20 +100,20 @@ export function ForgotPassword() {
             style={{ 
               fontFamily: 'Poppins, sans-serif',
               fontWeight: 600,
-              fontSize: '48px'
+              fontSize: 'clamp(18px, 3vw, 32px)'
             }}
           >
             Enter your email
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-4 sm:p-6 md:p-8">
           <h2 
-            className="text-black mb-6"
+            className="text-black mb-4 sm:mb-6"
             style={{ 
               fontFamily: 'Poppins, sans-serif',
               fontWeight: 500,
-              fontSize: '36px'
+              fontSize: 'clamp(24px, 5vw, 36px)'
             }}
           >
             Forgot Password?
@@ -126,15 +126,15 @@ export function ForgotPassword() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div>
               <label 
                 htmlFor="email" 
-                className="block text-black mb-2"
+                className="block text-black mb-1.5"
                 style={{ 
                   fontFamily: 'Poppins, sans-serif',
                   fontWeight: 500,
-                  fontSize: '18px'
+                  fontSize: '14px'
                 }}
               >
                 Email Address
@@ -145,13 +145,13 @@ export function ForgotPassword() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
+                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
                 placeholder="Enter your email"
                 disabled={isLoading}
                 style={{
                   fontFamily: 'Poppins, sans-serif',
                   fontWeight: 500,
-                  fontSize: '16px',
+                  fontSize: '14px',
                   color: '#000000'
                 }}
               />
@@ -160,13 +160,13 @@ export function ForgotPassword() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full text-white py-3 font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full text-white py-2.5 font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style={{
                 background: 'linear-gradient(to right, #6A94EE, #916BE3)',
                 fontFamily: 'Poppins, sans-serif',
                 fontWeight: 500,
-                fontSize: '22px',
-                borderRadius: '15px'
+                fontSize: '16px',
+                borderRadius: '12px'
               }}
             >
               {isLoading ? (
@@ -180,8 +180,8 @@ export function ForgotPassword() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <div className="mt-3 sm:mt-4 text-center">
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
               Remember your password?{' '}
               <Link 
                 to={ROUTES.LOGIN} 

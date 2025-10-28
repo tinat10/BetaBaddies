@@ -33,23 +33,23 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
       {/* Left Section - Gradient Background with Login Form */}
       <div
-        className="flex-[0.35] flex flex-col justify-center items-center px-8 lg:px-16 min-h-screen lg:min-h-auto"
+        className="flex-[0.35] flex flex-col justify-center items-center px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-12"
         style={{
           background: "linear-gradient(to right, #EC85CA, #3351FD)",
-          borderRadius: "0 50px 50px 0",
+          borderRadius: "0 30px 30px 0",
         }}
       >
         {/* Welcome Section */}
-        <div className="mb-8 lg:mb-12 text-left">
+        <div className="mb-4 sm:mb-6 lg:mb-8 text-left w-full max-w-md">
           <h1
-            className="text-white mb-2 lg:mb-3"
+            className="text-white mb-1 sm:mb-2"
             style={{
               fontFamily: "Poppins, sans-serif",
               fontWeight: 700,
-              fontSize: "clamp(32px, 5vw, 64px)",
+              fontSize: "clamp(28px, 4vw, 48px)",
             }}
           >
             Welcome!
@@ -59,7 +59,7 @@ export function Login() {
             style={{
               fontFamily: "Poppins, sans-serif",
               fontWeight: 600,
-              fontSize: "48px",
+              fontSize: "clamp(18px, 3vw, 32px)",
             }}
           >
             Ready to get started?
@@ -89,15 +89,15 @@ export function Login() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div>
               <label
                 htmlFor="email"
-                className="block text-black mb-2"
+                className="block text-black mb-1.5"
                 style={{
                   fontFamily: "Poppins, sans-serif",
                   fontWeight: 500,
-                  fontSize: "18px",
+                  fontSize: "14px",
                 }}
               >
                 Email Address
@@ -108,13 +108,13 @@ export function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
+                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
                 placeholder="Enter your email"
                 disabled={isLoading}
                 style={{
                   fontFamily: "Poppins, sans-serif",
                   fontWeight: 500,
-                  fontSize: "16px",
+                  fontSize: "14px",
                   color: "#000000",
                 }}
               />
@@ -123,11 +123,11 @@ export function Login() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-black mb-2"
+                className="block text-black mb-1.5"
                 style={{
                   fontFamily: "Poppins, sans-serif",
                   fontWeight: 500,
-                  fontSize: "18px",
+                  fontSize: "14px",
                 }}
               >
                 Password
@@ -139,13 +139,13 @@ export function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
+                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
                 placeholder="Enter your password"
                 disabled={isLoading}
                 style={{
                   fontFamily: "Poppins, sans-serif",
                   fontWeight: 500,
-                  fontSize: "16px",
+                  fontSize: "14px",
                   color: "#000000",
                 }}
               />
@@ -154,13 +154,13 @@ export function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full text-white py-3 font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full text-white py-2.5 font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style={{
                 background: "linear-gradient(to right, #6A94EE, #916BE3)",
                 fontFamily: "Poppins, sans-serif",
                 fontWeight: 500,
-                fontSize: "22px",
-                borderRadius: "15px",
+                fontSize: "16px",
+                borderRadius: "12px",
               }}
             >
               {isLoading ? (
@@ -187,13 +187,13 @@ export function Login() {
             </button>
 
             {/* Divider */}
-            <div className="relative my-6">
+            <div className="relative my-3 sm:my-4">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
               </div>
-              <div className="relative flex justify-center text-sm">
+              <div className="relative flex justify-center text-xs sm:text-sm">
                 <span
-                  className="bg-white px-4 text-gray-500"
+                  className="bg-white px-3 text-gray-500"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                 >
                   Or continue with
@@ -205,13 +205,13 @@ export function Login() {
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="w-full text-white py-3 font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border border-gray-300 rounded-lg"
+              className="w-full text-white py-2.5 font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border border-gray-300 rounded-lg"
               style={{
                 background: "#fff",
                 color: "#4285F4",
                 fontFamily: "Poppins, sans-serif",
                 fontWeight: 500,
-                fontSize: "16px",
+                fontSize: "14px",
               }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24">
@@ -237,9 +237,9 @@ export function Login() {
           </form>
 
           {/* Register Link */}
-          <div className="mt-6 text-center">
+          <div className="mt-3 sm:mt-4 text-center">
             <p
-              className="text-gray-600"
+              className="text-gray-600 text-sm"
               style={{ fontFamily: "Poppins, sans-serif" }}
             >
               Don't have an account?{" "}

@@ -68,23 +68,23 @@ export function Register() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row overflow-hidden">
       {/* Left Section - Gradient Background with Register Form */}
       <div 
-        className="flex-[0.35] flex flex-col justify-center items-center px-8 lg:px-16 min-h-screen lg:min-h-auto"
+        className="flex-[0.35] flex flex-col justify-center items-center px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-12"
         style={{
           background: 'linear-gradient(to right, #EC85CA, #3351FD)',
-          borderRadius: '0 50px 50px 0'
+          borderRadius: '0 30px 30px 0'
         }}
       >
         {/* Welcome Section */}
-        <div className="mb-8 lg:mb-12 text-left w-full max-w-md">
+        <div className="mb-4 sm:mb-6 lg:mb-8 text-left w-full max-w-md">
           <h1 
-            className="text-white mb-2 lg:mb-3"
+            className="text-white mb-1 sm:mb-2"
             style={{ 
               fontFamily: 'Poppins, sans-serif',
               fontWeight: 700,
-              fontSize: 'clamp(32px, 5vw, 64px)'
+              fontSize: 'clamp(28px, 4vw, 48px)'
             }}
           >
             Join Us!
@@ -94,7 +94,7 @@ export function Register() {
             style={{ 
               fontFamily: 'Poppins, sans-serif',
               fontWeight: 600,
-              fontSize: '48px'
+              fontSize: 'clamp(18px, 3vw, 32px)'
             }}
           >
             Create your account
@@ -124,16 +124,16 @@ export function Register() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {/* Email Field */}
             <div>
               <label 
                 htmlFor="email" 
-                className="block text-black mb-2"
+                className="block text-black mb-1.5"
                 style={{ 
                   fontFamily: 'Poppins, sans-serif',
                   fontWeight: 500,
-                  fontSize: '18px'
+                  fontSize: '14px'
                 }}
               >
                 Email Address
@@ -144,13 +144,13 @@ export function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
+                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
                 placeholder="Enter your email"
                 disabled={isLoading}
                 style={{
                   fontFamily: 'Poppins, sans-serif',
                   fontWeight: 500,
-                  fontSize: '16px',
+                  fontSize: '14px',
                   color: '#000000'
                 }}
               />
@@ -160,11 +160,11 @@ export function Register() {
             <div>
               <label 
                 htmlFor="password" 
-                className="block text-black mb-2"
+                className="block text-black mb-1.5"
                 style={{ 
                   fontFamily: 'Poppins, sans-serif',
                   fontWeight: 500,
-                  fontSize: '18px'
+                  fontSize: '14px'
                 }}
               >
                 Password
@@ -177,13 +177,13 @@ export function Register() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full px-4 py-3 pr-12 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
+                  className="w-full px-3 py-2.5 pr-10 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
                   placeholder="At least 8 characters"
                   disabled={isLoading}
                   style={{
                     fontFamily: 'Poppins, sans-serif',
                     fontWeight: 500,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     color: '#000000'
                   }}
                 />
@@ -231,11 +231,11 @@ export function Register() {
             <div>
               <label 
                 htmlFor="confirmPassword" 
-                className="block text-black mb-2"
+                className="block text-black mb-1.5"
                 style={{ 
                   fontFamily: 'Poppins, sans-serif',
                   fontWeight: 500,
-                  fontSize: '18px'
+                  fontSize: '14px'
                 }}
               >
                 Confirm Password
@@ -248,13 +248,13 @@ export function Register() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full px-4 py-3 pr-12 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
+                  className="w-full px-3 py-2.5 pr-10 bg-white border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all placeholder-gray-600"
                   placeholder="Re-enter your password"
                   disabled={isLoading}
                   style={{
                     fontFamily: 'Poppins, sans-serif',
                     fontWeight: 500,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     color: '#000000'
                   }}
                 />
@@ -293,13 +293,13 @@ export function Register() {
             <button
               type="submit"
               disabled={isLoading || password !== confirmPassword}
-              className="w-full text-white py-3 font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full text-white py-2.5 font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style={{
                 background: 'linear-gradient(to right, #6A94EE, #916BE3)',
                 fontFamily: 'Poppins, sans-serif',
                 fontWeight: 500,
-                fontSize: '22px',
-                borderRadius: '15px'
+                fontSize: '16px',
+                borderRadius: '12px'
               }}
             >
               {isLoading ? (
@@ -314,8 +314,8 @@ export function Register() {
           </form>
 
           {/* Login Link */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <div className="mt-3 sm:mt-4 text-center">
+            <p className="text-gray-600 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
               Already have an account?{' '}
               <Link 
                 to={ROUTES.LOGIN} 
@@ -327,7 +327,7 @@ export function Register() {
           </div>
 
           {/* Terms & Privacy */}
-          <p className="mt-4 text-xs text-center text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <p className="mt-2 sm:mt-3 text-xs text-center text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
             By signing up, you agree to our{' '}
             <a href="#" className="text-purple-600 hover:underline">Terms of Service</a>
             {' '}and{' '}
