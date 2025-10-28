@@ -120,7 +120,7 @@ class ApiService {
   }
 
   async getJobHistory() {
-    return this.request<ApiResponse<{ jobs: any[] }>>('/jobs/history');
+    return this.request<ApiResponse<{ history: any[] }>>('/jobs/history');
   }
 
   async getJobStatistics() {

@@ -125,17 +125,31 @@ export function Dashboard() {
              <div className="space-y-4">
                {profileData.careerTimeline.length > 0 ? (
                  profileData.careerTimeline.map((item, index) => (
-                   <div key={index} className="flex items-start gap-3">
+                   <div key={item.id} className="flex items-start gap-3">
                      <div className="flex flex-col items-center flex-shrink-0">
-                       <div className="w-2 h-2 rounded-full bg-[#3351FD] mt-1.5" />
+                       <div className={`w-3 h-3 rounded-full mt-1.5 ${
+                         item.isCurrent ? 'bg-green-500' : 'bg-[#3351FD]'
+                       }`} />
                        {index < profileData.careerTimeline.length - 1 && (
-                         <div className="w-px h-full bg-slate-300 mt-2 min-h-[60px]" />
+                         <div className="w-px h-full bg-slate-300 mt-2 min-h-[80px]" />
                        )}
                      </div>
                      <div className="flex-1 pb-4">
-                       <div className="text-xs font-medium" style={{ color: '#525252' }}>{item.year}</div>
-                       <div className="text-sm font-semibold" style={{ color: '#161616', marginTop: '2px' }}>{item.position}</div>
-                       <div className="text-xs" style={{ color: '#525252', marginTop: '2px' }}>@{item.company}</div>
+                       <div className="text-sm font-semibold" style={{ color: '#161616', marginBottom: '2px' }}>
+                         {item.position}
+                       </div>
+                       <div className="text-xs font-medium" style={{ color: '#525252', marginBottom: '2px' }}>
+                         {item.company}
+                         {item.location && ` • ${item.location}`}
+                       </div>
+                       <div className="text-xs" style={{ color: '#525252', marginBottom: '2px' }}>
+                         {formatDate(item.startDate)} - {item.isCurrent ? 'Present' : formatDate(item.endDate)}
+                       </div>
+                       {item.duration && (
+                         <div className="text-xs" style={{ color: '#525252' }}>
+                           {item.duration}
+                         </div>
+                       )}
                      </div>
                    </div>
                  ))
@@ -318,4 +332,14 @@ export function Dashboard() {
       </div>
     </div>
   )
+}
+
+// Helper function to format dates
+function formatDate(dateString?: string): string {
+  if (!dateString) return 'Not specified'
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    year: 'numeric' 
+  })
 }
