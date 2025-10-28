@@ -177,7 +177,7 @@ class JobController {
 
     const deletedJob = await jobService.deleteJob(id, userId);
 
-    res.status(204).json({
+    res.status(200).json({
       ok: true,
       data: {
         message: "Job deleted successfully",
