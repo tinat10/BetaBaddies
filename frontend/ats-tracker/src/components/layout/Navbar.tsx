@@ -165,7 +165,10 @@ export function Navbar() {
                   <div className="h-px bg-slate-100 my-2" />
                   <button 
                     className="w-full flex items-center gap-3 px-4 py-3 bg-transparent border-none text-left cursor-pointer text-sm font-medium text-slate-900 transition-colors duration-200 hover:bg-slate-50"
-                    onClick={() => alert('Edit Profile')}
+                    onClick={() => {
+                      setIsDropdownOpen(false)
+                      navigate(ROUTES.BASIC_INFO)
+                    }}
                   >
                     <Icon icon="mingcute:edit-line" width={20} height={20} />
                     <span>Edit Profile</span>
