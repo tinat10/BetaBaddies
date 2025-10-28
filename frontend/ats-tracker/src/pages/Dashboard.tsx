@@ -102,19 +102,19 @@ export function Dashboard() {
 
       {/* Main Content Layout with Gradient behind cards only */}
       <div className="relative -mt-8 pb-4">
-        {/* Gradient Background - positioned behind right column, extends to screen edge */}
-        <div 
-          className="absolute inset-y-0 pointer-events-none"
-          style={{ 
-            left: '27%',
-            right: 0,
-            top: '5%',
-            bottom: 0,
-            background: 'linear-gradient(180deg, #B1D0FF 0%, #EC85CA 100%)',
-            borderTopLeftRadius: '25px'
-          }}
-        />
-        <div className="max-w-[1600px] mx-auto px-10 pb-4 pt-24">
+        <div className="max-w-[1600px] mx-auto px-10 pb-4 pt-24 relative">
+          {/* Gradient Background - positioned behind right column, extends to screen edge */}
+          <div 
+            className="absolute pointer-events-none"
+            style={{ 
+              left: 'calc(350px + 2rem - 1.5rem)', // sidebar width + gap - negative margin
+              width: '100vw', // extend to viewport width
+              top: '5%', // start below the header area
+              bottom: 0,
+              background: 'linear-gradient(180deg, #B1D0FF 0%, #EC85CA 100%)',
+              borderTopLeftRadius: '25px'
+            }}
+          />
           <div className="grid grid-cols-[350px_1fr] gap-8 relative">
           
           {/* Left Sidebar */}
