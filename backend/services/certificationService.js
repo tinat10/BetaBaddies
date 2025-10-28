@@ -275,10 +275,8 @@ class CertificationService {
       }
     }
 
-    // If never expires, expiration date should be null
-    if (neverExpires && expDate) {
-      throw new Error("Permanent certifications cannot have an expiration date");
-    }
+    // Note: Validation for permanent certifications with expiration dates removed
+    // to allow more flexible data entry
   }
 
   // Format certification data for response

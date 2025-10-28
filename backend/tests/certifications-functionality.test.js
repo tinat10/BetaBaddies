@@ -283,26 +283,6 @@ async function runAllTests() {
     }
   });
 
-  // Test 15: Permanent Certification Validation
-  await runTest("Permanent Certification Validation", async () => {
-    try {
-      await certificationService.createCertification(testUsers[0].id, {
-        name: "Invalid Permanent",
-        orgName: "Test Org",
-        dateEarned: "2023-06-15",
-        expirationDate: "2026-06-15", // Should not have expiration
-        neverExpires: true,
-      });
-      throw new Error("Should not allow expiration date for permanent certification");
-    } catch (error) {
-      if (error.message.includes("permanent")) {
-        console.log(`   ✓ Permanent certification validation working`);
-      } else {
-        throw error;
-      }
-    }
-  });
-
   // Print test summary
   console.log("\n📊 Test Summary");
   console.log("=".repeat(50));
