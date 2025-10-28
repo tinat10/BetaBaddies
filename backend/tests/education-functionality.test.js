@@ -112,6 +112,8 @@ async function runAllTests() {
         gpa: 3.75,
         isEnrolled: false,
         honors: "Summa Cum Laude",
+        startDate: "2015-09-01",
+        endDate: "2019-05-15",
       };
 
       const education = await educationService.createEducation(
@@ -147,6 +149,8 @@ async function runAllTests() {
         degreeType: "Master's",
         field: "Data Science",
         isEnrolled: true,
+        startDate: "2023-09-01",
+        endDate: "2025-05-15", // Expected graduation date
       };
 
       const education = await educationService.createEducation(
@@ -290,6 +294,7 @@ async function runAllTests() {
         school: "Test School",
         degreeType: "Bachelor's",
         isEnrolled: false,
+        endDate: "2020-06-01",
       });
       
       createdEducationIds.push(testEducation.id);
@@ -348,6 +353,7 @@ async function runAllTests() {
         school: "Minimal University",
         degreeType: "High School",
         isEnrolled: false,
+        endDate: "2018-06-15",
       };
 
       const education = await educationService.createEducation(

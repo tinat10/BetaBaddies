@@ -63,7 +63,22 @@ const schemas = {
     gpa: Joi.number().min(0).max(4.0).allow(null).optional(),
     isEnrolled: Joi.boolean().required(),
     honors: Joi.string().max(1000).allow(null, "").optional(),
-  }),
+    startDate: Joi.date().allow(null).optional(),
+    endDate: Joi.date().required().messages({
+      "any.required": "Graduation date is required",
+      "date.base": "Graduation date must be a valid date",
+    }),
+  })
+    .custom((value, helpers) => {
+      // If both dates exist, endDate should be after startDate
+      if (value.startDate && value.endDate && value.endDate < value.startDate) {
+        return helpers.error("date.endBeforeStart");
+      }
+      return value;
+    })
+    .messages({
+      "date.endBeforeStart": "Graduation date must be after start date",
+    }),
 
   updateEducation: Joi.object({
     school: Joi.string().max(255).optional(),
@@ -82,7 +97,19 @@ const schemas = {
     gpa: Joi.number().min(0).max(4.0).allow(null).optional(),
     isEnrolled: Joi.boolean().optional(),
     honors: Joi.string().max(1000).allow(null, "").optional(),
-  }),
+    startDate: Joi.date().allow(null).optional(),
+    endDate: Joi.date().optional(),
+  })
+    .custom((value, helpers) => {
+      // If both dates exist, endDate should be after startDate
+      if (value.startDate && value.endDate && value.endDate < value.startDate) {
+        return helpers.error("date.endBeforeStart");
+      }
+      return value;
+    })
+    .messages({
+      "date.endBeforeStart": "Graduation date must be after start date",
+    }),
 
   createSkill: Joi.object({
     skillName: Joi.string().max(100).required(),

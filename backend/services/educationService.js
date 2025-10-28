@@ -154,7 +154,7 @@ class EducationService {
           is_enrolled = COALESCE($7, is_enrolled),
           honors = $8,
           startdate = $9,
-          graddate = $10
+          graddate = COALESCE($10, graddate)
         WHERE id = $1 AND user_id = $2
         RETURNING *
       `;
