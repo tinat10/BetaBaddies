@@ -229,7 +229,9 @@ async function runAllTests() {
 
       // Extract session cookie
       const cookies = loginResponse.headers["set-cookie"];
-      sessionCookie = cookies ? cookies.find((cookie) => cookie.startsWith("connect.sid")) : null;
+      sessionCookie = cookies
+        ? cookies.find((cookie) => cookie.startsWith("connect.sid"))
+        : null;
 
       if (!sessionCookie) {
         throw new Error("No session cookie received on re-login");
@@ -284,10 +286,14 @@ async function runAllTests() {
 
       // Extract session cookie
       const cookies = loginResponse.headers["set-cookie"];
-      sessionCookie = cookies ? cookies.find((cookie) => cookie.startsWith("connect.sid")) : null;
+      sessionCookie = cookies
+        ? cookies.find((cookie) => cookie.startsWith("connect.sid"))
+        : null;
 
       if (!sessionCookie) {
-        throw new Error("No session cookie received on login with new password");
+        throw new Error(
+          "No session cookie received on login with new password"
+        );
       }
 
       console.log("   ✓ Login with new password successful");
@@ -427,7 +433,9 @@ async function runAllTests() {
 
         // Extract session cookie
         const cookies = loginResponse.headers["set-cookie"];
-        sessionCookie = cookies ? cookies.find((cookie) => cookie.startsWith("connect.sid")) : null;
+        sessionCookie = cookies
+          ? cookies.find((cookie) => cookie.startsWith("connect.sid"))
+          : null;
 
         if (!sessionCookie) {
           throw new Error("No session cookie received");
@@ -468,7 +476,11 @@ async function runAllTests() {
 
       const response = await request(app)
         .delete("/api/v1/users/account")
-        .set("Cookie", sessionCookie);
+        .set("Cookie", sessionCookie)
+        .send({
+          password: "NewTestPassword456",
+          confirmationText: "DELETE MY ACCOUNT",
+        });
 
       if (response.status !== 200) {
         throw new Error(
