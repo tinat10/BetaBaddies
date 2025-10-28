@@ -81,10 +81,10 @@ export function Dashboard() {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="p-10 max-w-[1600px] mx-auto font-poppins min-h-full flex items-center justify-center">
+      <div className="px-4 sm:px-6 lg:px-10 py-10 max-w-[1600px] mx-auto font-poppins min-h-full flex items-center justify-center">
         <div className="text-center text-white">
-          <div className="text-2xl font-semibold mb-2">Loading your dashboard...</div>
-          <div className="text-base">Please wait while we fetch your data</div>
+          <div className="text-xl sm:text-2xl font-semibold mb-2">Loading your dashboard...</div>
+          <div className="text-sm sm:text-base">Please wait while we fetch your data</div>
         </div>
       </div>
     )
@@ -93,10 +93,10 @@ export function Dashboard() {
   // Show error state
   if (error && !profileData) {
     return (
-      <div className="p-10 max-w-[1600px] mx-auto font-poppins min-h-full flex items-center justify-center">
+      <div className="px-4 sm:px-6 lg:px-10 py-10 max-w-[1600px] mx-auto font-poppins min-h-full flex items-center justify-center">
         <div className="text-center text-white">
-          <div className="text-2xl font-semibold text-red-200 mb-2">Error</div>
-          <div className="text-base">{error}</div>
+          <div className="text-xl sm:text-2xl font-semibold text-red-200 mb-2">Error</div>
+          <div className="text-sm sm:text-base">{error}</div>
         </div>
       </div>
     )
@@ -110,13 +110,13 @@ export function Dashboard() {
   return (
     <div className="font-poppins min-h-full">
       {/* Welcome Message */}
-      <div className="max-w-[1600px] mx-auto p-10 pb-6">
-        <div className="flex items-center justify-between">
-          <h2 className="mb-2" style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 100 }}>
-            Welcome Back, <span style={{ fontFamily: 'Poppins', fontSize: '64px', fontWeight: 600, color: '#3351FD' }}>{profileData.name}</span>
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light leading-tight" style={{ fontFamily: 'Poppins' }}>
+            Welcome Back, <span className="font-semibold" style={{ color: '#3351FD' }}>{profileData.name}</span>
           </h2>
           <button 
-            className="flex items-center gap-2 px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 bg-[#F9FAFB] border border-[#3351FD] rounded-md text-sm font-medium text-[#3351FD] cursor-pointer transition-all hover:bg-[#3351FD] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed self-start lg:self-auto"
             onClick={handleExportProfile}
             disabled={isExporting || !profileData}
           >
@@ -128,7 +128,7 @@ export function Dashboard() {
 
       {/* Error banner if there was an error but we have cached/default data */}
       {error && (
-        <div className="max-w-[1600px] mx-auto px-10 mb-6">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mb-6">
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
             <p className="text-sm text-yellow-800 m-0">{error}</p>
           </div>
@@ -136,21 +136,21 @@ export function Dashboard() {
       )}
 
       {/* Main Content Layout with Gradient behind cards only */}
-      <div className="relative -mt-8 pb-4">
-        <div className="max-w-[1600px] mx-auto px-10 pb-4 pt-24 relative">
-          {/* Gradient Background - simple approach that extends to container edge plus some */}
+      <div className="relative -mt-8 pb-4 overflow-hidden">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 pb-4 pt-24 relative">
+          {/* Gradient Background - positioned behind right column, extends to screen edge */}
           <div 
-            className="absolute pointer-events-none"
+            className="absolute pointer-events-none hidden lg:block"
             style={{ 
               left: 'calc(350px + 2rem - 1.5rem)', // sidebar width + gap - negative margin
-              right: '-10rem', // extend beyond container with safe margin
+              width: '200vw', // oversized width to ensure screen coverage
               top: '5%',
-              bottom: '-1rem',
+              bottom: '-1rem', // extend beyond container's bottom padding
               background: 'linear-gradient(180deg, #B1D0FF 0%, #EC85CA 100%)',
               borderTopLeftRadius: '25px'
             }}
           />
-          <div className="grid grid-cols-[350px_1fr] gap-8 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-8 relative">
           
           {/* Left Sidebar */}
           <div className="space-y-6 relative z-10">
@@ -226,10 +226,10 @@ export function Dashboard() {
                   </div>
 
           {/* Right Main Content - Bento Grid */}
-          <div className="-ml-6 relative z-10">
-            <div className="grid grid-cols-[373px_373px_374px] gap-6 auto-rows-auto">
+          <div className="lg:-ml-6 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-auto">
           {/* Profile Completion Card - Row 1 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200" style={{ gridColumn: 'span 2 / span 2' }}>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 sm:col-span-2 xl:col-span-2">
             <h3 className="text-3xl font-medium text-slate-900 mb-6">Profile Completion</h3>
             <div className="flex items-center gap-4 mb-4">
               <div className="flex-1 h-6 bg-slate-200 rounded-2xl overflow-hidden">
@@ -339,7 +339,7 @@ export function Dashboard() {
           </div>
 
           {/* Skill Distribution Card - Row 3 */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200" style={{ gridColumn: 'span 2 / span 2' }}>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 sm:col-span-2 xl:col-span-2">
             <h3 className="text-3xl font-medium text-slate-900 mb-6">Skill Distribution</h3>
             <div className="space-y-4">
               {profileData.skillsDistribution.map((skill) => (
