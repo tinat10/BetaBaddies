@@ -19,6 +19,22 @@ const schemas = {
     password: Joi.string().required(),
   }),
 
+  forgotPassword: Joi.object({
+    email: Joi.string().email().required(),
+  }),
+  
+  resetPassword: Joi.object({
+    token: Joi.string().required(),
+    newPassword: Joi.string()
+      .min(8)
+      .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)"))
+      .required()
+      .messages({
+        "string.pattern.base":
+          "Password must contain at least one lowercase letter, one uppercase letter, and one number",
+      }),
+  }),
+  
   changePassword: Joi.object({
     currentPassword: Joi.string().required(),
     newPassword: Joi.string()
@@ -425,3 +441,5 @@ export const validateUpdateProject = validate(schemas.updateProject);
 export const validateProjectId = validateParams(schemas.projectId);
 export const validateCreateProfile = validate(schemas.createProfile);
 export const validateUpdateProfile = validate(schemas.updateProfile);
+export const validateForgotPassword = validate(schemas.forgotPassword);
+export const validateResetPassword = validate(schemas.resetPassword);

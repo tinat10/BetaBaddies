@@ -177,6 +177,14 @@ export function Login() {
                 "LOG IN"
               )}
             </button>
+            <button
+              type="button"
+              onClick={() => window.location.href = ROUTES.FORGOT_PASSWORD}
+              className="w-full text-purple-600 hover:text-purple-700 font-semibold hover:underline text-center py-2"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+            >
+              Reset Password
+            </button>
 
             {/* Divider */}
             <div className="relative my-6">

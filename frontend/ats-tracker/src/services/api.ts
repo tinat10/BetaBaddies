@@ -58,6 +58,21 @@ class ApiService {
     }>>('/users/profile');
   }
 
+  // Password reset endpoints
+  async forgotPassword(email: string) {
+    return this.request<ApiResponse<{ message: string }>>('/users/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    return this.request<ApiResponse<{ message: string }>>('/users/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    });
+  }
+  
   // Profile endpoints (personal information from profiles table)
   async getProfile() {
     return this.request<ApiResponse<{ profile: ProfileData }>>('/profile');
