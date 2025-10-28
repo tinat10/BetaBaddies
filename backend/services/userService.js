@@ -206,6 +206,75 @@ class UserService {
     }
   }
 
+  // Generate reset token
+  async generateResetToken(userId) {
+    try {
+      const crypto = await import('crypto');
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      const query = `
+        UPDATE users 
+        SET reset_token = $2, reset_token_expires = $3, updated_at = NOW()
+        WHERE u_id = $1
+        RETURNING u_id, email
+      `;
+
+      const result = await database.query(query, [userId, resetToken, resetTokenExpires]);
+
+      if (result.rows.length === 0) {
+        throw new Error("User not found");
+      }
+
+      return resetToken;
+    } catch (error) {
+      console.error("❌ Error generating reset token:", error);
+      throw error;
+    }
+  }
+
+  // Reset password with token
+  async resetPasswordWithToken(token, newPassword) {
+    try {
+      // Find user with valid token
+      const userQuery = `
+        SELECT u_id, email, reset_token_expires
+        FROM users
+        WHERE reset_token = $1 AND reset_token_expires > NOW()
+      `;
+
+      const userResult = await database.query(userQuery, [token]);
+
+      if (userResult.rows.length === 0) {
+        throw new Error("Invalid or expired token");
+      }
+
+      const user = userResult.rows[0];
+
+      // Hash new password
+      const hashedPassword = await this.hashPassword(newPassword);
+
+      // Update password and clear reset token
+      const updateQuery = `
+        UPDATE users 
+        SET password = $2, reset_token = NULL, reset_token_expires = NULL, updated_at = NOW()
+        WHERE u_id = $1
+        RETURNING u_id, email
+      `;
+
+      const updateResult = await database.query(updateQuery, [user.u_id, hashedPassword]);
+
+      if (updateResult.rows.length === 0) {
+        throw new Error("Failed to update password");
+      }
+
+      return updateResult.rows[0];
+    } catch (error) {
+      console.error("❌ Error resetting password with token:", error);
+      throw error;
+    }
+  }
+  
   // Delete user account with password verification
   async deleteUser(userId, password) {
     try {

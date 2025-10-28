@@ -36,6 +36,7 @@ app.use(
   })
 );
 
+
 // CORS configuration
 app.use(
   cors({
@@ -71,15 +72,14 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // Session configuration
 app.use(
   session({
-    secret:
-      process.env.SESSION_SECRET || "your-secret-key-change-in-production",
+    secret: process.env.SESSION_SECRET || "your-secret-key-change-in-production",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // Set to false for local development, even in production mode
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      sameSite: "lax", // Use lax for local development
     },
   })
 );

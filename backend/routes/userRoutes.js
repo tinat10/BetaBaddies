@@ -6,6 +6,8 @@ import {
   validateLogin,
   validateChangePassword,
   validateDeleteAccount,
+  validateForgotPassword,
+  validateResetPassword
 } from "../middleware/validation.js";
 
 const router = express.Router();
@@ -43,6 +45,20 @@ router.put(
   isAuthenticated,
   validateChangePassword,
   userController.changePassword
+);
+
+router.post(
+  "/forgot-password",
+  authRateLimit(15 * 60 * 1000, 5), // 5 attempts per 15 minutes for security
+  validateForgotPassword,
+  userController.forgotPassword
+);
+
+router.post(
+  "/reset-password",
+  authRateLimit(15 * 60 * 1000, 5), // 5 attempts per 15 minutes for security
+  validateResetPassword,
+  userController.resetPassword
 );
 
 router.delete(
